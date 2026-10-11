@@ -1,0 +1,981 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style><title>Residencia Madroño Badajoz</title>
+<meta name="description" content="Residencia de estudiantes en Valdepasillas, Badajoz: 44 plazas en habitaciones individuales y dobles, todas con cocina propia. Solo alojamiento, precios claros y línea 9 de autobús al Campus desde la avenida. Lista de prerreserva abierta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"LodgingBusiness","name":"Madroño Living","description":"Residencia de estudiantes con 44 plazas en habitaciones individuales y dobles, todas con cocina propia. Solo alojamiento.","address":{"@type":"PostalAddress","streetAddress":"Avenida Sinforiano Madroñero","postalCode":"06011","addressLocality":"Badajoz","addressRegion":"Badajoz","addressCountry":"ES"},"amenityFeature":[{"@type":"LocationFeatureSpecification","name":"Cocina en cada habitación","value":true},{"@type":"LocationFeatureSpecification","name":"Gimnasio","value":true},{"@type":"LocationFeatureSpecification","name":"Salas de estudio","value":true},{"@type":"LocationFeatureSpecification","name":"Lavandería","value":true}]}
+</script>
+<style>
+/* Layout: plano de arquitecto. Láminas con cotas y etiquetas técnicas; el plano de la habitación abre la página y la avenida se dibuja como un eje con sus números de portal. */
+:root{
+  --paper:#F1F3EF; --sheet:#FFFFFF; --ink:#14281F; --ink-2:#4A5A51; --line:#CBD3CC;
+  --leaf:#3F6B4A; --berry:#C43D24; --berry-ink:#FFFFFF; --tint:#E3E9E2;
+  --ok:#2F7A4B; --warn:#8A5A00; --err:#B3261E;
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Instrument Sans","Helvetica Neue",Arial,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.5rem;--s6:2rem;--s7:3rem;--s8:5rem;
+  --r:6px; --maxw:72rem;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0F1813;--sheet:#16211B;--ink:#E6ECE6;--ink-2:#A8B5AC;--line:#2D3B33;
+  --leaf:#8DBE97;--berry:#F06A4C;--berry-ink:#1A0D09;--tint:#1C2A22;--ok:#7CCB97;--warn:#E6B657;--err:#FF8A80;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0F1813;--sheet:#16211B;--ink:#E6ECE6;--ink-2:#A8B5AC;--line:#2D3B33;
+  --leaf:#8DBE97;--berry:#F06A4C;--berry-ink:#1A0D09;--tint:#1C2A22;--ok:#7CCB97;--warn:#E6B657;--err:#FF8A80;color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(1rem,4vw,2.5rem)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.05;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h2{font-size:clamp(2rem,5vw,3.25rem);font-weight:800}
+h3{font-size:1.3rem;font-weight:600;letter-spacing:-.01em}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--berry);outline-offset:3px;border-radius:2px}
+.tag{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.lede{font-size:1.15rem;color:var(--ink-2);max-width:38rem}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-2)}
+.pend{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;padding:.15rem .5rem;border-radius:999px;border:1px dashed var(--warn);color:var(--warn);white-space:nowrap}
+.ok-pill{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;padding:.15rem .5rem;border-radius:999px;border:1px solid var(--ok);color:var(--ok);white-space:nowrap}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:3rem;padding:.75rem 1.4rem;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font:600 1rem/1 var(--f-body);text-decoration:none;cursor:pointer;transition:transform .15s ease,background .15s ease,color .15s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:progress;transform:none}
+.btn--primary{background:var(--berry);border-color:var(--berry);color:var(--berry-ink)}
+.btn--ghost:hover{background:var(--ink);color:var(--paper)}
+.btn--sm{min-height:2.4rem;padding:.5rem .9rem;font-size:.88rem}
+.btn svg{width:1.1em;height:1.1em}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);min-height:4rem}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.brand b{font-family:var(--f-display);font-weight:800;font-size:1.3rem;letter-spacing:-.02em}
+.brand b i{font-style:normal;font-weight:400;color:var(--ink-2);margin-left:.25rem;font-size:.95rem;letter-spacing:0}
+.brand small{display:block;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);line-height:1}
+.nav{display:flex;gap:var(--s5);font-weight:500;font-size:.95rem}
+.nav a{text-decoration:none;color:var(--ink-2)}
+.nav a:hover{color:var(--ink)}
+.top .btn{min-height:2.5rem;padding:.55rem 1.1rem;font-size:.9rem}
+@media (max-width:900px){.nav{display:none}}
+@media (max-width:520px){.top .btn{display:none}}
+
+/* hero */
+.hero{padding-block:clamp(2.5rem,6vw,5rem) var(--s7)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(2rem,5vw,4rem);align-items:center}
+.status{display:inline-flex;align-items:center;gap:.55rem;padding:.4rem .8rem;border:1px solid var(--line);border-radius:999px;background:var(--sheet);font-size:.85rem;font-weight:500}
+.status i{width:.55rem;height:.55rem;border-radius:50%;background:var(--berry);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--berry) 55%,transparent)}70%{box-shadow:0 0 0 .5rem transparent}100%{box-shadow:0 0 0 0 transparent}}
+.hero h1{font-size:clamp(2.75rem,8vw,5.6rem);font-weight:800;margin-block:var(--s5);letter-spacing:-.035em}
+.hero h1 em{font-style:normal;color:var(--berry)}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
+.proof{list-style:none;margin:var(--s6) 0 0;padding:var(--s4) 0 0;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);font-size:.92rem;color:var(--ink-2)}
+.proof li{display:flex;gap:.45rem;align-items:center}
+.proof svg{width:1rem;height:1rem;flex:none;stroke:var(--leaf);fill:none;stroke-width:2.2}
+.plan{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:clamp(.75rem,2vw,1.25rem);margin:0}
+.plan svg{display:block;width:100%;height:auto}
+.plan figcaption{display:flex;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s3);padding-top:var(--s3);border-top:1px dashed var(--line)}
+.plan .wall{fill:none;stroke:var(--ink);stroke-width:7;stroke-linecap:square}
+.plan .thin{fill:none;stroke:var(--ink);stroke-width:1.5}
+.plan .fur{fill:var(--tint);stroke:var(--ink);stroke-width:1.5}
+.plan .kit{fill:color-mix(in srgb,var(--berry) 14%,var(--sheet));stroke:var(--berry);stroke-width:2}
+.plan .kit-l{fill:none;stroke:var(--berry);stroke-width:1.5}
+.plan .lbl{font-family:var(--f-mono);font-size:11px;fill:var(--ink-2);letter-spacing:.06em}
+.plan .lbl-k{font-family:var(--f-mono);font-size:11px;fill:var(--berry);font-weight:500;letter-spacing:.06em}
+.plan .lead-k{stroke:var(--berry);stroke-width:1.2;fill:none}
+.plan .dim{stroke:var(--ink-2);stroke-width:1;fill:none}
+.plan .draw{stroke-dasharray:1200;animation:draw 1.6s ease-out both}
+@keyframes draw{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+@media (max-width:900px){.hero .wrap{grid-template-columns:minmax(0,1fr)}}
+
+.facts{border-block:1px solid var(--line);background:var(--sheet)}
+.facts ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.facts li{padding:var(--s5) var(--s4);border-left:1px solid var(--line);display:grid;gap:.15rem}
+.facts li:first-child{border-left:0}
+.facts strong{font-family:var(--f-display);font-size:clamp(1.6rem,3.5vw,2.25rem);font-weight:800;letter-spacing:-.02em}
+.facts span{color:var(--ink-2);font-size:.92rem;line-height:1.35}
+@media (max-width:760px){.facts ul{grid-template-columns:repeat(2,minmax(0,1fr))}.facts li:nth-child(3){border-left:0}.facts li:nth-child(n+3){border-top:1px solid var(--line)}}
+
+section{padding-block:clamp(3.5rem,8vw,6.5rem)}
+section.flush{padding-top:0}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s5) var(--s7);align-items:end;margin-bottom:clamp(2rem,5vw,3.5rem)}
+.sec-head .tag{grid-column:1/-1}
+@media (max-width:760px){.sec-head{grid-template-columns:minmax(0,1fr)}}
+
+/* rooms */
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
+.room{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);display:grid;grid-template-rows:auto 1fr auto}
+.room-plan{border-bottom:1px solid var(--line);padding:var(--s4);background:repeating-linear-gradient(0deg,transparent 0 19px,color-mix(in srgb,var(--line) 45%,transparent) 19px 20px),repeating-linear-gradient(90deg,transparent 0 19px,color-mix(in srgb,var(--line) 45%,transparent) 19px 20px)}
+.room-plan svg{display:block;width:100%;height:auto;max-height:13rem}
+.room-body{padding:var(--s5);display:grid;gap:var(--s4);align-content:start}
+.bul{margin:0;padding:0;list-style:none;display:grid;gap:.45rem}
+.bul li{display:flex;gap:.6rem;align-items:baseline;color:var(--ink-2)}
+.bul li::before{content:"";flex:none;width:.45rem;height:.45rem;border-radius:50%;background:var(--leaf);transform:translateY(-.1rem)}
+.room-foot{display:flex;justify-content:space-between;align-items:end;gap:var(--s4);padding:var(--s4) var(--s5);border-top:1px dashed var(--line);flex-wrap:wrap}
+.price{font-family:var(--f-display);font-weight:800;font-size:2.25rem;letter-spacing:-.03em;line-height:1}
+.price small{font-family:var(--f-body);font-size:.9rem;font-weight:500;color:var(--ink-2);letter-spacing:0}
+@media (max-width:760px){.rooms{grid-template-columns:minmax(0,1fr)}}
+.note{font-size:.88rem;color:var(--ink-2);margin-top:var(--s4)}
+
+/* argument band */
+.band{--paper:#F1F3EF;background:#14281F;color:var(--paper)}
+.band .tag{color:color-mix(in srgb,var(--paper) 70%,transparent)}
+.band .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:var(--s7);align-items:start}
+.band h2{color:var(--paper)}
+.band p{color:color-mix(in srgb,var(--paper) 80%,transparent)}
+.pillars{list-style:none;margin:var(--s6) 0 0;padding:0;display:grid;gap:var(--s4)}
+.pillars li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.2rem var(--s4);padding-top:var(--s4);border-top:1px solid color-mix(in srgb,var(--paper) 20%,transparent)}
+.pillars b{font-family:var(--f-display);font-size:1.2rem;font-weight:600;color:var(--paper)}
+.pillars span{grid-column:2;color:color-mix(in srgb,var(--paper) 75%,transparent);font-size:.98rem}
+.pillars svg{grid-row:span 2;width:1.6rem;height:1.6rem;stroke:var(--berry);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.compare{display:grid;gap:var(--s3);padding:var(--s5);border:1px solid color-mix(in srgb,var(--paper) 20%,transparent);border-radius:var(--r)}
+.bar{display:grid;gap:.35rem}
+.bar-row{display:flex;justify-content:space-between;gap:var(--s3);font-size:.95rem}
+.bar-track{height:.9rem;border-radius:999px;background:color-mix(in srgb,var(--paper) 14%,transparent);overflow:hidden}
+.bar-fill{height:100%;border-radius:999px;background:color-mix(in srgb,var(--paper) 55%,transparent)}
+.bar-fill.me{background:var(--berry)}
+.band small{display:block;font-size:.8rem;color:color-mix(in srgb,var(--paper) 62%,transparent)}
+@media (max-width:900px){.band .wrap{grid-template-columns:minmax(0,1fr);gap:var(--s6)}}
+
+/* location */
+.chips{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s5)}
+.chip{font:500 .92rem/1 var(--f-body);padding:.6rem 1rem;border-radius:999px;border:1.5px solid var(--line);background:var(--sheet);color:var(--ink);cursor:pointer;display:inline-flex;gap:.45rem;align-items:center;min-height:2.6rem}
+.chip i{width:.6rem;height:.6rem;border-radius:50%;background:var(--c,var(--ink-2))}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.locgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:var(--s5);align-items:start}
+@media (max-width:900px){.locgrid{grid-template-columns:minmax(0,1fr)}}
+.near{display:grid;gap:var(--s4)}
+.place-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+.place{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.15rem var(--s3);align-items:center;padding:.8rem 0;border-bottom:1px solid var(--line);transition:opacity .2s}
+.place .dot{width:.65rem;height:.65rem;border-radius:50%;background:var(--c);grid-row:span 2}
+.place b{font-weight:600;font-size:.98rem}
+.place small{grid-column:2;color:var(--ink-2);font-size:.85rem}
+.place a{grid-row:1/span 2;grid-column:3;font-size:.85rem;font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--berry);padding-bottom:1px;white-space:nowrap}
+.place.dim{opacity:.25}
+.uni{--paper:#F1F3EF;background:#14281F;color:var(--paper);border-radius:var(--r);padding:var(--s5);display:grid;gap:var(--s3)}
+.uni .tag{color:color-mix(in srgb,var(--paper) 70%,transparent)}
+.uni h3{color:var(--paper)}
+.uni p{color:color-mix(in srgb,var(--paper) 80%,transparent);font-size:.95rem}
+.route{display:flex;align-items:center;gap:0;margin-block:var(--s2);overflow-x:auto;padding-bottom:.25rem}
+.route span{flex:none;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.04em;padding:.35rem .55rem;border:1px solid color-mix(in srgb,var(--paper) 35%,transparent);border-radius:999px;white-space:nowrap}
+.route span.hl{background:var(--berry);border-color:var(--berry);color:var(--berry-ink)}
+.route i{flex:none;width:1.2rem;border-top:2px dotted color-mix(in srgb,var(--paper) 45%,transparent)}
+.uni a{color:var(--paper)}
+.mapbox{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--sheet)}
+.mapbox iframe{display:block;width:100%;height:22rem;border:0}
+.mapbox .cap{display:flex;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;padding:.6rem .9rem;font-size:.85rem;color:var(--ink-2);border-top:1px solid var(--line)}
+.srcs{font-size:.8rem;color:var(--ink-2);margin-top:var(--s5)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.calc form{padding:clamp(1.25rem,3vw,2rem);display:grid;gap:var(--s5)}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:var(--s2);min-width:0}
+legend{font-weight:600;margin-bottom:var(--s2);padding:0;display:flex;gap:.5rem;align-items:baseline}
+legend .tag{font-size:.68rem}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.seg.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.seg label,.chk{position:relative;display:flex;align-items:flex-start;gap:.7rem;padding:.8rem 1rem;border:1.5px solid var(--line);border-radius:var(--r);cursor:pointer;transition:border-color .15s,background .15s}
+.seg input,.chk input{accent-color:var(--berry);width:1.1rem;height:1.1rem;flex:none;margin:.15rem 0 0}
+.seg label:has(input:checked),.chk:has(input:checked){border-color:var(--ink);background:var(--tint)}
+.seg label:has(input:disabled),.chk:has(input:disabled){opacity:.5;cursor:not-allowed}
+.seg label span,.chk span{display:grid;gap:.1rem;line-height:1.25;min-width:0}
+.seg label small,.chk small{color:var(--ink-2);font-size:.83rem}
+.chk-grid{display:grid;gap:var(--s2)}
+.result{background:var(--tint);padding:clamp(1.25rem,3vw,2rem);display:grid;align-content:start;gap:var(--s4);border-left:1px solid var(--line)}
+.result .big{font-family:var(--f-display);font-size:clamp(2.75rem,6vw,3.75rem);font-weight:800;letter-spacing:-.03em;line-height:1}
+.result .big.na{font-size:clamp(1.6rem,4vw,2rem)}
+.lines{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.lines li{display:flex;justify-content:space-between;gap:var(--s3);padding:.55rem 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.lines li span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.lines li.total{font-weight:600;border-bottom:0}
+.pending-box{border:1px dashed var(--warn);border-radius:var(--r);padding:var(--s3) var(--s4);font-size:.88rem;display:grid;gap:.35rem}
+.pending-box ul{margin:0;padding-left:1.1rem;color:var(--ink-2)}
+@media (max-width:900px){.calc{grid-template-columns:minmax(0,1fr)}.result{border-left:0;border-top:1px solid var(--line)}}
+@media (max-width:560px){.seg,.seg.three{grid-template-columns:minmax(0,1fr)}}
+
+/* spaces */
+.spaces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--ink)}
+.space{padding:var(--s5) var(--s5) var(--s6) 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2) var(--s4);align-content:start}
+.space:nth-child(3n+2),.space:nth-child(3n){padding-left:var(--s5);border-left:1px solid var(--line)}
+.space svg{grid-row:span 2;width:2.25rem;height:2.25rem;stroke:var(--ink);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.space p{color:var(--ink-2);font-size:.98rem}
+.space .pill{display:inline-block;margin-left:.4rem;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:.1rem .45rem;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);vertical-align:middle}
+@media (max-width:900px){.spaces{grid-template-columns:repeat(2,minmax(0,1fr))}.space:nth-child(n){padding-left:0;border-left:0}.space:nth-child(2n){padding-left:var(--s5);border-left:1px solid var(--line)}}
+@media (max-width:560px){.spaces{grid-template-columns:minmax(0,1fr)}.space:nth-child(n){padding-left:0;border-left:0;padding-right:0}}
+
+/* summer */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
+.panel{border:1px solid var(--line);border-radius:var(--r);padding:clamp(1.25rem,3vw,2rem);background:var(--sheet);display:grid;gap:var(--s3);align-content:start}
+.months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;margin-block:var(--s2)}
+.months div{font-family:var(--f-mono);font-size:.62rem;text-align:center;padding:.5rem 0;border-radius:3px;background:var(--tint);color:var(--ink-2)}
+.months div.c{background:color-mix(in srgb,var(--leaf) 28%,var(--sheet));color:var(--ink)}
+.months div.v{background:var(--berry);color:var(--berry-ink)}
+.legend{display:flex;gap:var(--s4);flex-wrap:wrap;font-size:.85rem;color:var(--ink-2)}
+.legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:2px;margin-right:.35rem;vertical-align:-1px}
+@media (max-width:760px){.duo{grid-template-columns:minmax(0,1fr)}}
+
+/* transparency */
+.ledger{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
+.ledger .panel ul{list-style:none;margin:0;padding:0}
+.ledger .panel li{display:flex;justify-content:space-between;gap:var(--s3);padding:.6rem 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.ledger .panel li:last-child{border-bottom:0}
+.timeline{list-style:none;margin:var(--s6) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s3)}
+.timeline li{border-top:3px solid var(--line);padding-top:var(--s3);display:grid;gap:.2rem;font-size:.92rem}
+.timeline li.done{border-color:var(--leaf)}
+.timeline li.now{border-color:var(--berry)}
+.timeline b{font-family:var(--f-display);font-weight:600;font-size:1.05rem}
+@media (max-width:760px){.ledger{grid-template-columns:minmax(0,1fr)}.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* form */
+.steps{list-style:none;margin:var(--s6) 0 0;padding:0;display:grid;gap:var(--s5);counter-reset:s}
+.steps li{counter-increment:s;border-top:2px solid var(--ink);padding-top:var(--s4);display:grid;gap:var(--s2)}
+.steps li::before{content:"Paso " counter(s);font-family:var(--f-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--berry)}
+.steps p{color:var(--ink-2)}
+.reserve{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(2rem,5vw,4rem);align-items:start}
+.form{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:clamp(1.25rem,3vw,2rem);display:grid;gap:var(--s4)}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
+.field{display:grid;gap:.35rem;min-width:0}
+.field label{font-weight:600;font-size:.95rem}
+.field label small{font-weight:400;color:var(--ink-2)}
+.field input,.field select,.field textarea{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:var(--r);padding:.75rem .85rem;min-height:3rem}
+.field textarea{min-height:6rem;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--berry) 25%,transparent)}
+.field [aria-invalid="true"]{border-color:var(--err)}
+.err{color:var(--err);font-size:.85rem}
+.hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+.consent{display:flex;gap:.6rem;align-items:flex-start;font-size:.9rem;color:var(--ink-2)}
+.consent input{accent-color:var(--berry);width:1.1rem;height:1.1rem;margin-top:.2rem;flex:none}
+.privacy{font-size:.85rem;color:var(--ink-2)}
+.privacy summary{cursor:pointer;font-weight:600;color:var(--ink)}
+.privacy p{margin-top:var(--s2)}
+.form-msg{border-radius:var(--r);padding:var(--s4);font-size:.95rem}
+.form-msg.ok{background:color-mix(in srgb,var(--ok) 14%,var(--sheet));border:1px solid var(--ok)}
+.form-msg.bad{background:color-mix(in srgb,var(--err) 10%,var(--sheet));border:1px solid var(--err)}
+.form-msg pre{white-space:pre-wrap;font-family:var(--f-mono);font-size:.8rem;background:var(--paper);padding:var(--s3);border-radius:4px;margin:var(--s3) 0}
+@media (max-width:900px){.reserve{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.row2{grid-template-columns:minmax(0,1fr)}}
+
+.faq{border-top:1px solid var(--ink);max-width:52rem}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:var(--s4);padding:var(--s5) 0;font-family:var(--f-display);font-weight:600;font-size:1.2rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--f-mono);font-weight:400;color:var(--berry);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding-bottom:var(--s5);color:var(--ink-2);max-width:42rem}
+
+.owner{background:var(--sheet);border:1px dashed var(--berry);border-radius:var(--r);padding:var(--s5);display:grid;gap:var(--s4)}
+.table-wrap{overflow-x:auto}
+.owner table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:40rem}
+.owner th,.owner td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
+.owner th{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+
+footer{border-top:1px solid var(--line);padding-block:var(--s6) calc(var(--s8) + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;color:var(--ink-2);font-size:.9rem}
+
+.mbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;gap:var(--s2);padding:.6rem 1rem calc(.6rem + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+.mbar .btn{flex:1;min-height:2.9rem;padding-inline:.8rem;font-size:.95rem}
+@media (max-width:760px){.mbar{display:flex}}
+</style>
+
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#14281F">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Residencia Madroño Badajoz">
+<meta property="og:description" content="Residencia de estudiantes en Valdepasillas, Badajoz: 44 plazas en habitaciones individuales y dobles, todas con cocina propia. Solo alojamiento, precios claros y línea 9 de autobús al Campus desde la avenida. Lista de prerreserva abierta.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='19' r='12' fill='%23C43D24'/%3E%3Cpath d='M17 7C19 2 25 1.5 28 3C25 6 21 7.5 17 7Z' fill='%233F6B4A'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio" aria-label="Inicio">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="19" r="12" fill="var(--berry)"/><g fill="var(--berry-ink)" opacity=".55"><circle cx="13" cy="15" r="1.1"/><circle cx="18" cy="13.5" r="1.1"/><circle cx="22" cy="17" r="1.1"/><circle cx="15" cy="20" r="1.1"/><circle cx="20" cy="22" r="1.1"/><circle cx="12" cy="24" r="1.1"/><circle cx="24" cy="23" r="1.1"/><circle cx="17" cy="26.5" r="1.1"/></g><path d="M17 7 C19 2 25 1.5 28 3 C25 6 21 7.5 17 7Z" fill="var(--leaf)"/></svg>
+      <span><b><span data-brand="name">Madroño</span><i data-brand="suffix">living</i></b><small data-brand="tagline">Residencia de estudiantes · Badajoz</small></span>
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#habitaciones">Habitaciones</a>
+      <a href="#ubicacion">Ubicación</a>
+      <a href="#calculadora">Precios</a>
+      <a href="#verano">Verano</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <a class="btn btn--primary" href="#prerreserva">Prerreservar plaza</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero" aria-labelledby="h1">
+    <div class="wrap">
+      <div>
+        <span class="status"><i aria-hidden="true"></i>Próxima apertura · Lista de prerreserva abierta</span>
+        <h1 id="h1">Tu habitación. <em>Tu cocina.</em> Tu ritmo.</h1>
+        <p class="lede">Residencia de estudiantes en Valdepasillas, Badajoz. 44 plazas en habitaciones individuales y dobles, y cada habitación con su propia cocina. Solo alojamiento: pagas tu plaza y decides tú qué, cuándo y cuánto comes.</p>
+        <div class="ctas">
+          <a class="btn btn--primary" href="#prerreserva">Apuntarme a la prerreserva</a>
+          <a class="btn btn--ghost" href="#calculadora">Calcular mi curso
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <ul class="proof">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Cocina en las 44 plazas</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Sin cuota de comedor</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Línea 9 al Campus desde la avenida</li>
+        </ul>
+      </div>
+
+      <figure class="plan">
+        <svg viewBox="0 0 520 380" role="img" aria-labelledby="plan-t">
+          <title id="plan-t">Plano tipo de habitación individual con cocina independiente, zona de estudio, cama y baño</title>
+          <path class="wall draw" d="M40 40 H480 V340 H40 Z"/>
+          <path class="wall" d="M330 40 V150"/>
+          <path class="wall" d="M330 200 V210 H480"/>
+          <path class="thin" d="M330 150 A50 50 0 0 0 380 200"/><path class="thin" d="M330 150 V200"/>
+          <path d="M120 340 H260" stroke="var(--sheet)" stroke-width="9"/><path class="thin" d="M120 336 H260 M120 344 H260"/>
+          <path d="M480 250 V310" stroke="var(--sheet)" stroke-width="9"/><path class="thin" d="M480 250 A60 60 0 0 0 420 310"/><path class="thin" d="M480 310 H420"/>
+          <rect class="fur" x="58" y="60" width="110" height="200" rx="4"/>
+          <rect class="fur" x="70" y="70" width="86" height="38" rx="8" style="fill:var(--sheet)"/>
+          <path class="thin" d="M58 135 H168"/>
+          <rect class="fur" x="190" y="282" width="128" height="48" rx="3"/>
+          <circle class="thin" cx="254" cy="262" r="15"/>
+          <rect class="fur" x="190" y="58" width="120" height="44" rx="3"/>
+          <rect class="kit" x="350" y="222" width="116" height="52" rx="3"/>
+          <circle class="kit-l" cx="374" cy="248" r="10"/><circle class="kit-l" cx="400" cy="248" r="10"/>
+          <rect class="kit-l" x="420" y="234" width="34" height="28" rx="6"/>
+          <rect class="kit" x="440" y="282" width="26" height="40" rx="2"/>
+          <rect class="fur" x="345" y="55" width="62" height="62" rx="2"/>
+          <path class="thin" d="M345 55 L407 117 M407 55 L345 117"/>
+          <ellipse class="fur" cx="452" cy="80" rx="14" ry="20"/>
+          <rect class="fur" x="425" y="150" width="45" height="36" rx="10"/>
+          <path class="dim" d="M40 22 H480 M40 16 V28 M480 16 V28"/>
+          <text class="lbl" x="113" y="200" text-anchor="middle">CAMA</text>
+          <text class="lbl" x="250" y="85" text-anchor="middle">ARMARIO</text>
+          <text class="lbl" x="254" y="311" text-anchor="middle">ESTUDIO</text>
+          <text class="lbl" x="405" y="140" text-anchor="middle">BAÑO</text>
+          <path class="lead-k" d="M408 222 V196 H300"/>
+          <circle cx="408" cy="222" r="3" fill="var(--berry)"/>
+          <text class="lbl-k" x="206" y="200">COCINA PROPIA</text>
+          <text class="lbl" x="44" y="370">ESQUEMA ORIENTATIVO · SIN ESCALA</text>
+        </svg>
+        <figcaption><span class="tag">Habitación tipo · individual</span><span class="tag">Distribución definitiva según proyecto</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="facts">
+    <div class="wrap">
+      <ul>
+        <li><strong class="num">44</strong><span>plazas en total, en un edificio a escala humana</span></li>
+        <li><strong>1 cocina</strong><span>en cada habitación, individual o doble</span></li>
+        <li><strong class="num">12</strong><span>meses de uso: curso completo y estancias de verano</span></li>
+        <li><strong>Directo</strong><span>gestión propia, sin intermediarios entre tú y la propiedad</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <section id="habitaciones" aria-labelledby="h-rooms">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="tag">Habitaciones</span>
+        <h2 id="h-rooms">Dos formatos. La misma independencia.</h2>
+        <p class="lede">Elige vivir solo o compartir con alguien de confianza. En los dos casos tienes cocina equipada dentro de la habitación y acceso a todas las zonas comunes.</p>
+      </div>
+      <div class="rooms">
+        <article class="room">
+          <div class="room-plan" aria-hidden="true">
+            <svg viewBox="0 0 300 160"><rect x="10" y="10" width="280" height="140" fill="var(--sheet)" stroke="var(--ink)" stroke-width="5"/><rect x="22" y="22" width="56" height="100" rx="3" fill="var(--tint)" stroke="var(--ink)" stroke-width="1.5"/><rect x="100" y="112" width="70" height="28" rx="2" fill="var(--tint)" stroke="var(--ink)" stroke-width="1.5"/><path d="M200 10 V75 H290" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="210" y="112" width="70" height="28" rx="2" fill="color-mix(in srgb,var(--berry) 14%,var(--sheet))" stroke="var(--berry)" stroke-width="2"/><text x="245" y="104" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--berry)">COCINA</text><text x="245" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-2)">BAÑO</text></svg>
+          </div>
+          <div class="room-body">
+            <h3>Individual</h3>
+            <ul class="bul">
+              <li>Cama, armario y zona de estudio solo para ti</li>
+              <li>Cocina independiente dentro de la habitación</li>
+              <li>Pensada para quien necesita concentración y silencio</li>
+            </ul>
+          </div>
+          <div class="room-foot">
+            <div><span class="tag">Tarifa prevista</span><div class="price"><span class="num" data-price="individual">560</span> €<small> / mes</small></div></div>
+            <a class="btn btn--ghost" href="#prerreserva" data-pick="Individual">Prerreservar individual</a>
+          </div>
+        </article>
+        <article class="room">
+          <div class="room-plan" aria-hidden="true">
+            <svg viewBox="0 0 300 160"><rect x="10" y="10" width="280" height="140" fill="var(--sheet)" stroke="var(--ink)" stroke-width="5"/><rect x="22" y="22" width="46" height="90" rx="3" fill="var(--tint)" stroke="var(--ink)" stroke-width="1.5"/><rect x="80" y="22" width="46" height="90" rx="3" fill="var(--tint)" stroke="var(--ink)" stroke-width="1.5"/><rect x="22" y="122" width="104" height="20" rx="2" fill="var(--tint)" stroke="var(--ink)" stroke-width="1.5"/><path d="M200 10 V75 H290" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="190" y="112" width="90" height="28" rx="2" fill="color-mix(in srgb,var(--berry) 14%,var(--sheet))" stroke="var(--berry)" stroke-width="2"/><text x="235" y="104" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--berry)">COCINA</text><text x="245" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-2)">BAÑO</text></svg>
+          </div>
+          <div class="room-body">
+            <h3>Doble</h3>
+            <ul class="bul">
+              <li>Dos camas y espacio de estudio para cada residente</li>
+              <li>Cocina independiente compartida solo entre dos</li>
+              <li>La opción más económica para venir con un amigo o hermano</li>
+            </ul>
+          </div>
+          <div class="room-foot">
+            <div><span class="tag">Tarifa prevista</span><div class="price"><span class="num" data-price="doble">440</span> €<small> / mes por plaza</small></div></div>
+            <a class="btn btn--ghost" href="#prerreserva" data-pick="Doble">Prerreservar doble</a>
+          </div>
+        </article>
+      </div>
+      <p class="note">Esquemas orientativos: los planos definitivos y las fotografías reales se publicarán con el proyecto de obra. Tarifas previstas para el curso de apertura, pendientes de confirmación. La prerreserva no compromete ningún pago.</p>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-why">
+    <div class="wrap">
+      <div>
+        <span class="tag">Solo alojamiento</span>
+        <h2 id="h-why" style="margin-top:var(--s4)">Pagas tu habitación. No un menú que no eliges.</h2>
+        <ul class="pillars">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16M6 11V7a6 6 0 0 1 12 0v4M5 11l1 9h12l1-9"/></svg><b>Autonomía</b><span>Cocina propia en cada habitación: horarios, dieta y presupuesto los decides tú.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10H4zM9 20v-6h6v6"/></svg><b>Comodidad</b><span>Gimnasio, salas de estudio y lavandería en el edificio; supermercados, farmacias y cafeterías en la misma avenida.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16H7zM10 8h4M10 12h4M10 16h2"/></svg><b>Transparencia</b><span>Calculadora con el coste completo del curso y una lista pública de lo que aún está por confirmar.</span></li>
+        </ul>
+      </div>
+      <div class="compare" aria-label="Comparación de cuota mensual orientativa">
+        <span class="tag">Cuota fija mensual, plaza individual</span>
+        <div class="bar">
+          <div class="bar-row"><span>Con media pensión típica</span><span class="num">560 € + 210 €</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+        </div>
+        <div class="bar">
+          <div class="bar-row"><span><strong data-brand="full">Madroño living</strong></span><span class="num">560 €</span></div>
+          <div class="bar-track"><div class="bar-fill me" style="width:73%"></div></div>
+        </div>
+        <small>Referencia: 210 € al mes es el precio de media pensión publicado por una residencia universitaria de referencia para el curso 2024/25. El gasto en comida depende de cada residente y no está incluido en ninguna de las dos barras.</small>
+      </div>
+    </div>
+  </section>
+
+  <section id="ubicacion" aria-labelledby="h-loc">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="tag">Ubicación · Valdepasillas</span>
+        <h2 id="h-loc">Tu día a día, a pie de calle.</h2>
+        <p class="lede">Avenida Sinforiano Madroñero es una de las calles comerciales de Valdepasillas. Farmacias, panaderías, cafeterías, alimentación y paradas de autobús están en la propia avenida; supermercados, parques y el centro de salud, en las calles de alrededor.</p>
+      </div>
+
+      <div class="chips" role="group" aria-label="Filtrar lugares por categoría">
+        <button class="chip" type="button" data-cat="all" aria-pressed="true">Todo</button>
+        <button class="chip" type="button" data-cat="comer" aria-pressed="false" style="--c:var(--berry)"><i></i>Comer y comprar</button>
+        <button class="chip" type="button" data-cat="salud" aria-pressed="false" style="--c:#2F7FA8"><i></i>Salud</button>
+        <button class="chip" type="button" data-cat="mover" aria-pressed="false" style="--c:#B07D12"><i></i>Autobús</button>
+        <button class="chip" type="button" data-cat="ocio" aria-pressed="false" style="--c:var(--leaf)"><i></i>Deporte y parques</button>
+      </div>
+
+      <div class="locgrid">
+        <div class="near">
+          <div class="uni">
+            <span class="tag">Ir a clase</span>
+            <h3>Línea 9: de la avenida al Campus</h3>
+            <p>La línea 9 de autobús urbano tiene paradas en Av. Sinforiano Madroñero nº 6 y nº 7. En sentido Facultad de Medicina recorre la Av. de Elvas, el Hospital Clínico y las paradas del Campus Universitario.</p>
+            <div class="route" aria-label="Recorrido resumido de la línea 9 hacia el Campus">
+              <span class="hl">Sinforiano Madroñero, 6</span><i></i><span>Av. de Elvas · H. Clínico</span><i></i><span>Campus · Empresariales</span><i></i><span>Campus · Av. de la Investigación</span><i></i><span>Facultad de Medicina</span>
+            </div>
+            <p style="font-size:.85rem">Según el horario publicado, funciona de lunes a viernes. Consulta horarios y frecuencias actualizados en Tubasa antes de planificar tu curso.</p>
+          </div>
+          <div>
+            <h3 style="margin-bottom:var(--s3)">En la propia avenida</h3>
+            <ul class="place-list" id="avenida-list"></ul>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:var(--s3)">En el barrio</h3>
+          <ul class="place-list" id="near-list"></ul>
+        </div>
+      </div>
+
+      <div class="mapbox" id="mapbox" hidden style="margin-top:var(--s5)">
+        <div id="map-gate" style="display:grid;place-items:center;gap:var(--s3);height:22rem;padding:var(--s5);text-align:center;background:var(--tint)">
+          <div style="display:grid;gap:var(--s3);max-width:26rem;justify-items:center">
+            <strong>Mapa interactivo de la zona</strong>
+            <span class="muted" style="font-size:.9rem">El mapa lo sirve Google Maps, que puede usar sus propias cookies. Se carga solo si lo pides.</span>
+            <button class="btn btn--ghost btn--sm" type="button" id="map-load">Mostrar mapa</button>
+          </div>
+        </div>
+        <iframe id="map" title="Mapa de la zona" loading="lazy" referrerpolicy="no-referrer-when-downgrade" hidden></iframe>
+        <div class="cap"><span id="map-cap">Avenida Sinforiano Madroñero, Badajoz</span><a id="map-open" href="#" target="_blank" rel="noopener">Abrir en Google Maps</a></div>
+      </div>
+
+      <p class="srcs">Lugares comprobados en Google Maps en octubre de 2026; recorrido de la línea 9 según el horario publicado de Tubasa. Los comercios pueden cambiar. Las distancias y tiempos a pie se publicarán al confirmar el número exacto del edificio; mientras tanto, cada enlace «Cómo llegar» calcula la ruta real desde la avenida.</p>
+    </div>
+  </section>
+
+  <section id="calculadora" class="flush" aria-labelledby="h-calc">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="tag">Calculadora</span>
+        <h2 id="h-calc">El coste de tu curso, sin letra pequeña.</h2>
+        <p class="lede">Elige plaza, duración del contrato y extras. Ves la cuota mensual, el total del contrato y lo que aún falta por confirmar.</p>
+      </div>
+      <div class="calc">
+        <form id="calc">
+          <fieldset>
+            <legend>Modalidad</legend>
+            <div class="seg">
+              <label><input type="radio" name="tipo" id="c-ind" value="individual" checked><span>Individual<small class="num"><span data-price="individual">560</span> € / mes</small></span></label>
+              <label><input type="radio" name="tipo" id="c-dob" value="doble"><span>Plaza en doble<small class="num"><span data-price="doble">440</span> € / mes por persona</small></span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Duración del contrato</legend>
+            <div class="seg three">
+              <label><input type="radio" name="dur" id="d-10" value="curso" checked><span>Curso completo<small>Septiembre a junio · 10 meses</small></span></label>
+              <label><input type="radio" name="dur" id="d-12" value="anual"><span>Curso + verano<small>Septiembre a agosto · 12 meses</small></span></label>
+              <label><input type="radio" name="dur" id="d-v" value="verano"><span>Solo verano<small>Julio y/o agosto · tarifa pendiente</small></span></label>
+            </div>
+          </fieldset>
+          <fieldset id="f-summer" hidden>
+            <legend>Meses de verano</legend>
+            <div class="seg">
+              <label><input type="radio" name="vm" id="vm-1" value="1" checked><span>Un mes<small>Julio o agosto</small></span></label>
+              <label><input type="radio" name="vm" id="vm-2" value="2"><span>Dos meses<small>Julio y agosto</small></span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Extras opcionales</legend>
+            <div class="chk-grid">
+              <label class="chk"><input type="checkbox" id="c-sab" name="sabanas"><span>Cambio mensual de sábanas y toallas<small class="num">37 € / mes, durante todo el contrato</small></span></label>
+              <label class="chk"><input type="checkbox" id="c-alm" name="almacen"><span>Almacén de verano para quien renueva<small>Solo con curso completo · precio pendiente</small></span></label>
+              <label class="chk"><input type="checkbox" id="c-lav" name="lavanderia"><span>Lavandería del edificio<small>Pago por uso · precio por lavado pendiente</small></span></label>
+            </div>
+          </fieldset>
+        </form>
+        <div class="result" aria-live="polite">
+          <span class="tag">Tu estimación</span>
+          <div><div class="big num" id="r-month">560 €</div><span class="muted" id="r-month-l">al mes</span></div>
+          <ul class="lines" id="r-lines"></ul>
+          <div class="pending-box">
+            <strong>Pendiente de confirmar, no incluido en el cálculo</strong>
+            <ul id="r-pend"></ul>
+          </div>
+          <a class="btn btn--primary" href="#prerreserva" id="r-cta">Prerreservar con esta opción</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="espacios" class="flush" aria-labelledby="h-spaces">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="tag">Espacios comunes</span>
+        <h2 id="h-spaces">Lo que no cabe en tu habitación, está en el edificio.</h2>
+        <p class="lede">Zonas para estudiar, entrenar y conocer gente sin salir de casa.</p>
+      </div>
+      <div class="spaces">
+        <div class="space"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 14v8M10 11v14M26 11v14M30 14v8M10 18h16"/></svg><h3>Gimnasio</h3><p>Entrena sin salir del edificio y sin pagar un gimnasio aparte.</p></div>
+        <div class="space"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 8h9a3 3 0 0 1 3 3v18a2.5 2.5 0 0 0-2.5-2.5H6zM30 8h-9a3 3 0 0 0-3 3v18a2.5 2.5 0 0 1 2.5-2.5H30z"/></svg><h3>Salas de estudio</h3><p>Espacios tranquilos para preparar exámenes o reunirte con tu grupo de trabajo.</p></div>
+        <div class="space"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="12" cy="13" r="4"/><circle cx="24" cy="13" r="4"/><path d="M4 28c1-5 4.5-7 8-7s7 2 8 7M16 28c1-5 4.5-7 8-7s7 2 8 7"/></svg><h3>Sala de eventos</h3><p>Espacio común para reuniones, celebraciones y actividades entre residentes.</p></div>
+        <div class="space"><svg viewBox="0 0 36 36" aria-hidden="true"><rect x="7" y="5" width="22" height="26" rx="2"/><circle cx="18" cy="20" r="6.5"/><path d="M11 9h3"/></svg><h3>Lavandería <span class="pill">De pago</span></h3><p>Zona de lavandería en el propio edificio: pagas solo los lavados que haces.</p></div>
+        <div class="space"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M18 5v4M18 27v4M5 18h4M27 18h4M9 9l3 3M24 24l3 3M27 9l-3 3M12 24l-3 3"/><circle cx="18" cy="18" r="4"/></svg><h3>Limpieza de zonas comunes</h3><p>Pasillos, salas y espacios compartidos se mantienen limpios de forma regular.</p></div>
+        <div class="space"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M5 11l13-6 13 6v14l-13 6-13-6z"/><path d="M5 11l13 6 13-6M18 17v14"/></svg><h3>Almacén de verano <span class="pill">Opcional</span></h3><p>Si renuevas para el curso siguiente, guarda tus cosas durante julio y agosto.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="verano" class="flush" aria-labelledby="h-summer">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="tag">Todo el año</span>
+        <h2 id="h-summer">El edificio no se apaga en verano.</h2>
+        <p class="lede">Durante el curso, residentes de larga estancia. En julio y agosto, alojamiento temporal para quien viene a Badajoz por prácticas, cursos o trabajo de temporada.</p>
+      </div>
+      <div class="duo">
+        <div class="panel">
+          <h3>Calendario de uso</h3>
+          <div class="months" aria-label="Septiembre a junio, curso; julio y agosto, estancias temporales">
+            <div class="c">SEP</div><div class="c">OCT</div><div class="c">NOV</div><div class="c">DIC</div><div class="c">ENE</div><div class="c">FEB</div><div class="c">MAR</div><div class="c">ABR</div><div class="c">MAY</div><div class="c">JUN</div><div class="v">JUL</div><div class="v">AGO</div>
+          </div>
+          <div class="legend"><span><i style="background:color-mix(in srgb,var(--leaf) 28%,var(--sheet))"></i>Curso académico</span><span><i style="background:var(--berry)"></i>Estancias temporales de verano</span></div>
+        </div>
+        <div class="panel">
+          <h3>¿Vienes solo en verano?</h3>
+          <p class="muted">Apúntate indicando las fechas aproximadas. Te avisaremos cuando se abra la reserva de estancias de verano y se publiquen sus tarifas.</p>
+          <a class="btn btn--ghost" href="#prerreserva" data-pick="Estancia de verano" style="justify-self:start">Avisarme para verano</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="transparencia" class="flush" aria-labelledby="h-tr">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="tag">Estado del proyecto</span>
+        <h2 id="h-tr">Lo que sabemos hoy, y lo que falta.</h2>
+        <p class="lede">La residencia está en fase de proyecto. Preferimos enseñarte qué está decidido y qué no, a prometerte algo que todavía no podemos asegurar.</p>
+      </div>
+      <div class="ledger">
+        <div class="panel">
+          <h3>Confirmado</h3>
+          <ul>
+            <li><span>44 plazas, habitaciones individuales y dobles</span><span class="ok-pill">Sí</span></li>
+            <li><span>Cocina independiente en cada habitación</span><span class="ok-pill">Sí</span></li>
+            <li><span>Solo alojamiento, sin comedor</span><span class="ok-pill">Sí</span></li>
+            <li><span>Gimnasio, salas de estudio y de eventos</span><span class="ok-pill">Sí</span></li>
+            <li><span>Lavandería de pago y limpieza de zonas comunes</span><span class="ok-pill">Sí</span></li>
+            <li><span>Sábanas y toallas, 37 € al mes (opcional)</span><span class="ok-pill">Sí</span></li>
+            <li><span>Gestión directa por la propiedad</span><span class="ok-pill">Sí</span></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Pendiente de confirmar</h3>
+          <ul>
+            <li><span>Fecha de apertura</span><span class="pend">Pendiente</span></li>
+            <li><span>Tarifas definitivas e IVA</span><span class="pend">Pendiente</span></li>
+            <li><span>Suministros (agua, luz, climatización)</span><span class="pend">Pendiente</span></li>
+            <li><span>Wifi</span><span class="pend">Pendiente</span></li>
+            <li><span>Fianza y condiciones de contrato</span><span class="pend">Pendiente</span></li>
+            <li><span>Tarifas de verano y del almacén</span><span class="pend">Pendiente</span></li>
+            <li><span>Número de portal y planos definitivos</span><span class="pend">Pendiente</span></li>
+          </ul>
+        </div>
+      </div>
+      <ol class="timeline" aria-label="Fases del proyecto">
+        <li class="done"><span class="tag">Fase 1</span><b>Proyecto</b><span class="muted">Diseño de la residencia</span></li>
+        <li class="now"><span class="tag">Ahora</span><b>Prerreserva</b><span class="muted">Lista abierta, sin compromiso</span></li>
+        <li><span class="tag">Fase 3</span><b>Obras</b><span class="muted">Fechas por publicar</span></li>
+        <li><span class="tag">Fase 4</span><b>Apertura</b><span class="muted">Reserva por orden de lista</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="prerreserva" class="flush" aria-labelledby="h-form">
+    <div class="wrap reserve">
+      <div>
+        <span class="tag">Prerreserva</span>
+        <h2 id="h-form" style="margin-block:var(--s4) var(--s5)">Asegura tu turno antes de la apertura.</h2>
+        <p class="lede">Son 44 plazas. Quienes estén en la lista recibirán primero las tarifas definitivas y elegirán habitación por orden de inscripción.</p>
+        <ol class="steps">
+          <li><h3>Te apuntas</h3><p>Dos minutos, sin pagos ni compromiso.</p></li>
+          <li><h3>Te escribimos</h3><p>La propia gestión de la residencia te contacta para resolver dudas y concretar fechas.</p></li>
+          <li><h3>Eliges y reservas</h3><p>Al abrir las reservas, confirmas tu plaza por orden de lista.</p></li>
+        </ol>
+      </div>
+
+      <form class="form" id="lead" novalidate>
+        <div class="hp" aria-hidden="true"><label for="f-web">No rellenar</label><input id="f-web" name="web" tabindex="-1" autocomplete="off"></div>
+        <div class="row2">
+          <div class="field"><label for="f-name">Nombre y apellidos</label><input id="f-name" name="nombre" autocomplete="name" required maxlength="80"><span class="err" id="e-name"></span></div>
+          <div class="field"><label for="f-email">Correo electrónico</label><input id="f-email" name="email" type="email" autocomplete="email" required maxlength="120"><span class="err" id="e-email"></span></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="f-tel">Teléfono <small>(opcional)</small></label><input id="f-tel" name="telefono" type="tel" autocomplete="tel" inputmode="tel" maxlength="20"><span class="err" id="e-tel"></span></div>
+          <div class="field"><label for="f-who">Quién solicita</label>
+            <select id="f-who" name="perfil"><option>Estudiante</option><option>Madre, padre o tutor</option><option>Otro</option></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="f-type">Plaza que te interesa</label>
+            <select id="f-type" name="plaza"><option>Individual</option><option>Doble</option><option>Estancia de verano</option><option>Aún no lo sé</option></select></div>
+          <div class="field"><label for="f-when">Duración prevista</label>
+            <select id="f-when" name="entrada"><option>Curso completo (10 meses)</option><option>Curso + verano (12 meses)</option><option>Solo verano</option><option>A mitad de curso</option></select></div>
+        </div>
+        <div class="field"><label for="f-study">Qué vas a estudiar <small>(opcional)</small></label><input id="f-study" name="estudios" maxlength="120" placeholder="Por ejemplo: 2.º de Enfermería"></div>
+        <div class="field"><label for="f-msg">Algo que debamos saber <small>(opcional)</small></label><textarea id="f-msg" name="mensaje" maxlength="800"></textarea></div>
+        <label class="consent"><input type="checkbox" id="f-ok" name="consent" required><span>He leído cómo se tratan mis datos y acepto que se usen solo para gestionar mi prerreserva.</span></label>
+        <span class="err" id="e-ok"></span>
+        <details class="privacy"><summary>Cómo tratamos tus datos</summary>
+          <p>Los datos se usan únicamente para contactarte sobre tu prerreserva y enviarte las tarifas definitivas. No se ceden a terceros ni se usan para publicidad. Puedes pedir que se borren en cualquier momento respondiendo a nuestro primer correo. La identidad completa del responsable del tratamiento se publicará antes de la apertura de reservas.</p>
+        </details>
+        <button class="btn btn--primary" type="submit" id="f-send">Enviar prerreserva</button>
+        <div id="f-msgbox" role="status" hidden></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="preguntas" class="flush" aria-labelledby="h-faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="tag">Preguntas frecuentes</span>
+        <h2 id="h-faq">Lo que suelen preguntar las familias.</h2>
+      </div>
+      <div class="faq">
+        <details><summary>¿Cuándo abre la residencia?</summary><p>La fecha de apertura está pendiente del calendario de obras. Quienes estén en la lista de prerreserva serán los primeros en conocerla.</p></details>
+        <details><summary>¿Hay comedor?</summary><p>No. Es una residencia de solo alojamiento y cada habitación tiene su propia cocina. Nadie paga un menú fijo que no se ajusta a sus horarios o a su dieta.</p></details>
+        <details><summary>¿Qué incluye la cuota mensual?</summary><p>La habitación con su cocina independiente, el uso del gimnasio, las salas de estudio y la sala de eventos, y la limpieza de las zonas comunes. Si los suministros y el wifi van incluidos se confirmará con las tarifas definitivas.</p></details>
+        <details><summary>¿Qué servicios se pagan aparte?</summary><p>La lavandería, que se paga por uso; el cambio mensual de sábanas y toallas, por 37 € al mes; y el almacén de verano para quien renueva plaza.</p></details>
+        <details><summary>¿Cómo se llega a la universidad?</summary><p>La línea 9 de autobús urbano tiene paradas en la propia Avenida Sinforiano Madroñero (nº 6 y nº 7) y llega al Campus de la Avenida de Elvas y a la Facultad de Medicina. Consulta horarios actualizados en Tubasa.</p></details>
+        <details><summary>¿Puedo quedarme en julio y agosto?</summary><p>Sí. En verano la residencia ofrece alojamiento temporal, tanto a residentes que amplían su estancia como a personas que vienen solo esos meses. Las tarifas de verano se publicarán más adelante.</p></details>
+        <details><summary>¿Quién gestiona la residencia?</summary><p>La propia propiedad, sin empresas intermediarias. Hablas directamente con quien toma las decisiones.</p></details>
+        <details><summary>¿Apuntarme a la lista me obliga a algo?</summary><p>No. La prerreserva no tiene coste ni compromiso. Solo te da prioridad para elegir habitación cuando se abran las reservas.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="solicitudes" hidden aria-labelledby="h-owner" class="flush">
+    <div class="wrap">
+      <div class="owner">
+        <div style="display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;align-items:end">
+          <div><span class="tag">Solo visible para la propiedad</span><h3 id="h-owner" style="margin-top:var(--s2)">Solicitudes de prerreserva · <span class="num" id="o-count">0</span></h3></div>
+          <button class="btn btn--ghost" type="button" id="o-copy">Copiar como CSV</button>
+        </div>
+        <p id="o-empty" class="muted">Aún no hay solicitudes. Aparecerán aquí en cuanto alguien envíe el formulario.</p>
+        <div class="table-wrap"><table id="o-table" hidden><thead><tr><th>Fecha</th><th>Nombre</th><th>Contacto</th><th>Plaza</th><th>Duración</th><th>Perfil</th><th>Estudios / mensaje</th></tr></thead><tbody></tbody></table></div>
+        <textarea id="o-csv" hidden readonly style="width:100%;min-height:8rem;font-family:var(--f-mono);font-size:.8rem"></textarea>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><span data-brand="full">Madroño living</span> · Avenida Sinforiano Madroñero, 06011 Badajoz</span>
+    <span>44 plazas · Individuales y dobles con cocina · <a href="privacidad.html" data-prod-only hidden>Privacidad</a></span>
+  </div>
+</footer>
+
+<div class="mbar" role="navigation" aria-label="Acciones rápidas">
+  <a class="btn btn--ghost" href="#calculadora">Calcular</a>
+  <a class="btn btn--primary" href="#prerreserva">Prerreservar</a>
+</div>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN EDITABLE
+   ========================================================= */
+const CONFIG = {
+  brand: { name: "Madroño", suffix: "living", tagline: "Residencia de estudiantes · Badajoz" },
+  precios: { individual: 560, doble: 440 },      // €/mes por plaza (tarifas previstas)
+  sabanas: 37,                                   // €/mes
+  portal: null,                                  // número del edificio cuando se confirme, p. ej. 12
+  formEndpoint: ""                               // URL del Apps Script desplegado (versión de producción)
+};
+document.documentElement.lang = "es";
+const IN_ARTIFACT = !!(window.claude && window.claude.use);
+const eur = n => new Intl.NumberFormat("es-ES",{maximumFractionDigits:0}).format(n) + " €";
+
+/* Marca sustituible */
+document.querySelectorAll("[data-brand]").forEach(el => {
+  const k = el.dataset.brand, b = CONFIG.brand;
+  el.textContent = k === "full" ? `${b.name} ${b.suffix}`.trim() : b[k];
+});
+document.querySelectorAll("[data-price]").forEach(el => el.textContent = CONFIG.precios[el.dataset.price]);
+if (!IN_ARTIFACT) document.querySelectorAll("[data-prod-only]").forEach(el => el.hidden = false);
+
+/* =========================================================
+   UBICACIÓN
+   ========================================================= */
+const ORIGIN = `Avenida Sinforiano Madroñero${CONFIG.portal ? " " + CONFIG.portal : ""}, 06011 Badajoz`;
+const CATS = { comer:"var(--berry)", salud:"#2F7FA8", mover:"#B07D12", ocio:"var(--leaf)" };
+// Lugares en la propia avenida (por número de portal)
+const AVENIDA = [
+  { n:6,  cat:"comer", name:"Granja El Cruce", kind:"Alimentación" },
+  { n:6,  cat:"mover", name:"Parada de autobús", kind:"Línea 9 al Campus", bus:true },
+  { n:7,  cat:"comer", name:"Capricho de Pueblo", kind:"Panadería" },
+  { n:7,  cat:"mover", name:"Parada de autobús", kind:"Línea 9", bus:true },
+  { n:9,  cat:"comer", name:"La Molienda", kind:"Cafetería" },
+  { n:17, cat:"salud", name:"Farmacia", kind:"Farmacia" },
+  { n:23, cat:"comer", name:"Café-Bar Astoria", kind:"Cafetería" },
+  { n:24, cat:"salud", name:"Farmacia Óptica Salesa Liso", kind:"Farmacia y óptica" },
+  { n:24, cat:"comer", name:"La Andaluza", kind:"Panadería y pastelería" },
+  { n:30, cat:"comer", name:"La Tentación de Rafa", kind:"Cafetería" },
+  { n:37, cat:"salud", name:"Buenavida Sánchez", kind:"Farmacia y droguería" }
+];
+// Lugares en calles próximas
+const BARRIO = [
+  { cat:"comer", name:"Mercadona", where:"Av. del Guadiana, 4" },
+  { cat:"comer", name:"Carrefour Express", where:"C/ Francisco Vaca Morales, 8" },
+  { cat:"comer", name:"Carrefour · C.C. La Granadilla", where:"Av. José María Alcaraz y Alenda" },
+  { cat:"salud", name:"Centro de Salud Valdepasillas", where:"C/ Jaime Montero de Espinosa" },
+  { cat:"ocio",  name:"Plaza de las Américas", where:"Parque y plaza con terrazas" },
+  { cat:"ocio",  name:"Plaza La Molineta", where:"Plaza con zona deportiva" },
+  { cat:"ocio",  name:"Parque Alconchel", where:"C/ Alconchel" },
+  { cat:"ocio",  name:"Gimnasio Olimpo", where:"C/ Godofredo Ortega y Muñoz, 5" },
+  { cat:"ocio",  name:"Cellini E·Gym", where:"Paseo Condes de Barcelona, 15" }
+];
+const dirUrl = dest => "https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=" + encodeURIComponent(ORIGIN) + "&destination=" + encodeURIComponent(dest + ", Badajoz");
+const mkEl = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+function renderList(ul, items){
+  items.forEach(p => {
+    const li = mkEl("li","place"); li.dataset.cat = p.cat; li.dataset.q = p.q; li.style.setProperty("--c", CATS[p.cat]);
+    li.append(mkEl("i","dot"), mkEl("b",null,p.name), mkEl("small",null,p.where));
+    const a = mkEl("a",null,"Cómo llegar"); a.href = dirUrl(p.q); a.target = "_blank"; a.rel = "noopener";
+    a.setAttribute("aria-label", "Cómo llegar a pie a " + p.name);
+    li.append(a); ul.append(li);
+  });
+}
+renderList(document.getElementById("avenida-list"), AVENIDA.map(p => ({
+  cat: p.cat, name: p.bus ? "Parada de autobús · " + p.kind : p.name,
+  where: (p.bus ? "" : p.kind + " · ") + "Av. Sinforiano Madroñero, " + p.n,
+  q: (p.bus ? "Parada de autobús" : p.name) + ", Avenida Sinforiano Madroñero " + p.n
+})));
+renderList(document.getElementById("near-list"), BARRIO.map(p => ({ ...p, q: p.name + ", " + p.where })));
+const near = document.getElementById("near-list");
+
+document.querySelectorAll(".chip").forEach(ch => ch.addEventListener("click", () => {
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === ch)));
+  const cat = ch.dataset.cat;
+  document.querySelectorAll(".place-list [data-cat]").forEach(el => {
+    el.classList.toggle("dim", cat !== "all" && el.dataset.cat !== cat);
+  });
+}));
+
+/* Mapa interactivo: solo en la web publicada (los visores con restricciones no permiten incrustar mapas) */
+if (!IN_ARTIFACT){
+  const box = document.getElementById("mapbox"), map = document.getElementById("map");
+  const setCap = q => { document.getElementById("map-cap").textContent = q; document.getElementById("map-open").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
+  const show = q => { document.getElementById("map-gate").hidden = true; map.hidden = false;
+    map.src = "https://www.google.com/maps?q=" + encodeURIComponent(q) + "&z=16&output=embed"; setCap(q); };
+  box.hidden = false; setCap(ORIGIN);
+  document.getElementById("map-load").addEventListener("click", () => show(ORIGIN));
+  document.querySelectorAll(".place-list .place").forEach(li => {
+    li.style.cursor = "pointer"; li.title = "Ver en el mapa";
+    li.addEventListener("click", e => { if (e.target.tagName !== "A"){ show(li.dataset.q + ", Badajoz"); box.scrollIntoView({block:"nearest",behavior:"smooth"}); } });
+  });
+}
+
+/* =========================================================
+   CALCULADORA
+   ========================================================= */
+const calc = document.getElementById("calc");
+const fType = document.getElementById("f-type"), fWhen = document.getElementById("f-when");
+function updateCalc(){
+  const tipo = calc.tipo.value, dur = calc.dur.value;
+  document.getElementById("f-summer").hidden = dur !== "verano";
+  const alm = document.getElementById("c-alm");
+  alm.disabled = dur !== "curso"; if (alm.disabled) alm.checked = false;
+  const base = CONFIG.precios[tipo], sab = calc.sabanas.checked ? CONFIG.sabanas : 0;
+  const pend = ["Suministros y wifi", "Fianza", "IVA y tarifas definitivas", "Fecha de apertura"];
+  if (calc.almacen.checked) pend.unshift("Precio del almacén de verano");
+  if (calc.lavanderia.checked) pend.unshift("Precio por lavado");
+  const ul = document.getElementById("r-lines"); ul.textContent = "";
+  const row = (a, b, cls) => { const li = mkEl("li", cls||""); li.append(mkEl("span",null,a), mkEl("span",null,b)); ul.append(li); };
+  const big = document.getElementById("r-month");
+
+  if (dur === "verano"){
+    const m = +calc.vm.value;
+    big.textContent = "Tarifa pendiente"; big.classList.add("na");
+    document.getElementById("r-month-l").textContent = "Las estancias de verano tendrán su propia tarifa";
+    row(`Plaza ${tipo === "doble" ? "en doble" : "individual"} · ${m} ${m>1?"meses":"mes"} de verano`, "pendiente");
+    if (sab) row(`Sábanas y toallas · ${m} ${m>1?"meses":"mes"}`, eur(sab*m));
+    row("Total del contrato", "pendiente", "total");
+    pend.unshift("Tarifa de verano");
+  } else {
+    const meses = dur === "anual" ? 12 : 10, mes = base + sab;
+    big.textContent = eur(mes); big.classList.remove("na");
+    document.getElementById("r-month-l").textContent = tipo === "doble" ? `al mes por persona · habitación completa ${eur(base*2)}` : "al mes";
+    row(`Plaza ${tipo === "doble" ? "en doble" : "individual"} · ${meses} meses`, eur(base*meses));
+    if (sab) row(`Sábanas y toallas · ${meses} meses`, eur(sab*meses));
+    if (calc.almacen.checked) row("Almacén de verano", "pendiente");
+    if (calc.lavanderia.checked) row("Lavandería", "por uso");
+    row("Total del contrato", eur(mes*meses), "total");
+  }
+  const p = document.getElementById("r-pend"); p.textContent = ""; pend.forEach(t => p.append(mkEl("li",null,t)));
+}
+calc.addEventListener("change", updateCalc); updateCalc();
+document.getElementById("r-cta").addEventListener("click", () => {
+  const dur = calc.dur.value;
+  fType.value = dur === "verano" ? "Estancia de verano" : (calc.tipo.value === "doble" ? "Doble" : "Individual");
+  fWhen.value = dur === "verano" ? "Solo verano" : dur === "anual" ? "Curso + verano (12 meses)" : "Curso completo (10 meses)";
+});
+document.querySelectorAll("[data-pick]").forEach(a => a.addEventListener("click", () => {
+  fType.value = a.dataset.pick;
+  if (a.dataset.pick === "Estancia de verano") fWhen.value = "Solo verano";
+}));
+
+/* =========================================================
+   PRERRESERVA
+   - Web publicada: envía al Apps Script (CONFIG.formEndpoint)
+   - Vista previa en Claude: guarda en la base de datos del artifact
+   ========================================================= */
+let db = null, user = null;
+const ready = (async () => {
+  if (!IN_ARTIFACT) return;
+  try { [db, user] = await Promise.all([claude.use("db"), claude.use("user")]); } catch { db = null; }
+  if (db && user && (await user.isOwner?.())) startOwner();
+})();
+
+const form = document.getElementById("lead"), box = document.getElementById("f-msgbox"), send = document.getElementById("f-send");
+const startedAt = Date.now();
+function setErr(input, errId, msg){ input.setAttribute("aria-invalid", msg ? "true" : "false"); document.getElementById(errId).textContent = msg || ""; }
+function validate(){
+  let ok = true; const n = form.nombre, e = form.email, t = form.telefono, c = form.consent;
+  if (n.value.trim().length < 2){ setErr(n,"e-name","Escribe tu nombre para que sepamos a quién contactar."); ok=false; } else setErr(n,"e-name");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.value.trim())){ setErr(e,"e-email","Revisa el correo: debe tener el formato nombre@dominio.es"); ok=false; } else setErr(e,"e-email");
+  if (t.value.trim() && !/^[+()\d\s.-]{6,20}$/.test(t.value.trim())){ setErr(t,"e-tel","El teléfono solo puede llevar números, espacios y el prefijo +."); ok=false; } else setErr(t,"e-tel");
+  if (!c.checked){ document.getElementById("e-ok").textContent = "Necesitamos tu permiso para poder contactarte."; ok=false; } else document.getElementById("e-ok").textContent = "";
+  return ok;
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function show(kind, html){ box.hidden = false; box.className = "form-msg " + kind; box.innerHTML = html; box.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+
+async function sendToEndpoint(req){
+  const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    const res = await fetch(CONFIG.formEndpoint, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(req), signal: ctrl.signal });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw { code: data.error || "http_" + res.status };
+  } finally { clearTimeout(to); }
+}
+async function sendToArtifactDb(req){
+  await ready;
+  if (!db || !user) throw { code:"no_db" };
+  const id = await user.id(), ref = db.doc("leads/" + id), snap = await ref.get();
+  const prev = snap.exists ? (snap.data().solicitudes || []) : [];
+  await ref.set({ solicitudes: [...prev, req].slice(-10), actualizado: req.fecha });
+}
+
+form.addEventListener("submit", async ev => {
+  ev.preventDefault(); box.hidden = true;
+  if (!validate()){ form.querySelector('[aria-invalid="true"]')?.focus(); return; }
+  const req = {
+    nombre: form.nombre.value.trim(), email: form.email.value.trim(), telefono: form.telefono.value.trim(),
+    perfil: form.perfil.value, plaza: form.plaza.value, entrada: form.entrada.value,
+    estudios: form.estudios.value.trim(), mensaje: form.mensaje.value.trim(),
+    consentimiento: true, fecha: new Date().toISOString(),
+    web: form.web.value, ms: Date.now() - startedAt   // antispam: campo trampa y tiempo de rellenado
+  };
+  send.disabled = true; send.textContent = "Enviando…";
+  try {
+    if (CONFIG.formEndpoint && !IN_ARTIFACT) await sendToEndpoint(req);
+    else if (IN_ARTIFACT) await sendToArtifactDb(req);
+    else throw { code:"no_endpoint" };
+    form.reset();
+    show("ok", `<strong>Prerreserva recibida, ${esc(req.nombre.split(" ")[0])}.</strong><br>Te escribiremos a ${esc(req.email)} para concretar fechas y enviarte las tarifas definitivas en cuanto estén cerradas.`);
+  } catch (err) {
+    const msg = err && err.code === "rate_limited" ? "Ya hemos recibido varias solicitudes con este correo en la última hora. Si necesitas cambiar algo, espera un rato y vuelve a enviarla."
+      : "No hemos podido registrar la solicitud. Comprueba tu conexión e inténtalo de nuevo; si sigue fallando, copia este resumen para no perder los datos.";
+    const text = `Prerreserva ${CONFIG.brand.name} ${CONFIG.brand.suffix}\nNombre: ${req.nombre}\nEmail: ${req.email}\nTeléfono: ${req.telefono||"-"}\nPerfil: ${req.perfil}\nPlaza: ${req.plaza}\nDuración: ${req.entrada}\nEstudios: ${req.estudios||"-"}\nMensaje: ${req.mensaje||"-"}`;
+    show("bad", `<strong>No se ha enviado.</strong> ${esc(msg)}<pre id="f-copytext">${esc(text)}</pre><button type="button" class="btn btn--ghost btn--sm" id="f-copy">Copiar resumen</button>`);
+    document.getElementById("f-copy").onclick = async e => {
+      try { await navigator.clipboard.writeText(text); e.target.textContent = "Copiado"; }
+      catch { const r = document.createRange(); r.selectNodeContents(document.getElementById("f-copytext")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); e.target.textContent = "Texto seleccionado"; }
+    };
+  } finally { send.disabled = false; send.textContent = "Enviar prerreserva"; }
+});
+
+/* Panel de la propiedad (solo en la vista previa de Claude) */
+function startOwner(){
+  document.getElementById("solicitudes").hidden = false;
+  let rows = [];
+  db.collection("leads").onSnapshot(snap => {
+    rows = snap.docs.flatMap(d => (d.data()?.solicitudes || [])).sort((a,b) => (b.fecha||"").localeCompare(a.fecha||""));
+    document.getElementById("o-count").textContent = rows.length;
+    document.getElementById("o-empty").hidden = rows.length > 0;
+    const t = document.getElementById("o-table"); t.hidden = rows.length === 0;
+    const tb = t.tBodies[0]; tb.textContent = "";
+    rows.forEach(r => { const tr = document.createElement("tr");
+      [new Date(r.fecha).toLocaleDateString("es-ES"), r.nombre, [r.email, r.telefono].filter(Boolean).join(" · "), r.plaza, r.entrada, r.perfil, [r.estudios, r.mensaje].filter(Boolean).join(" — ")]
+        .forEach(v => tr.append(mkEl("td", null, v || ""))); tb.append(tr); });
+  }, () => { document.getElementById("o-empty").textContent = "No se pudieron cargar las solicitudes. Recarga la página."; });
+  document.getElementById("o-copy").onclick = async e => {
+    const q = v => '"' + String(v||"").replace(/"/g,'""') + '"';
+    const csv = ["fecha,nombre,email,telefono,perfil,plaza,duracion,estudios,mensaje",
+      ...rows.map(r => [r.fecha,r.nombre,r.email,r.telefono,r.perfil,r.plaza,r.entrada,r.estudios,r.mensaje].map(q).join(","))].join("\n");
+    try { await navigator.clipboard.writeText(csv); e.target.textContent = "CSV copiado"; }
+    catch { const ta = document.getElementById("o-csv"); ta.hidden = false; ta.value = csv; ta.select(); e.target.textContent = "Selecciona y copia"; }
+  };
+}
+</script>
+</body>
+</html>
