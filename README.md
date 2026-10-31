@@ -1,10 +1,5 @@
-# Madroño living
+# Entreno OS
 
-Web de la residencia de estudiantes en Avenida Sinforiano Madroñero, Badajoz.
+App de entrenamiento personal instalable. Abre https://p9nkm76vgk-ops.github.io/Madro-o-papa/ en Safari y añádela a la pantalla de inicio.
 
-## Publicar con GitHub Pages
-1. Sube estos archivos a la raíz de un repositorio.
-2. Ve a **Settings → Pages**, elige la rama `main` y la carpeta `/ (root)`, y guarda.
-3. En un par de minutos la web estará en `https://TU-USUARIO.github.io/NOMBRE-DEL-REPO/`.
-
-El formulario de prerreserva mostrará un aviso hasta que se configure el receptor de solicitudes (`formEndpoint` dentro de `index.html`).
+La web anterior de la residencia está en el historial de git (commit 1b41ec5).
