@@ -316,6 +316,10 @@ textarea{min-height:90px;font-size:12px;font-family:ui-monospace,monospace}
 .phototools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .phototools label.secondary{width:auto;cursor:pointer;min-height:40px;display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:700}
 
+
+.refs{display:flex;gap:8px;flex-wrap:wrap}.refs a.secondary{width:auto;flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:46px;font-size:14px}
+.refrow{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.refrow small{display:block;color:var(--fg3);font-size:12px}
+
 /* ===== Identidad ENTRENO: marca deportiva premium (negro, blanco, un acento) ===== */
 :root{--bg:#060912;--s1:#0C111D;--s2:#141B2B;--s3:#1D263A;--line:#19213A;--fg:#FFFFFF;--fg2:#9AA4BC;--fg3:#5E6880;
   --acc:#3D7BFF;--acc2:#5B8CFF;--acc3:#2F5BFF;--acc-soft:rgba(61,123,255,.16);--f-dsp:"Anton","Barlow Condensed","Arial Narrow",sans-serif}
@@ -567,7 +571,7 @@ function addDays(s,n){const d=parse(s);d.setDate(d.getDate()+n);return iso(d)}
 const daysBetween=(a,b)=>Math.round((parse(b)-parse(a))/864e5);
 const dow=s=>(parse(s).getDay()+6)%7;
 const weekStartOf=s=>addDays(s,-dow(s));
-function defaults(){return{v:3,updated:0,settings:{start:todayISO(),exam:false,voice:true,sarge:true,dur:60,hora:"17:00"},dur:{},swap:{},noauto:{},maint:[],tests:{},pull:{},checkin:{},vol:{},volLog:{},pr:{},prlog:{},repSeen:{},ui:{},prog:{},run:{lv:1},logs:{},short:{},tired:{},equip:{dominadas:false,anillas:false,cargables:false,chaleco:false},forced:[],anchor:null,evald:{},live:null}}
+function defaults(){return{v:3,updated:0,settings:{start:todayISO(),exam:false,voice:true,sarge:true,coach:"duro",dur:60,hora:"17:00"},dur:{},swap:{},noauto:{},maint:[],tests:{},pull:{},checkin:{},vol:{},volLog:{},pr:{},prlog:{},repSeen:{},ui:{},prog:{},run:{lv:1},logs:{},short:{},tired:{},equip:{dominadas:false,anillas:false,cargables:false,chaleco:false},forced:[],anchor:null,evald:{},live:null}}
 function migrate(s){
   if((s.v||0)<4){
     if(s.settings&&s.settings.start>="2026-10-26"&&s.settings.start<"2026-11-02")s.settings.start="2026-11-02";
@@ -792,7 +796,11 @@ function finishSession(date,ratings,ses,extra){
 const $=s=>document.querySelector(s);
 const kgTxt=k=>String(k).replace(".",",");
 function loadTxt(id,pp){const e=EX[id],p=pp||S.prog[id]||{};let b=p.load||e.load||"";if(p.kg)b=(b?b+" ":"")+"+ "+kgTxt(p.kg)+" kg"+(e.ld==="bw"?" de lastre":"");return b}
-const vidUrl=e=>"https://www.youtube.com/results?search_query="+encodeURIComponent(e.n+" técnica ejercicio");
+const EXEN={"cmj": "countermovement jump", "bulg": "front foot elevated split squat", "nordico": "towel slider hamstring curl", "rdl": "barbell romanian deadlift", "gemelo": "single leg calf raise", "frontal": "1.5 rep front squat barbell", "rueda": "ab wheel rollout from knees", "pallof": "band pallof press", "militar": "standing barbell overhead press", "face": "band face pull", "flexdef": "deficit push up on plates", "invertido": "door anchor resistance band row", "lean": "lean away lateral raise", "extri": "standing dumbbell overhead triceps extension", "dragon": "lying leg raise floor", "hollow": "hollow body hold", "latband": "resistance band lateral raise", "curlband": "resistance band bicep curl", "triband": "resistance band triceps pushdown door anchor", "copen": "side lying hip adduction", "deadbug": "dead bug exercise", "pendlay": "pendlay row", "flexplio": "plyometric push up", "jalon1": "half kneeling single arm band lat pulldown", "pullover": "floor dumbbell pullover", "curlb": "barbell curl", "bayes": "bayesian curl resistance band", "pajaro": "standing bent over dumbbell rear delt fly", "lsit": "floor l-sit progression", "broad": "standing broad jump", "skater": "skater jump", "cosaca": "cossack squat", "hipunil": "single leg glute bridge", "maleta": "suitcase carry barbell", "tgu": "turkish get up", "pallofp": "pallof press lateral step", "floor": "barbell floor press with bands", "invsup": "underhand barbell row", "fondos": "close grip diamond push up", "latmyo": "dumbbell lateral raise myo reps", "martillo": "dumbbell hammer curl", "dominada": "pull up", "chinup": "chin up", "colgado": "hanging leg raise", "fondosan": "ring dips", "remoan": "ring row", "crunchb": "kneeling band crunch door anchor", "revcrunch": "reverse crunch", "pullapart": "band pull apart", "triover": "band overhead triceps extension", "domsub": "submaximal pull up sets", "pushpress": "barbell push press", "emom": "burpee thruster mountain climber emom"};
+const exQuery=id=>{const e=EX[id];return EXEN[id]||(e&&e.en)||((e?e.n:id)+" ejercicio")};
+const vidUrl=(e,id)=>"https://www.youtube.com/results?search_query="+encodeURIComponent((id&&EXEN[id]?EXEN[id]+" technique":e.n+" técnica ejercicio"));
+const picUrl=q=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q);
+const vidQ=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const UNIT={"/pierna":"por pierna","/brazo":"por brazo","/lado":"por lado","s":"segundos","s/lado":"s por lado","m/lado":"m por lado","min":"minutos"};
 function unitShort(e){return e.u?({"/pierna":"reps/pierna","/brazo":"reps/brazo","/lado":"reps/lado","s":"seg","s/lado":"seg/lado","m/lado":"m/lado","min":"min"})[e.u]:"reps"}
@@ -1287,6 +1295,11 @@ const MANTRAS=["Hoy no se negocia, soldado.","El dolor pasa. Rendirse se queda."
 function mantra(d){const n=Math.floor(parse(d).getTime()/864e5);return MANTRAS[((n%MANTRAS.length)+MANTRAS.length)%MANTRAS.length]}
 const SG=(arr)=>arr[Math.floor(Math.random()*arr.length)];
 const sarge=()=>S.settings.sarge!==false;
+const duro=()=>sarge()&&S.settings.coach==="duro";
+const DU_PREP=["Nadie viene a salvarte. Empieza.","Tu cabeza quiere parar. Tú no.","Esto es lo que te separa del resto. A trabajar.","Cuando empieza a doler, empieza el entrenamiento de verdad.","Hazlo incómodo. Hazlo igual.","Hoy no se busca motivación. Se busca trabajo."];
+const DU_REST=["Bien. Pero aún no has hecho nada.","Respira. Lo que viene es más duro.","Eso es. Ahora, a por más.","Recupera. Tu rival no descansa."];
+const DU_LAST=["¡Última! ¡Aquí se decide quién eres!","¡Una más! ¡Demuéstrate que puedes!","¡No es el cuerpo, es tu cabeza! ¡Última!"];
+const DU_TWO=["¡Dos más! ¡Tu mente miente, sigue!","¡Quedan dos! ¡Aquí no se negocia!","¡Dos! ¡El dolor es el precio, págalo!"];
 const SG_PREP=["¡En posición, soldado!","¡Arriba! A trabajar.","¡Sin excusas! Vamos.","¡Atención! Siguiente misión.","¡Firmes! Esto empieza ya."];
 const SG_REST=["¡Bien hecho, soldado!","¡Eso es! Ni un paso atrás.","¡Así se hace!","¡Correcto! Recupera."];
 const SG_LAST=["¡Última! ¡Aprieta!","¡Última! ¡Dámelo todo!","¡La última, soldado!"];
@@ -1303,7 +1316,7 @@ function render(){
   $("#app").innerHTML=brandBar()+({hoy:vHoy,plan:vPlan,progreso:vProgreso})[tab]();
 }
 function itemRow(i,ix){
-  if(i.seq){const secs=seqSecs(i.seqKey),a=i.seq[0][0]==="int"?i.seq[0][5]:i.seq[0][2];return`<div class="row" style="cursor:default"><span class="thumb">${figThumb(a,.4)}</span><div style="min-width:0"><div class="row-n">${esc(i.name)}</div><div class="row-c">${esc(i.seq.slice(0,3).map(e=>(e[0]==="int"?e[1]:e[0]).split(" · ")[0].split(":")[0]).join(" · "))}${i.seq.length>3?" …":""}</div></div><div class="row-t"><span class="num">${Math.round(secs/60)}</span><small>min</small></div></div>`}
+  if(i.seq){const secs=seqSecs(i.seqKey),a=i.seq[0][0]==="int"?i.seq[0][5]:i.seq[0][2];return`<button class="row" data-seqref="${i.seqKey}"><span class="thumb">${figThumb(a,.4)}</span><div style="min-width:0"><div class="row-n">${esc(i.name)}</div><div class="row-c">${esc(i.seq.slice(0,3).map(e=>(e[0]==="int"?e[1]:e[0]).split(" · ")[0].split(":")[0]).join(" · "))}${i.seq.length>3?" …":""}</div></div><div class="row-t"><span class="num">${Math.round(secs/60)}</span><small>min</small></div></button>`}
   if(i.mob)return`<div class="row" style="cursor:default"><span class="thumb">${figThumb("lunge",.5)}</span><div><div class="row-n">Movilidad</div><div class="row-c">Cadera, tobillo, torácica y hombro</div></div><div class="row-t"><span class="num">10</span><small>min</small></div></div>`;
   if(i.run)return`<button class="row" data-run="${ix}"><span class="thumb">${figThumb("run",.5)}</span><div style="min-width:0"><div class="row-n">${RUN_NAME[i.run]||"Carrera"}</div><div class="row-c">${esc(runLabel(i))}</div></div><div class="row-t"><span class="num">${Math.round(i.ph.reduce((a,x)=>a+x.s,0)/60)}</span><small>${rated(i.run)?"min · nv "+i.lv:"min"}</small></div></button>`;
   const flags=[];if(i.cal)flags.push(`<span class="tq">calibración</span>`);if(i.tech)flags.push(`<span class="tq">técnica</span>`);if(i.myo)flags.push(`<span class="tq">myo-reps</span>`);
@@ -1398,7 +1411,8 @@ function vPlan(){
      <div class="field" style="margin-top:14px"><h3>Hora del entreno</h3><input type="time" data-hora value="${esc(S.settings.hora||"17:00")}" style="font:inherit;font-size:17px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--fg)"><p class="sub" style="font-size:13px">Igual que en Focus OS: cada día de ${hhmm(horaIni())} a ${hhmm(horaIni()+60)} (1 hora). En la semana de exámenes, 30 min y la otra media hora es para estudiar. Focus OS te avisa 10 min antes si importas su calendario.</p></div></div>
    <div class="card"><div class="toggle"><div><h3>Esta semana es de exámenes</h3><p class="sub" style="font-size:13px">Mantenimiento: lunes, miércoles y viernes 30 min de cuerpo completo; el resto, paseo. No cuenta como semana del plan.</p></div><button class="switch" data-act="maint" aria-pressed="${(S.maint||[]).includes(ws)}" aria-label="Semana de exámenes"></button></div>
      <div class="toggle"><div><h3>Voz</h3><p class="sub" style="font-size:13px">Repeticiones, descansos y lo que viene.</p></div>${sw("voice",S.settings.voice)}</div>
-     <div class="toggle"><div><h3>Modo sargento</h3><p class="sub" style="font-size:13px">La voz te habla como un instructor militar: órdenes, presión en las últimas repeticiones y ascensos de rango.</p></div>${sw("sarge",S.settings.sarge!==false)}</div></div>
+     <div class="toggle"><div><h3>Modo sargento</h3><p class="sub" style="font-size:13px">La voz te habla como un instructor militar: órdenes, presión en las últimas repeticiones y ascensos de rango.</p></div>${sw("sarge",S.settings.sarge!==false)}</div>
+     ${S.settings.sarge!==false?`<div class="field"><h3>Estilo del instructor</h3><div class="seg" role="group">${[["sargento","Sargento"],["duro","Modo duro"]].map(([k,l])=>`<button data-coach="${k}" aria-pressed="${(S.settings.coach||"duro")===k}">${l}</button>`).join("")}</div><p class="sub" style="font-size:13px">Modo duro: voz más grave y frases de dureza mental, sin piedad. Sargento: órdenes militares clásicas.</p></div>`:""}</div>
    <div class="card"><h3>Tu material</h3>
      <div class="toggle"><div><b>Barra de dominadas</b><p class="sub" style="font-size:13px">Dominadas y elevaciones colgado.</p></div>${swq("dominadas")}</div>
      <div class="toggle"><div><b>Anillas</b><p class="sub" style="font-size:13px">Fondos y remos en anillas.</p></div>${swq("anillas")}</div>
@@ -1446,15 +1460,18 @@ function vProgreso(){
 
 /* ============ Hojas ============ */
 function tempoTxt(tp){const[a,b,c,d]=tp.split("-");const f=(x,w)=>x==="X"?w+" explosivo":x==="0"?"":x+" s "+w;return[f(a,"bajando"),f(b,"de pausa abajo"),f(c,"subiendo"),f(d,"apretando arriba")].filter(Boolean).join(", ")}
+function sheetSeq(k){const q=SEQ[k];if(!q)return;const ctx=/yoga|calma/.test(k)?"yoga":/pilates/.test(k)?"pilates mat":/fifa/.test(k)?"FIFA 11+":/nfl/.test(k)?"agility drill":/boxeo/.test(k)?"shadow boxing":/movil/.test(k)?"mobility":"exercise";
+  const rows=q.els.map(e=>{const n=(e[0]==="int"?e[1]:e[0]).split(" · ")[0].split(":").pop().trim();const t=e[0]==="int"?`${e[4]} × ${e[2]} s`:`${e[1]} s${e[3]?" por lado":""}`;return`<div class="refrow"><div><b>${esc(n)}</b><small>${t}</small></div><a class="link" href="${vidQ(n+" "+ctx)}" target="_blank" rel="noopener">Vídeo</a><a class="link" href="${picUrl(n+" "+ctx)}" target="_blank" rel="noopener">Imágenes</a></div>`}).join("");
+  $("#layer").innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true"><div class="eyebrow">Referencias de cada postura</div><h2 style="font-size:30px">${esc(q.n)}</h2>${rows}<button class="secondary" data-close>Cerrar</button></div></div>`}
 function sheetEx(id,orig){ensureEx(id);orig=orig||id;
   const e=EX[id],p=prog(id),ph=phaseOf(viewDate),rir=rirFor(e,ph),tech=techFor(e,ph);
   const ladder=e.v.length>1?`<dt>Variantes</dt><dd>${e.v.map((v,j)=>`<span style="${j===p.vi?"color:var(--accent)":j<p.vi?"color:var(--muted);text-decoration:line-through":"color:var(--muted);font-weight:500"}">${esc(v||"básica")}</span>`).join(" → ")}</dd>`:"";
   $("#layer").innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t">
    <div class="eyebrow">Rango ${e.r[0]}${e.r[0]!==e.r[1]?"–"+e.r[1]:""} ${unitShort(e)}${e.rest?" · descanso "+e.rest+" s":""}</div>
-   ${(()=>{const k=imgFolder(id);return k?imgPair(k,"expair big")+`<div class="credit">${imgCredit(k)}</div>`:`<div class="noimg">No hay ilustración libre que coincida exactamente con este ejercicio. Hazte tú la foto de inicio y final: verás tu técnica con tu material.</div>`})()}${photoTools(id)}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
+   ${(()=>{const k=imgFolder(id);return k?imgPair(k,"expair big")+`<div class="credit">${imgCredit(k)}</div>`:`<div class="noimg">Sin ilustración libre exacta. Abajo tienes el vídeo y las imágenes de referencia, o hazte tu foto de inicio y final.</div>`})()}${photoTools(id)}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
    <dl class="kv"><dt>Objetivo</dt><dd>${p.t} ${unitTxt(e)}${rir?" · RIR "+rir:" · calidad máxima, sin fatiga"}</dd>${e.tp?`<dt>Tempo ${e.tp}</dt><dd>${tempoTxt(e.tp)}</dd>`:""}${tech?`<dt>Técnica</dt><dd>${esc(tech)}</dd>`:""}${p.last?`<dt>La última vez</dt><dd>${p.last.t} · ${RATE_TXT[p.last.r]}</dd>`:""}${ladder}</dl>
    <div class="field"><label for="load" class="eyebrow">Peso o banda que usas</label><input type="text" id="load" value="${esc((S.prog[id]&&S.prog[id].load)||e.load)}">${S.prog[id]&&S.prog[id].kg?`<span class="sub" style="font-size:13px">Más ${kgTxt(S.prog[id].kg)} kg ganados con la progresión.</span>`:""}</div>
-   <a class="link" href="${vidUrl(e)}" target="_blank" rel="noopener" style="align-self:flex-start">Ver la técnica en vídeo</a>
+   <div class="refs"><a class="secondary" href="${vidUrl(e,id)}" target="_blank" rel="noopener">▶ Vídeo de la técnica</a><a class="secondary" href="${picUrl(exQuery(id)+" exercise")}" target="_blank" rel="noopener">Imágenes de referencia</a></div>
    <div class="btns"><button class="btn" data-act="alts" data-orig="${orig}">Cambiar por otro ejercicio</button>${p.vi>0?`<button class="btn" data-act="varback" data-id="${id}">Volver a la variante anterior</button>`:""}<button class="primary" style="width:auto;flex:1;min-height:48px" data-act="saveload" data-id="${id}">Guardar</button></div>
   </div></div>`;
 }
@@ -1604,7 +1621,7 @@ try{pickVoice();speechSynthesis.addEventListener("voiceschanged",pickVoice)}catc
 function say(txt,o){if(!S.settings.voice||!txt)return;o=o||{};try{
   const busy=speechSynthesis.speaking||speechSynthesis.pending;
   if(o.urgent)speechSynthesis.cancel();else if(busy&&o.skip)return;
-  const u=new SpeechSynthesisUtterance(txt);u.lang="es-ES";if(VOICE)u.voice=VOICE;u.rate=1;u.pitch=1;u.volume=1;speechSynthesis.speak(u)}catch(e){}}
+  const u=new SpeechSynthesisUtterance(txt);u.lang="es-ES";if(VOICE)u.voice=VOICE;u.rate=duro()?1.04:1;u.pitch=duro()?.82:sarge()?.92:1;u.volume=1;speechSynthesis.speak(u)}catch(e){}}
 /* Pitidos programados con el reloj de audio: suenan exactamente cuando cambia el número */
 let SCHED=[];
 function sbeep(at,f,ms,vol){try{if(!actx)return;const t=actx.currentTime+Math.max(0,at);const o=actx.createOscillator(),g=actx.createGain();o.type="sine";o.frequency.value=f;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.006);g.gain.exponentialRampToValueAtTime(.001,t+ms/1000);o.start(t);o.stop(t+ms/1000+.03);SCHED.push(o)}catch(e){}}
@@ -1684,12 +1701,12 @@ function enterSeg(prev){
   const durTxt=d0=>{const d=Math.round(d0/5)*5||d0;if(d<60)return d+" segundos";const m=Math.floor(d/60),r=d%60,mt=m===1?"un minuto":m+" minutos";return r===30?mt+" y medio":r?mt+" y "+r+" segundos":mt};
   const reps=x=>{const t=targetOf(x);return t+" "+unitWord(x.e)+(SIDE[x.e.u]?" por "+SIDE[x.e.u]:"")};
   if(s.ph==="switch"&&s.big.startsWith("Cambia de")){const nx=G.T[G.idx+1];flashSide(nx&&nx.label?nx.label:s.big);say(nx&&nx.label?nx.label:s.big,{urgent:1})}
-  else if(s.ph==="prep")say(`${sarge()&&s.set===1?SG(SG_PREP)+" ":""}${name}. ${reps(s.ex)}${s.of>1?", serie "+s.set+" de "+s.of:""}. ${s.set===1?tempoSpoken(s.ex):""}`,{urgent:1});
+  else if(s.ph==="prep")say(`${sarge()&&s.set===1?SG(duro()?DU_PREP:SG_PREP)+" ":""}${name}. ${reps(s.ex)}${s.of>1?", serie "+s.set+" de "+s.of:""}. ${s.set===1?tempoSpoken(s.ex):""}`,{urgent:1});
   else if(s.ph==="switch")say("Cambia a "+name+". "+reps(s.ex)+".",{urgent:1});
   else if(s.ph==="rest"&&!s.mini){
     const remain=Math.round((G.T.total-s.at-s.d)/60),slot=Math.floor(remain/10);let extra="";
     if(G.lastSlot!==undefined&&slot<G.lastSlot&&remain>3)extra=" Quedan "+remain+" minutos de sesión.";G.lastSlot=slot;
-    say((sarge()?SG(SG_REST):"Bien.")+" Descansa "+durTxt(s.d)+". Luego, "+s.next.split(" · ")[0]+"."+extra);
+    say((sarge()?SG(duro()?DU_REST:SG_REST):"Bien.")+" Descansa "+durTxt(s.d)+". Luego, "+s.next.split(" · ")[0]+"."+extra);
   }
   else if(s.ph==="rest"&&s.mini)say(s.seqn?"Descansa":"Respira",{skip:1});
   else if(s.ph==="hold"&&s.title)say(s.title.split(" · ")[0]+(s.label?", "+s.label.toLowerCase():"")+". "+durTxt(s.d)+".",{urgent:1});
@@ -1700,8 +1717,8 @@ function enterSeg(prev){
     /* Primera repetición: se nombra la fase; después, solo el número, como un entrenador contando */
     const w=(SPOKEN[s.big]||s.big).toLowerCase();
     if(s.rep===1)say((s.label&&/Lado|Pierna|Brazo|Mini|Activ/.test(s.label)?s.label+". ":"")+"Uno, "+w,{urgent:1});
-    else if(s.rep===s.reps)say(sarge()?SG(SG_LAST):"Última",{skip:1});
-    else if(s.reps-s.rep===2&&s.reps>=8)say(sarge()?SG(SG_TWO):s.rep+", quedan dos",{skip:1});
+    else if(s.rep===s.reps)say(sarge()?SG(duro()?DU_LAST:SG_LAST):"Última",{skip:1});
+    else if(s.reps-s.rep===2&&s.reps>=8)say(sarge()?SG(duro()?DU_TWO:SG_TWO):s.rep+", quedan dos",{skip:1});
     else say(String(s.rep),{skip:1});
   }
   drawGo();
@@ -1814,7 +1831,7 @@ function drawGo(){
 
 function toReview(){
   clearSched();clearInterval(tick);G.review=true;try{speechSynthesis.cancel()}catch(e){}
-  beep(880,120);setTimeout(()=>beep(1175,260),170);say(sarge()?"¡Misión cumplida, soldado! Rellena el informe.":"Sesión terminada. Rellena la encuesta.");
+  beep(880,120);setTimeout(()=>beep(1175,260),170);say(duro()?"Hoy has ganado a la versión cómoda de ti. Mañana, otra vez. Rellena el informe.":sarge()?"¡Misión cumplida, soldado! Rellena el informe.":"Sesión terminada. Rellena la encuesta.");
   const min=Math.max(1,Math.round((Date.now()-G.t0)/60000));
   const d=G.date,ses=G.ses,r=G.r,prs=G.prs.slice();G=null;releaseAwake();
   openSurvey(d,ses,r,min,prs);
@@ -1956,6 +1973,8 @@ document.addEventListener("click",e=>{
   const hi=t.closest("[data-hist]");if(hi){sheetHist(hi.dataset.hist);return}
   const st2=t.closest("[data-swapto]");if(st2){const[o,id]=st2.dataset.swapto.split("|");S.swap[o]=id;save();closeSheet();render();return}
   const mn=t.closest("[data-min]");if(mn){S.dur[viewDate]=+mn.dataset.min;if(S.short)delete S.short[viewDate];save();render();return}
+  const co=t.closest("[data-coach]");if(co){S.settings.coach=co.dataset.coach;save();render();say(co.dataset.coach==="duro"?SG(DU_PREP):SG(SG_PREP),{urgent:1});return}
+  const sq=t.closest("[data-seqref]");if(sq){sheetSeq(sq.dataset.seqref);return}
   const oc=t.closest("[data-ownclear]");if(oc){clearOwn(oc.dataset.ownclear).then(()=>{sheetEx(oc.dataset.ownclear);render()});return}
   const dm=t.closest("[data-defmin]");if(dm){S.settings.dur=+dm.dataset.defmin;save();render();return}
   const ex=t.closest("[data-ex]");if(ex){sheetEx(ex.dataset.ex,ex.dataset.orig);return}
