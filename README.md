@@ -4,4 +4,6 @@ App de entrenamiento personal instalable. Abre https://p9nkm76vgk-ops.github.io/
 
 La web anterior de la residencia está en el historial de git (commit 1b41ec5).
 
-Las fotos de los ejercicios (carpeta `ex/`) son de [free-exercise-db](https://github.com/yuhonas/free-exercise-db), de dominio público (Unlicense).
+
+## Créditos de imágenes
+Las ilustraciones de la carpeta `ek/` son de **Everkinetic**, con licencia [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), obtenidas de [opentraining-exercises](https://github.com/chaosbastler/opentraining-exercises) (también en Wikimedia Commons). Se han reducido de tamaño y pasado a escala de grises; estas versiones modificadas se comparten con la misma licencia CC BY-SA 3.0.

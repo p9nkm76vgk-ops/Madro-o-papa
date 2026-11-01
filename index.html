@@ -305,6 +305,17 @@ textarea{min-height:90px;font-size:12px;font-family:ui-monospace,monospace}
 .stage.withimg .ringwrap.center{width:min(48vw,260px)}
 @media (max-width:420px){.stage.withimg{gap:12px}.stage.withimg .big{font-size:64px}}
 
+
+.thumb:has(img.thumbimg){background:#fff}
+.thumb img.thumbimg{object-fit:contain!important;padding:2px}
+.expair{background:#fff}
+.expair img{object-fit:contain}
+.expair.own img{object-fit:cover}
+.credit{font-size:11px;color:var(--fg3);margin-top:-6px}
+.noimg{border:1px dashed var(--line);border-radius:16px;padding:14px;font-size:13px;color:var(--fg2)}
+.phototools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.phototools label.secondary{width:auto;cursor:pointer;min-height:40px;display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:700}
+
 /* ===== Identidad ENTRENO: marca deportiva premium (negro, blanco, un acento) ===== */
 :root{--bg:#060912;--s1:#0C111D;--s2:#141B2B;--s3:#1D263A;--line:#19213A;--fg:#FFFFFF;--fg2:#9AA4BC;--fg3:#5E6880;
   --acc:#3D7BFF;--acc2:#5B8CFF;--acc3:#2F5BFF;--acc-soft:rgba(61,123,255,.16);--f-dsp:"Anton","Barlow Condensed","Arial Narrow",sans-serif}
@@ -470,7 +481,7 @@ const PLAN=[
   long:["A1:cosaca","A2:hipunil","run:z2","B1:latband*3","B2:bayes*2","B3:triover*2","C1:crunchb","C2:copen","C3:pullapart"],
   short:["A1:hipunil*2","run:z2","B1:latband*2","B2:crunchb*2"]},
  {n:"Torso B",s:"Espalda primero, bíceps, deltoide posterior y abdomen",w:"sup",int:3,
-  long:["A1:pendlay","A2:flexplio","B1:jalon1","B2:pullover","C1:curlb","C2:bayes","D:pajaro","E:revcrunch"],
+  long:["A1:pendlay","A2:flexplio","B1:jalon1","B2:pullover","C1:curlb","C2:bayes","D1:pajaro","D2:lean","E:revcrunch"],
   short:["A1:pendlay*3","A2:flexplio*2","B1:jalon1*2","B2:pullover*2","C:bayes!m","E:revcrunch*2"]},
  {n:"Atleta",s:"Cuestas, saltos, pierna unilateral, transporte y hombro",w:"run",int:3,
   long:["sprint","A1:broad","A2:skater","B1:cosaca","B2:hipunil","C1:maleta","C2:tgu","D:pallofp","E:lean*2"],
@@ -511,9 +522,9 @@ const SEQ={
 };
 function seqSecs(k){return SEQ[k].els.reduce((a,e)=>a+(e[0]==="int"?e[2]*e[4]+e[3]*(e[4]-1):e[1]*(e[3]?2:1)+(e[3]?6:0)),0)}
 const ATH={
- nfl:{n:"Atleta · NFL",s:"Velocidad, agilidad y potencia tipo combine",w:"run",int:3,long:["seq:nfl_warm","seq:nfl_ladder","1:broad","2:cmj","seq:nfl_agility","sprint","E:lean*2","P:pushpress?"],short:["seq:nfl_ladder","1:broad","seq:nfl_agility","E:lean*2"]},
- futbol:{n:"Atleta · Fútbol",s:"FIFA 11+, resistencia intermitente y cambios de dirección",w:"run",int:3,long:["seq:fifa1","seq:fifa2","1:nordico*3","intermit","E:lean*2","seq:fifa_cod?"],short:["seq:fifa1","seq:fifa2","E:lean*2"]},
- hiit:{n:"Atleta · HIIT",s:"EMOM, intervalos en cuesta y boxeo de sombra",w:"run",int:3,long:["seq:hiit_emom","hiitcinta","E:lean*2","seq:boxeo?","seq:hiit_core?"],short:["seq:hiit_emom","E:lean*2"]},
+ nfl:{n:"Atleta · NFL",s:"FIFA 11+ de calentamiento, velocidad, agilidad y potencia tipo combine",w:"run",int:3,long:["seq:fifa1","seq:nfl_ladder","1:broad","2:cmj","seq:nfl_agility","sprint","E:lean*3","P:pushpress?"],short:["seq:nfl_ladder","1:broad","seq:nfl_agility","E:lean*2"]},
+ futbol:{n:"Atleta · Fútbol",s:"FIFA 11+, resistencia intermitente y cambios de dirección",w:"run",int:3,long:["seq:fifa1","seq:fifa2","1:nordico*3","intermit","E:lean*3","seq:fifa_cod?"],short:["seq:fifa1","seq:fifa2","E:lean*2"]},
+ hiit:{n:"Atleta · HIIT",s:"Boxeo de sombra, intervalos en cuesta y core (el EMOM queda solo el sábado)",w:"run",int:3,long:["seq:boxeo","hiitcinta","E:lean*3","seq:hiit_core?"],short:["seq:boxeo","E:lean*2"]},
 };
 const CALM_DAYS={
  yoga:{n:"Yoga",s:"Movilidad, respiración y calma para la semana",w:"calma",int:1,calm:1,long:["seq:yoga_base","seq:yoga_45?","seq:yoga_60?","seq:movilidad?"],short:["seq:yoga_base"]},
@@ -542,7 +553,7 @@ const PHASES={
  acum:{n:"Acumulación",rc:"2–3",ri:"1–2",desc:"Semana base. Las series marcadas como calibración van al fallo real para afinar tu RIR."},
  intens:{n:"Intensificación",rc:"1–2",ri:"0–1",desc:"Más cerca del límite. En aislamiento, parciales en la parte estirada al acabar la última serie."},
  pico:{n:"Pico",rc:"1",ri:"0",desc:"La semana dura del bloque. Técnicas de intensidad en aislamiento; press militar y saltos nunca al fallo."},
- mant:{n:"Exámenes",rc:"2–3",ri:"2–3",desc:"Semana de mantenimiento: 3 sesiones cortas de cuerpo completo y paseos. Una semana así no te quita músculo; dormir 8 h (tu horario de 23:00 a 7:00 ya las da: no las recortes) es lo prioritario."},
+ mant:{n:"Exámenes",rc:"2–3",ri:"2–3",desc:"Semana de mantenimiento: 3 sesiones cortas de cuerpo completo y paseos. Una semana así no te quita músculo; dormir 8–10 h (recomendación para adolescentes de la AASM; con tu horario de 23:00 a 7:00 estás en el mínimo, intenta 8,5–9) es lo prioritario."},
  desc:{n:"Descarga",rc:"3–4",ri:"2–3",desc:"40 % menos series y sin fallo. Aquí es cuando el cuerpo asimila el bloque."},
 };
 const CYCLE=["acum","intens","pico","desc"];
@@ -927,15 +938,28 @@ function archOf(id){
 }
 
 /* ============ Imágenes de los ejercicios ============
-   Fotos de free-exercise-db (dominio público). Dos fotos por ejercicio: posición inicial y final. */
-const IMG_BASE="ex/";
-const IMGCUR={"cmj": "Freehand_Jump_Squat", "bulg": "Split_Squat_with_Dumbbells", "nordico": "Ball_Leg_Curl", "rdl": "Romanian_Deadlift", "gemelo": "Calf_Raise_On_A_Dumbbell", "frontal": "Front_Squat_Clean_Grip", "rueda": "Ab_Roller", "pallof": "Pallof_Press", "militar": "Standing_Military_Press", "face": "Face_Pull", "flexdef": "Pushups", "invertido": "Seated_Cable_Rows", "lean": "One-Arm_Side_Laterals", "extri": "Standing_Dumbbell_Triceps_Extension", "dragon": "Flat_Bench_Lying_Leg_Raise", "latband": "Lateral_Raise_-_With_Bands", "curlband": "Standing_Biceps_Cable_Curl", "triband": "Triceps_Pushdown_-_Rope_Attachment", "copen": "Band_Hip_Adductions", "deadbug": "Dead_Bug", "pendlay": "Bent_Over_Barbell_Row", "flexplio": "Plyo_Push-up", "jalon1": "One_Arm_Lat_Pulldown", "pullover": "Bent-Arm_Dumbbell_Pullover", "curlb": "Barbell_Curl", "bayes": "Standing_Biceps_Cable_Curl", "pajaro": "Seated_Bent-Over_Rear_Delt_Raise", "broad": "Standing_Long_Jump", "skater": "Lateral_Bound", "cosaca": "Barbell_Side_Split_Squat", "hipunil": "Single_Leg_Glute_Bridge", "maleta": "Farmers_Walk", "tgu": "Kettlebell_Turkish_Get-Up_Lunge_style", "pallofp": "Pallof_Press_With_Rotation", "floor": "Floor_Press", "invsup": "Reverse_Grip_Bent-Over_Rows", "fondos": "Push-Ups_-_Close_Triceps_Position", "latmyo": "Side_Lateral_Raise", "martillo": "Hammer_Curls", "dominada": "Pullups", "chinup": "Chin-Up", "colgado": "Hanging_Leg_Raise", "fondosan": "Dips_-_Triceps_Version", "remoan": "Inverted_Row_with_Straps", "crunchb": "Cable_Crunch", "revcrunch": "Reverse_Crunch", "pullapart": "Band_Pull_Apart", "triover": "Cable_Rope_Overhead_Triceps_Extension", "domsub": "Pullups", "pushpress": "Push_Press", "emom": "Kettlebell_Thruster", "hollow": "Dead_Bug", "lsit": "Flat_Bench_Lying_Leg_Raise"};
-const IMGARCH={"run": "Running_Treadmill", "walk": "Walking_Treadmill", "stroll": "Walking_Treadmill", "child": "Childs_Pose", "catcow": "Cat_Stretch", "downdog": "Downward_Facing_Balance", "lizard": "Worlds_Greatest_Stretch", "climber": "Mountain_Climbers", "skip": "Fast_Skipping", "jump": "Freehand_Jump_Squat", "plank": "Plank", "sideplank": "Side_Bridge", "bridge": "Single_Leg_Glute_Bridge", "crunch": "Crunches", "legraise": "Flat_Bench_Lying_Leg_Raise", "hundred": "Dead_Bug", "squat": "Goblet_Squat", "lunge": "Dumbbell_Lunges", "swing": "Standing_Hip_Circles", "pushup": "Pushups", "burpee": "Mountain_Climbers", "scissor": "Scissor_Kick", "pigeon": "Worlds_Greatest_Stretch", "squatdeep": "Goblet_Squat", "rollup": "Sit-Up", "teaser": "Sit-Up", "cobra": "Hip_Circles_prone"};
-function imgFolder(id){if(IMGCUR[id])return IMGCUR[id];if(id&&id.startsWith("db")){const x=EXDB[+id.slice(2)];if(x&&x[5])return x[5]}const a=archOf(id);return IMGARCH[FIGALIAS[a[0]]||a[0]]||null}
-function imgArch(a){return IMGARCH[FIGALIAS[a]||a]||null}
-const imgSrc=(f,k)=>IMG_BASE+f+"_"+k+".jpg";
+   1) Tus propias fotos (inicio y final), guardadas solo en este dispositivo.
+   2) Ilustraciones de Everkinetic (CC BY-SA 3.0, vía Wikimedia Commons / opentraining-exercises) cuando coinciden con el ejercicio.
+   Si no hay ninguna con licencia libre que coincida, no se pone una equivocada: se ofrece hacer tu foto. */
+const EKCUR={"frontal": "Front-squat", "bulg": "Lunges", "gemelo": "Standing-calf-raises", "rueda": "Ab-rollout-on-knees", "flexdef": "Push-ups", "fondos": "Close-triceps-pushup", "flexplio": "Push-ups", "lean": "Dumbbell-lateral-raises", "latmyo": "Dumbbell-lateral-raises", "latband": "Dumbbell-lateral-raises", "extri": "Standing-overhead-triceps-extension", "triover": "Standing-overhead-triceps-extension", "triband": "Triceps-pushdown-with-rope", "dragon": "Leg-raises", "pendlay": "Barbell-rear-delt-row", "invsup": "Reverse-grip-bent-over-rows", "curlb": "Wide-grip-standing-biceps-curl", "curlband": "Standing-biceps-curl", "bayes": "Standing-one-arm-bicep-curl", "martillo": "Bicep-hammer-curl", "pajaro": "Bent-over-cable-lateral-raises", "pullapart": "Back-flyes-with-resistance-bands", "hipunil": "Bridge", "revcrunch": "Bent-knee-hip-raise", "dominada": "Chin-ups", "chinup": "Chin-ups", "domsub": "Chin-ups", "cosaca": "Side-split-squats", "maleta": "One-arm-side-deadlift", "remoan": "Body-row"};
+const EKARCH={"squat": "Squats", "squatdeep": "Squats", "pushup": "Push-ups", "bridge": "Bridge", "legraise": "Leg-raises", "sideplank": "Side-plank", "swim": "Supermans", "scissor": "Flutter-kicks", "lunge": "Lunges"};
+const IMGARCH={};
+let OWN={};
+function imgFolder(id){if(OWN[id]&&OWN[id][0])return"own:"+id;return EKCUR[id]?"ek:"+EKCUR[id]:null}
+function imgArch(a){a=FIGALIAS[a]||a;return EKARCH[a]?"ek:"+EKARCH[a]:null}
+function imgSrc(key,k){if(key.startsWith("own:")){const o=OWN[key.slice(4)]||[];return o[k]||o[0]}return"ek/"+key.slice(3)+"_"+(k+1)+".png"}
+function imgCredit(key){return!key?"":key.startsWith("own:")?"Tu foto":"Ilustración: Everkinetic · CC BY-SA 3.0"}
 function imgThumb(f){return f?`<img class="thumbimg" alt="" loading="lazy" src="${imgSrc(f,0)}" onerror="this.remove()">`:""}
-function imgPair(f,cls){return f?`<div class="${cls||"expair"}"><img alt="Posición inicial" src="${imgSrc(f,0)}"><img class="b" alt="Posición final" src="${imgSrc(f,1)}" onerror="this.remove()"></div>`:""}
+function imgPair(f,cls){return f?`<div class="${cls||"expair"}${f.startsWith("own:")?" own":""}"><img alt="Posición inicial" src="${imgSrc(f,0)}"><img class="b" alt="Posición final" src="${imgSrc(f,1)}" onerror="this.remove()"></div>`:""}
+/* fotos propias en IndexedDB */
+const ODB={open(){return new Promise((ok,ko)=>{try{const r=indexedDB.open("entreno-fotos",1);r.onupgradeneeded=()=>r.result.createObjectStore("f");r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)}catch(e){ko(e)}})},
+  async all(){const db=await this.open();return new Promise(ok=>{const out={},tx=db.transaction("f").objectStore("f").openCursor();tx.onsuccess=e=>{const c=e.target.result;if(c){out[c.key]=c.value;c.continue()}else ok(out)};tx.onerror=()=>ok(out)})},
+  async put(k,v){const db=await this.open();return new Promise(ok=>{const t=db.transaction("f","readwrite");v==null?t.objectStore("f").delete(k):t.objectStore("f").put(v,k);t.oncomplete=ok;t.onerror=ok})}};
+async function loadOwn(){try{const a=await ODB.all();const o={};for(const k in a){const[id,n]=k.split("|");(o[id]=o[id]||[])[+n]=a[k]}OWN=o;if(Object.keys(o).length&&!G)render()}catch(e){}}
+function shrinkPhoto(file){return new Promise((ok,ko)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const m=520,sc=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.72))};im.onerror=ko;im.src=r.result};r.onerror=ko;r.readAsDataURL(file)})}
+async function saveOwn(id,n,file){const d=await shrinkPhoto(file);await ODB.put(id+"|"+n,d);(OWN[id]=OWN[id]||[])[n]=d}
+async function clearOwn(id){await ODB.put(id+"|0",null);await ODB.put(id+"|1",null);delete OWN[id]}
+function photoTools(id){const has=OWN[id]&&OWN[id][0];return`<div class="phototools"><label class="secondary">${has?"Cambiar":"Hacer"} foto de inicio<input type="file" accept="image/*" capture="environment" data-ownphoto="${id}|0" hidden></label><label class="secondary">${has&&OWN[id][1]?"Cambiar":"Hacer"} foto final<input type="file" accept="image/*" capture="environment" data-ownphoto="${id}|1" hidden></label>${has?`<button class="link" data-ownclear="${id}">Quitar mis fotos</button>`:""}</div>`}
 function thumbFig(id){const f=imgFolder(id);return f?imgThumb(f):figThumb(archOf(id)[0],.65)}
 /* ============ Maniquí 3D ============
    Atleta articulado hecho con volúmenes (deltoides, pecho, dorsales, abdomen, cuádriceps, gemelos)
@@ -1367,7 +1391,8 @@ function vPlan(){
    ${calendarCard()}
    ${S.equip.dominadas?pullCard():""}
    ${vol.length?`<div class="note"><b>Volumen ajustado a tus sensaciones:</b> ${vol.map(([g,v])=>GROUP_TXT[g]+" "+(v>0?"+":"")+v+" serie"+(Math.abs(v)>1?"s":"")).join(" · ")}. Se recalcula cada lunes.</div>`:""}
-   <div class="card"><h2>Abdomen marcado</h2><p class="sub" style="font-size:14px">Que se marque depende sobre todo de la grasa corporal: los abdominales no queman la grasa de encima. El plan hace crecer el abdomen con carga (rueda, dragon flag, crunch con banda); el resto lo pone la comida: <b>proteína 1,6–2,2 g por kg</b> al día, un déficit suave (perder como máximo un 0,5 % del peso a la semana) solo si te sobra grasa, comer normal en exámenes y <b>dormir tus 8 h</b> (de 23:00 a 7:00). Nada de dietas extremas; si quieres bajar mucho de peso, mejor con tu médico o un dietista-nutricionista.</p></div>
+   <div class="card"><h2>Abdomen marcado</h2><p class="sub" style="font-size:14px">Que se marque depende sobre todo de la grasa corporal: los abdominales no queman la grasa de encima. El plan hace crecer el abdomen con carga (rueda, dragon flag, crunch con banda); el resto lo pone la comida: <b>proteína 1,6–2,2 g por kg</b> al día, un déficit suave (perder como máximo un 0,5 % del peso a la semana) solo si te sobra grasa, comer normal en exámenes y <b>dormir 8–10 h</b> (tu horario 23:00–7:00 da el mínimo; si puedes, acuéstate a las 22:30). Nada de dietas extremas; si quieres bajar mucho de peso, mejor con tu médico o un dietista-nutricionista.</p></div>
+   <div class="card"><h2>Suplementos y cafeína</h2><p class="sub" style="font-size:14px">Lo primero es la comida: carne, pescado, huevos, lácteos y legumbres. Batido de proteína solo si no llegas a 1,6 g por kg. <b>Creatina</b> (3–5 g al día) es el suplemento con más evidencia, pero en menores de edad decídelo con tus padres y tu médico. <b>Cafeína</b>: poca o ninguna, nunca después de las 14:00 (entrenas a las 17:00 y el sueño manda). <b>Bebidas energéticas y preentrenos con estimulantes: no.</b> Quemagrasas, BCAA y «potenciadores de testosterona» no valen la pena.</p></div>
    <h2 class="section-t">Ajustes</h2>
    <div class="card"><div class="field"><h3>Duración por defecto</h3><div class="seg" role="group">${[30,45,60].map(m=>`<button data-defmin="${m}" aria-pressed="${(S.settings.dur||60)===m}">${m} min</button>`).join("")}</div><p class="sub" style="font-size:13px">La sesión dura exactamente eso.</p></div>
      <div class="field" style="margin-top:14px"><h3>Hora del entreno</h3><input type="time" data-hora value="${esc(S.settings.hora||"17:00")}" style="font:inherit;font-size:17px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--fg)"><p class="sub" style="font-size:13px">Igual que en Focus OS: cada día de ${hhmm(horaIni())} a ${hhmm(horaIni()+60)} (1 hora). En la semana de exámenes, 30 min y la otra media hora es para estudiar. Focus OS te avisa 10 min antes si importas su calendario.</p></div></div>
@@ -1386,6 +1411,7 @@ function vPlan(){
      <p class="sub" id="msg" style="font-size:13px" aria-live="polite"></p>
      <div class="btns"><button class="btn" data-act="reset1" style="color:var(--bad)">Empezar de cero</button></div>
      <div id="reset2" hidden class="btns"><span class="sub" style="font-size:13px;align-self:center">Se borrará todo tu historial.</span><button class="btn" data-act="reset" style="color:var(--bad)">Borrar todo</button><button class="btn" data-act="reset0">Cancelar</button></div></div>
+  <p class="sub" style="font-size:11px;color:var(--fg3)">Ilustraciones de ejercicios: Everkinetic, licencia CC BY-SA 3.0 (vía Wikimedia Commons y opentraining-exercises). Tus fotos se guardan solo en este dispositivo.</p>
   </section>`;
 }
 function pathCard(){
@@ -1399,7 +1425,7 @@ function pathCard(){
   const st=loadStats(addDays(todayISO(),1));
   return`<div class="card"><h2>Camino de carga</h2><svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Carga semanal de las últimas 12 semanas con tu banda habitual" style="width:100%;height:auto">${band}${bars}${labs}</svg>
    <div class="legend"><span><i style="background:var(--acc);opacity:.35"></i>tu banda habitual (6 semanas)</span><span><i style="background:var(--acc)"></i>esta semana</span></div>
-   <div class="kpis"><div><b class="num">${Math.round(W[11].v)}</b><span>carga esta semana (UA)</span></div><div><b class="num">${st.acwr?st.acwr.toFixed(2):"–"}</b><span>aguda : crónica</span></div><div><b class="num">${st.mono?st.mono.toFixed(1):"–"}</b><span>monotonía</span></div></div>
+   <div class="kpis"><div><b class="num">${Math.round(W[11].v)}</b><span>carga esta semana (UA)</span></div><div><b class="num">${st.wow==null?"–":(st.wow>0?"+":"")+Math.round(st.wow*100)+" %"}</b><span>vs semana anterior</span></div><div><b class="num">${st.mono?st.mono.toFixed(1):"–"}</b><span>monotonía</span></div></div>
    <p class="sub" style="font-size:12px">Orientativo: carga = dureza × minutos (Foster). Solo se usa para no subir volumen cuando te sales de tu banda.</p></div>`;
 }
 function vProgreso(){
@@ -1425,7 +1451,7 @@ function sheetEx(id,orig){ensureEx(id);orig=orig||id;
   const ladder=e.v.length>1?`<dt>Variantes</dt><dd>${e.v.map((v,j)=>`<span style="${j===p.vi?"color:var(--accent)":j<p.vi?"color:var(--muted);text-decoration:line-through":"color:var(--muted);font-weight:500"}">${esc(v||"básica")}</span>`).join(" → ")}</dd>`:"";
   $("#layer").innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t">
    <div class="eyebrow">Rango ${e.r[0]}${e.r[0]!==e.r[1]?"–"+e.r[1]:""} ${unitShort(e)}${e.rest?" · descanso "+e.rest+" s":""}</div>
-   ${imgPair(imgFolder(id),"expair big")}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
+   ${(()=>{const k=imgFolder(id);return k?imgPair(k,"expair big")+`<div class="credit">${imgCredit(k)}</div>`:`<div class="noimg">No hay ilustración libre que coincida exactamente con este ejercicio. Hazte tú la foto de inicio y final: verás tu técnica con tu material.</div>`})()}${photoTools(id)}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
    <dl class="kv"><dt>Objetivo</dt><dd>${p.t} ${unitTxt(e)}${rir?" · RIR "+rir:" · calidad máxima, sin fatiga"}</dd>${e.tp?`<dt>Tempo ${e.tp}</dt><dd>${tempoTxt(e.tp)}</dd>`:""}${tech?`<dt>Técnica</dt><dd>${esc(tech)}</dd>`:""}${p.last?`<dt>La última vez</dt><dd>${p.last.t} · ${RATE_TXT[p.last.r]}</dd>`:""}${ladder}</dl>
    <div class="field"><label for="load" class="eyebrow">Peso o banda que usas</label><input type="text" id="load" value="${esc((S.prog[id]&&S.prog[id].load)||e.load)}">${S.prog[id]&&S.prog[id].kg?`<span class="sub" style="font-size:13px">Más ${kgTxt(S.prog[id].kg)} kg ganados con la progresión.</span>`:""}</div>
    <a class="link" href="${vidUrl(e)}" target="_blank" rel="noopener" style="align-self:flex-start">Ver la técnica en vídeo</a>
@@ -1747,7 +1773,7 @@ function drawGo(){
   if(s.arch)G.fig={a:s.arch,f:0};
   else if(fx){const[a,f]=archOf(fx.id);G.fig={a,f}}else if(s.ph==="run")G.fig={a:"run",f:0};else if(s.ph==="walk")G.fig={a:"stroll",f:0};
   G.fig=null;
-  const goImg=s.ph==="list"?null:fx?imgFolder(fx.id):s.arch?imgArch(s.arch):s.ph==="run"?IMGARCH.run:s.ph==="walk"?IMGARCH.walk:null;G.img=!!goImg;
+  const goImg=s.ph==="list"?null:fx?imgFolder(fx.id):s.arch?imgArch(s.arch):null;G.img=!!goImg;
   const fill=setFill(s,el),center=G.fig&&(tempo||s.ph==="hold");if(s.ph==="switch"&&s.seqn)G.fig=null;
   let ticks="";
   if(tempo&&s.reps&&s.reps<=30)for(let k=0;k<s.reps;k++){const a=k/s.reps*2*Math.PI-Math.PI/2,c=Math.cos(a),sn=Math.sin(a);ticks+=`<line class="tk${k<s.rep-1?" done":k===s.rep-1?" cur":""}" x1="${(150+141*c).toFixed(1)}" y1="${(150+141*sn).toFixed(1)}" x2="${(150+147*c).toFixed(1)}" y2="${(150+147*sn).toFixed(1)}"/>`}
@@ -1846,7 +1872,8 @@ function loadStats(date){
   const arr=loadSeries(addDays(date,-1),56),A=ewma(arr,7),C=ewma(arr,28);
   const a=A[A.length-1],c=C[C.length-1],w=arr.slice(-7),mean=w.reduce((s,x)=>s+x,0)/7,sd=Math.sqrt(w.reduce((s,x)=>s+(x-mean)**2,0)/7);
   const mono=sd>0?mean/sd:0,n=Object.values(S.logs).filter(l=>l.load).length;
-  return{a,c,acwr:c>0?a/c:0,mono,week:mean*7,strain:mean*7*mono,n};
+  const prev=loadSeries(addDays(date,-8),7).reduce((x,y)=>x+y,0),wk=w.reduce((x,y)=>x+y,0);
+  return{a,c,wow:prev>0?wk/prev-1:null,mono,week:mean*7,strain:mean*7*mono,n};
 }
 function autoReason(date){
   if(S.noauto[date])return null;
@@ -1854,7 +1881,7 @@ function autoReason(date){
   if(prev.length>=2&&prev[0].srpe>=9&&prev[1].srpe>=9)return"Tus dos últimas sesiones fueron de 9 o más sobre 10.";
   if(prev.length>=3&&prev.filter(l=>l.energy==="baja").length>=2)return"Llegaste con energía baja a 2 de tus 3 últimas sesiones.";
   const st=loadStats(date);
-  if(st.n>=10&&st.acwr>1.5)return"Tu carga reciente es "+st.acwr.toFixed(2)+" veces tu media de 4 semanas (por encima de 1,5).";
+  if(st.n>=10&&st.wow!=null&&st.wow>.2)return"Tu carga de los últimos 7 días es un "+Math.round(st.wow*100)+" % mayor que la de la semana anterior (más de un 20 %).";
   if(st.n>=7&&st.mono>2)return"Monotonía alta ("+st.mono.toFixed(1)+"): todas las sesiones de la semana han sido igual de duras.";
   return null;
 }
@@ -1879,12 +1906,12 @@ function loadCard(){
   const bars=L.map((v,i)=>v?`<rect x="${x(i)-3.5}" y="${y(v)}" width="7" height="${H-18-y(v)}" rx="1.5" fill="var(--muted)" opacity=".35"/>`:"").join("");
   const line=(S2,c,w)=>`<polyline fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round" points="${S2.map((v,i)=>x(i).toFixed(1)+","+y(v).toFixed(1)).join(" ")}"/>`;
   const lab=[0,13,27].map(i=>`<text x="${x(i)}" y="${H-4}" text-anchor="middle" font-size="9" fill="var(--muted)">${parse(addDays(t,i-27)).getDate()}/${parse(addDays(t,i-27)).getMonth()+1}</text>`).join("");
-  const z=st.acwr===0?"":st.acwr>1.5?"pico de carga":st.acwr<.8?"carga baja":"zona estable";
+  const pct=st.wow==null?"–":(st.wow>0?"+":"")+Math.round(st.wow*100)+" %",z=st.wow==null?"":st.wow>.2?"subida brusca":st.wow<-.3?"semana suave":"estable";
   return`<div class="card"><h2>Carga de entrenamiento</h2>
    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Carga diaria y medias de 7 y 28 días" style="width:100%;height:auto"><line x1="22" x2="${W}" y1="${H-18}" y2="${H-18}" stroke="var(--line)"/>${bars}${line(C,"var(--muted)",1.5)}${line(A,"var(--accent)",2.5)}<circle cx="${x(27)}" cy="${y(A[27])}" r="3.5" fill="var(--accent)"/>${lab}</svg>
    <div class="legend"><span><i style="background:var(--accent)"></i>media 7 días</span><span><i style="background:var(--muted)"></i>media 28 días</span><span><i style="background:var(--muted);opacity:.35"></i>carga del día</span></div>
-   <div class="kpis"><div><b class="num">${st.acwr?st.acwr.toFixed(2):"–"}</b><span>agudo:crónico${z?" · "+z:""}</span></div><div><b class="num">${st.mono?st.mono.toFixed(1):"–"}</b><span>monotonía</span></div><div><b class="num">${Math.round(st.week)}</b><span>carga 7 días (UA)</span></div></div>
-   <p class="sub" style="font-size:12px">Carga = dureza × minutos (Foster). Medias exponenciales de 7 y 28 días. Son orientativas: su capacidad de predecir lesiones está discutida, así que solo se usan para suavizar la sesión siguiente cuando se disparan.</p></div>`;
+   <div class="kpis"><div><b class="num">${pct}</b><span>vs semana anterior${z?" · "+z:""}</span></div><div><b class="num">${st.mono?st.mono.toFixed(1):"–"}</b><span>monotonía</span></div><div><b class="num">${Math.round(st.week)}</b><span>carga 7 días (UA)</span></div></div>
+   <p class="sub" style="font-size:12px">Carga = dureza × minutos (Foster). Medias exponenciales de 7 y 28 días. No se usa el ratio agudo:crónico (ACWR) porque la evidencia lo desaconseja: la app solo te avisa si la carga semanal sube más de un 20 % de golpe.</p></div>`;
 }
 function historyCard(){
   const ds=Object.keys(S.logs).filter(d=>S.logs[d].st==="done").sort().reverse().slice(0,20);
@@ -1929,6 +1956,7 @@ document.addEventListener("click",e=>{
   const hi=t.closest("[data-hist]");if(hi){sheetHist(hi.dataset.hist);return}
   const st2=t.closest("[data-swapto]");if(st2){const[o,id]=st2.dataset.swapto.split("|");S.swap[o]=id;save();closeSheet();render();return}
   const mn=t.closest("[data-min]");if(mn){S.dur[viewDate]=+mn.dataset.min;if(S.short)delete S.short[viewDate];save();render();return}
+  const oc=t.closest("[data-ownclear]");if(oc){clearOwn(oc.dataset.ownclear).then(()=>{sheetEx(oc.dataset.ownclear);render()});return}
   const dm=t.closest("[data-defmin]");if(dm){S.settings.dur=+dm.dataset.defmin;save();render();return}
   const ex=t.closest("[data-ex]");if(ex){sheetEx(ex.dataset.ex,ex.dataset.orig);return}
   const rn=t.closest("[data-run]");if(rn){sheetRun(+rn.dataset.run);return}
@@ -1967,7 +1995,7 @@ document.addEventListener("click",e=>{
   if(act==="reset"){S=defaults();save();render()}
 });
 document.addEventListener("input",e=>{const t=e.target;if(t.dataset&&t.dataset.ld&&SV)SV.ld[t.dataset.ld]=t.value});
-document.addEventListener("change",e=>{if(e.target.id==="start"&&e.target.value){S.settings.start=e.target.value;save();render()}if(e.target.dataset&&"hora" in e.target.dataset&&/^\d{1,2}:\d{2}$/.test(e.target.value)){S.settings.hora=e.target.value;save();render()}});
+document.addEventListener("change",async e=>{const op=e.target.dataset&&e.target.dataset.ownphoto;if(op&&e.target.files&&e.target.files[0]){const[id,n]=op.split("|");try{await saveOwn(id,+n,e.target.files[0])}catch(er){}sheetEx(id);render();return}if(e.target.id==="start"&&e.target.value){S.settings.start=e.target.value;save();render()}if(e.target.dataset&&"hora" in e.target.dataset&&/^\d{1,2}:\d{2}$/.test(e.target.value)){S.settings.hora=e.target.value;save();render()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!G)closeSheet()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&G){keepAwake();if(actx&&actx.state==="suspended")actx.resume()}});
 
@@ -1976,6 +2004,7 @@ evaluateWeeks();
   if(a.i>b){const d=document.createElement("div");d.className="rankup";d.innerHTML=`<div>${rankBadge(a.i).replace('width="18" height="18"','width="64" height="64"')}<small>ASCENSO</small><b>${a.name}</b></div>`;document.body.appendChild(d);setTimeout(()=>d.remove(),3200);
     if(sarge())setTimeout(()=>say("¡Ascenso! A partir de hoy eres "+a.name.toLowerCase()+". ¡Firmes!",{urgent:1}),900)}return r}}
 render();
+loadOwn();
 
 /* ============ Sincronización con la cuenta ============ */
 (async()=>{
