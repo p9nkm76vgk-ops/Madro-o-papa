@@ -326,6 +326,8 @@ textarea{min-height:90px;font-size:12px;font-family:ui-monospace,monospace}
 .mus{display:flex;flex-direction:column;gap:4px;margin-top:4px}.mus .p{font-weight:800;color:#9DBBFF;font-size:15px}.mus .s{font-size:12px;color:var(--fg2)}
 .goimg .bmap{margin:8px auto 2px}.goimg .mus{align-items:center;text-align:center}.goimg .mus .p{font-size:12px}.goimg .mus .s{font-size:10px}
 .mtag{color:#9DBBFF;font-weight:700}
+.tmap{display:grid;place-items:center;width:100%;height:100%}.tmap .bmap text{display:none}
+.goimg .bmap text{display:none}
 
 /* ===== Identidad ENTRENO: marca deportiva premium (negro, blanco, un acento) ===== */
 :root{--bg:#060912;--s1:#0C111D;--s2:#141B2B;--s3:#1D263A;--line:#19213A;--fg:#FFFFFF;--fg2:#9AA4BC;--fg3:#5E6880;
@@ -960,8 +962,8 @@ const EKCUR={"frontal": "Front-squat", "bulg": "Lunges", "gemelo": "Standing-cal
 const EKARCH={"squat": "Squats", "squatdeep": "Squats", "pushup": "Push-ups", "bridge": "Bridge", "legraise": "Leg-raises", "sideplank": "Side-plank", "swim": "Supermans", "scissor": "Flutter-kicks", "lunge": "Lunges"};
 const IMGARCH={};
 let OWN={};
-function imgFolder(id){if(OWN[id]&&OWN[id][0])return"own:"+id;const a=archOf(id);return"il:"+a[0]+"|"+(a[1]?1:0)}
-function imgArch(a){return a?"il:"+a+"|0":null}
+function imgFolder(id){if(OWN[id]&&OWN[id][0])return"own:"+id;return null}
+function imgArch(a){return null}
 function imgSrc(key,k){if(key.startsWith("own:")){const o=OWN[key.slice(4)]||[];return o[k]||o[0]}if(key.startsWith("il:")){const rk=key+"|"+k;if(ILPNG[rk])return ILPNG[rk];const[a,f]=key.slice(3).split("|");const u=ilURL(a,k?1:0,f==="1");ilRaster(rk,u);return u}return"ek/"+key.slice(3)+"_"+(k+1)+".png"}
 function imgCredit(key){return!key?"":key.startsWith("own:")?"Tu foto":key.startsWith("il:")?"Ilustración de Entreno OS · inicio y final del movimiento":"Ilustración: Everkinetic · CC BY-SA 3.0"}
 function imgThumb(f){return f?`<img class="thumbimg" alt="" data-ilk="${f}|0" src="${imgSrc(f,0)}" onerror="this.remove()">`:""}
@@ -1083,7 +1085,7 @@ function shrinkPhoto(file){return new Promise((ok,ko)=>{const r=new FileReader()
 async function saveOwn(id,n,file){const d=await shrinkPhoto(file);await ODB.put(id+"|"+n,d);(OWN[id]=OWN[id]||[])[n]=d}
 async function clearOwn(id){await ODB.put(id+"|0",null);await ODB.put(id+"|1",null);delete OWN[id]}
 function photoTools(id){const has=OWN[id]&&OWN[id][0];return`<div class="phototools"><label class="secondary">${has?"Cambiar":"Hacer"} foto de inicio<input type="file" accept="image/*" capture="environment" data-ownphoto="${id}|0" hidden></label><label class="secondary">${has&&OWN[id][1]?"Cambiar":"Hacer"} foto final<input type="file" accept="image/*" capture="environment" data-ownphoto="${id}|1" hidden></label>${has?`<button class="link" data-ownclear="${id}">Quitar mis fotos</button>`:""}</div>`}
-function thumbFig(id){const f=imgFolder(id);return f?imgThumb(f):figThumb(archOf(id)[0],.65)}
+function thumbFig(id){const f=imgFolder(id);if(f)return imgThumb(f);const mp=musOf(id);return mp?`<span class="tmap">${bodyMap(mp,40)}</span>`:figThumb(archOf(id)[0],.65)}
 /* ============ Maniquí 3D ============
    Atleta articulado hecho con volúmenes (deltoides, pecho, dorsales, abdomen, cuádriceps, gemelos)
    y el material real (barra con discos, mancuernas, bandas, rueda). Usa las mismas poses que el
@@ -1540,7 +1542,7 @@ function vPlan(){
      <p class="sub" id="msg" style="font-size:13px" aria-live="polite"></p>
      <div class="btns"><button class="btn" data-act="reset1" style="color:var(--bad)">Empezar de cero</button></div>
      <div id="reset2" hidden class="btns"><span class="sub" style="font-size:13px;align-self:center">Se borrará todo tu historial.</span><button class="btn" data-act="reset" style="color:var(--bad)">Borrar todo</button><button class="btn" data-act="reset0">Cancelar</button></div></div>
-  <p class="sub" style="font-size:11px;color:var(--fg3)">Ilustraciones de ejercicios generadas por la propia app. Tus fotos se guardan solo en este dispositivo.</p>
+  <p class="sub" style="font-size:11px;color:var(--fg3)">Tus fotos de ejercicios se guardan solo en este dispositivo.</p>
   </section>`;
 }
 function pathCard(){
@@ -1583,7 +1585,7 @@ function sheetEx(id,orig){ensureEx(id);orig=orig||id;
   const ladder=e.v.length>1?`<dt>Variantes</dt><dd>${e.v.map((v,j)=>`<span style="${j===p.vi?"color:var(--accent)":j<p.vi?"color:var(--muted);text-decoration:line-through":"color:var(--muted);font-weight:500"}">${esc(v||"básica")}</span>`).join(" → ")}</dd>`:"";
   $("#layer").innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t">
    <div class="eyebrow">Rango ${e.r[0]}${e.r[0]!==e.r[1]?"–"+e.r[1]:""} ${unitShort(e)}${e.rest?" · descanso "+e.rest+" s":""}</div>
-   ${(()=>{const k=imgFolder(id);return k?imgPair(k,"expair big")+`<div class="credit">${imgCredit(k)}</div>`:`<div class="noimg">Sin ilustración libre exacta. Abajo tienes el vídeo y las imágenes de referencia, o hazte tu foto de inicio y final.</div>`})()}${musCard(id)}${photoTools(id)}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
+   ${(()=>{const k=imgFolder(id);return k?imgPair(k,"expair big")+`<div class="credit">${imgCredit(k)}</div>`:""})()}${musCard(id)}${photoTools(id)}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
    <dl class="kv"><dt>Objetivo</dt><dd>${p.t} ${unitTxt(e)}${rir?" · RIR "+rir:" · calidad máxima, sin fatiga"}</dd>${e.tp?`<dt>Tempo ${e.tp}</dt><dd>${tempoTxt(e.tp)}</dd>`:""}${tech?`<dt>Técnica</dt><dd>${esc(tech)}</dd>`:""}${p.last?`<dt>La última vez</dt><dd>${p.last.t} · ${RATE_TXT[p.last.r]}</dd>`:""}${ladder}</dl>
    <div class="field"><label for="load" class="eyebrow">Peso o banda que usas</label><input type="text" id="load" value="${esc((S.prog[id]&&S.prog[id].load)||e.load)}">${S.prog[id]&&S.prog[id].kg?`<span class="sub" style="font-size:13px">Más ${kgTxt(S.prog[id].kg)} kg ganados con la progresión.</span>`:""}</div>
    <div class="refs"><a class="secondary" href="${vidUrl(e,id)}" target="_blank" rel="noopener">▶ Vídeo de la técnica</a><a class="secondary" href="${picUrl(exQuery(id)+" exercise")}" target="_blank" rel="noopener">Imágenes de referencia</a></div>
@@ -1905,7 +1907,7 @@ function drawGo(){
   if(s.arch)G.fig={a:s.arch,f:0};
   else if(fx){const[a,f]=archOf(fx.id);G.fig={a,f}}else if(s.ph==="run")G.fig={a:"run",f:0};else if(s.ph==="walk")G.fig={a:"stroll",f:0};
   G.fig=null;
-  const goImg=s.ph==="list"?null:fx?imgFolder(fx.id):s.arch?imgArch(s.arch):null;G.img=!!goImg;
+  const goImg=s.ph==="list"?null:fx?imgFolder(fx.id):null;G.img=!!(goImg||(fx&&musOf(fx.id)));
   const fill=setFill(s,el),center=G.fig&&(tempo||s.ph==="hold");if(s.ph==="switch"&&s.seqn)G.fig=null;
   let ticks="";
   if(tempo&&s.reps&&s.reps<=30)for(let k=0;k<s.reps;k++){const a=k/s.reps*2*Math.PI-Math.PI/2,c=Math.cos(a),sn=Math.sin(a);ticks+=`<line class="tk${k<s.rep-1?" done":k===s.rep-1?" cur":""}" x1="${(150+141*c).toFixed(1)}" y1="${(150+141*sn).toFixed(1)}" x2="${(150+147*c).toFixed(1)}" y2="${(150+147*sn).toFixed(1)}"/>`}
@@ -1931,7 +1933,7 @@ function drawGo(){
     <div class="go-top"><div class="eyebrow">${esc(G.ses.day.n)} · ${mmss(Math.max(0,Math.round(G.T.total-s.at-el)))} restantes</div><button class="link" data-g="exit">Salir</button></div>
     <div class="prog"><i id="gp" style="width:${((s.at+el)/G.T.total*100).toFixed(2)}%"></i></div>
     <div class="go-body"><div class="go-main">${head}
-      <div class="stage${goImg?" withimg":""}">${goImg?`<div class="goimg" id="goimg">${imgPair(goImg,"expair live")}${fx&&musOf(fx.id)?bodyMap(musOf(fx.id),78)+musTxt(musOf(fx.id)):""}</div>`:""}
+      <div class="stage${G.img?" withimg":""}">${goImg||(fx&&musOf(fx.id))?`<div class="goimg" id="goimg">${goImg?imgPair(goImg,"expair live"):""}${fx&&musOf(fx.id)?bodyMap(musOf(fx.id),goImg?78:150)+musTxt(musOf(fx.id)):""}</div>`:""}
         <div class="ringwrap${center?" center":""}"><svg class="gring" viewBox="0 0 300 300"><circle class="rtrack" cx="150" cy="150" r="130"/><circle id="rarc" class="rarc" cx="150" cy="150" r="130" stroke-dasharray="${RC.toFixed(1)}" style="stroke-dashoffset:${(RC*(1-fill)).toFixed(1)}" transform="rotate(-90 150 150)"/>${ticks}</svg>
           ${center?`<div class="rin"><div class="fig in" id="fig">${figLive(G.fig.a,figPos(s,el),G.fig.f)}</div></div>`:`<div class="rin"><div class="big num${!tempo&&left>=60?" long":""}">${big}</div><div class="ph">${phw}</div>${sm?`<div class="sm">${sm}</div>`:""}</div>`}</div></div>
       ${center?`<div class="under"><span class="uph">${phw}</span><span class="ureps num">${tempo?`<b>${s.rep}</b>/${s.reps}`:`<b id="cd">${fmtLeft(left)}</b>s`}</span></div>${sm?`<div class="sm" style="color:var(--fg2)">${sm}</div>`:""}`:""}
