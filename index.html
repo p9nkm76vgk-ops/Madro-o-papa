@@ -320,6 +320,13 @@ textarea{min-height:90px;font-size:12px;font-family:ui-monospace,monospace}
 .refs{display:flex;gap:8px;flex-wrap:wrap}.refs a.secondary{width:auto;flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:46px;font-size:14px}
 .refrow{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.refrow small{display:block;color:var(--fg3);font-size:12px}
 
+
+.muscard{display:flex;gap:14px;align-items:center;background:#05070D;border-radius:16px;padding:10px 12px}
+.bmap{display:block;flex:0 0 auto}
+.mus{display:flex;flex-direction:column;gap:4px;margin-top:4px}.mus .p{font-weight:800;color:#9DBBFF;font-size:15px}.mus .s{font-size:12px;color:var(--fg2)}
+.goimg .bmap{margin:8px auto 2px}.goimg .mus{align-items:center;text-align:center}.goimg .mus .p{font-size:12px}.goimg .mus .s{font-size:10px}
+.mtag{color:#9DBBFF;font-weight:700}
+
 /* ===== Identidad ENTRENO: marca deportiva premium (negro, blanco, un acento) ===== */
 :root{--bg:#060912;--s1:#0C111D;--s2:#141B2B;--s3:#1D263A;--line:#19213A;--fg:#FFFFFF;--fg2:#9AA4BC;--fg3:#5E6880;
   --acc:#3D7BFF;--acc2:#5B8CFF;--acc3:#2F5BFF;--acc-soft:rgba(61,123,255,.16);--f-dsp:"Anton","Barlow Condensed","Arial Narrow",sans-serif}
@@ -953,12 +960,120 @@ const EKCUR={"frontal": "Front-squat", "bulg": "Lunges", "gemelo": "Standing-cal
 const EKARCH={"squat": "Squats", "squatdeep": "Squats", "pushup": "Push-ups", "bridge": "Bridge", "legraise": "Leg-raises", "sideplank": "Side-plank", "swim": "Supermans", "scissor": "Flutter-kicks", "lunge": "Lunges"};
 const IMGARCH={};
 let OWN={};
-function imgFolder(id){if(OWN[id]&&OWN[id][0])return"own:"+id;return EKCUR[id]?"ek:"+EKCUR[id]:null}
-function imgArch(a){a=FIGALIAS[a]||a;return EKARCH[a]?"ek:"+EKARCH[a]:null}
-function imgSrc(key,k){if(key.startsWith("own:")){const o=OWN[key.slice(4)]||[];return o[k]||o[0]}return"ek/"+key.slice(3)+"_"+(k+1)+".png"}
-function imgCredit(key){return!key?"":key.startsWith("own:")?"Tu foto":"Ilustración: Everkinetic · CC BY-SA 3.0"}
-function imgThumb(f){return f?`<img class="thumbimg" alt="" loading="lazy" src="${imgSrc(f,0)}" onerror="this.remove()">`:""}
-function imgPair(f,cls){return f?`<div class="${cls||"expair"}${f.startsWith("own:")?" own":""}"><img alt="Posición inicial" src="${imgSrc(f,0)}"><img class="b" alt="Posición final" src="${imgSrc(f,1)}" onerror="this.remove()"></div>`:""}
+function imgFolder(id){if(OWN[id]&&OWN[id][0])return"own:"+id;const a=archOf(id);return"il:"+a[0]+"|"+(a[1]?1:0)}
+function imgArch(a){return a?"il:"+a+"|0":null}
+function imgSrc(key,k){if(key.startsWith("own:")){const o=OWN[key.slice(4)]||[];return o[k]||o[0]}if(key.startsWith("il:")){const rk=key+"|"+k;if(ILPNG[rk])return ILPNG[rk];const[a,f]=key.slice(3).split("|");const u=ilURL(a,k?1:0,f==="1");ilRaster(rk,u);return u}return"ek/"+key.slice(3)+"_"+(k+1)+".png"}
+function imgCredit(key){return!key?"":key.startsWith("own:")?"Tu foto":key.startsWith("il:")?"Ilustración de Entreno OS · inicio y final del movimiento":"Ilustración: Everkinetic · CC BY-SA 3.0"}
+function imgThumb(f){return f?`<img class="thumbimg" alt="" data-ilk="${f}|0" src="${imgSrc(f,0)}" onerror="this.remove()">`:""}
+function imgPair(f,cls){return f?`<div class="${cls||"expair"}${f.startsWith("own:")?" own":""}"><img alt="Posición inicial" data-ilk="${f}|0" src="${imgSrc(f,0)}"><img class="b" alt="Posición final" data-ilk="${f}|1" src="${imgSrc(f,1)}" onerror="this.remove()"></div>`:""}
+/* ============ Ilustraciones propias (generadas por la app) ============
+   Atleta en estilo plano: piel, pantalón negro, zapatillas naranjas. Vista lateral o frontal,
+   posición inicial y final de cada ejercicio, a partir de las mismas poses del motor del tempo. */
+const IL={skin:"#000",skinD:"#000",line:"#FFFFFF",lineD:"#B9C0CC",det:"#FFFFFF",shorts:"#000",shortsD:"#000",shoe:"#000",sole:"#FFFFFF",hair:"#FFFFFF",plate:"#000",rim:"#FFFFFF",steel:"#FFFFFF",band:"#9DBBFF",db:"#000"};
+const ilCache={};
+const v2={add:(a,b)=>[a[0]+b[0],a[1]+b[1]],sub:(a,b)=>[a[0]-b[0],a[1]-b[1]],mul:(a,k)=>[a[0]*k,a[1]*k],len:a=>Math.hypot(a[0],a[1]),norm:a=>{const l=Math.hypot(a[0],a[1])||1;return[a[0]/l,a[1]/l]},perp:a=>[-a[1],a[0]],rot:(a,d)=>{const c=Math.cos(d),s=Math.sin(d);return[a[0]*c-a[1]*s,a[0]*s+a[1]*c]}};
+function ilJoints(arch,t,flip){
+  arch=FIGALIAS[arch]||arch;if(!FIG[arch])arch="walk";const F=FIG[arch];let A=F.S,B=F.W;if(flip){const x=A;A=B;B=x}
+  const p=lerpPose(A,B,t),k=fk(p,F.front);
+  const up=F.front?[0,-1]:[Math.sin(R(p.T)),-Math.cos(R(p.T))];let fw=F.front?[1,0]:[Math.cos(R(p.T)),Math.sin(R(p.T))];if(F.sup&&!F.front)fw=v2.mul(fw,-1);
+  const J={F,front:!!F.front,hip:[0,0],up,fw,legs:k.legs.map(L=>L.map(q=>q.slice())),arms:k.arms.map(a=>a.map(q=>q.slice()))};
+  if(!F.front)J.legs.forEach(L=>{const sd=v2.norm(v2.sub(L[2],L[1]));const fwd=F.sup?v2.mul(v2.perp(sd),1):v2.mul(v2.perp(sd),-1);L[3]=v2.add(L[2],v2.mul(fwd,SEG.ft))});
+  if(F.roll){const r=R(F.roll);const f=q=>{const o=v2.rot(q,r);q[0]=o[0];q[1]=o[1]};J.legs.forEach(L=>L.forEach(f));J.arms.forEach(a=>a.forEach(f));J.up=v2.rot(J.up,r);J.fw=v2.rot(J.fw,r)}
+  /* suelo y lastre */
+  const pts=[];const add=(q,r)=>pts.push([q,r]);add(J.hip,7);add(v2.add(J.hip,v2.mul(J.up,22)),9);add(v2.add(J.hip,v2.mul(J.up,40)),7.5);J.legs.forEach(L=>{add(L[1],4.5);add(L[2],3);add(L[3],3)});J.arms.forEach(a=>{add(a[1],3.4);add(a[2],3)});
+  if(F.imp==="wheel")J.arms.forEach(a=>add(a[2],6.5));
+  let dy;if(F.anchor==="hand")dy=-28-J.arms[0][2][1];else{let m=-1e9;for(const[q,r]of pts)m=Math.max(m,q[1]+r*.82);dy=-m-(F.air?F.air*Math.sin(Math.PI*Math.min(1,flip?1-t:t)):0)}
+  J.pts=pts.map(([q,r])=>[[q[0],q[1]+dy],r]);const sh=q=>{q[1]+=dy};sh(J.hip);J.legs.forEach(L=>L.forEach(sh));J.arms.forEach(a=>a.forEach(sh));
+  return J;
+}
+const f1=n=>Math.round(n*10)/10;
+function ilLimb(a,b,r1,rm,r2,fill,oc){oc=oc||IL.line;const d=v2.norm(v2.sub(b,a)),L=v2.len(v2.sub(b,a)),m=v2.add(a,v2.mul(d,L*.4));const ln=(p,q,w,c)=>`<line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="${c}" stroke-width="${f1(w)}" stroke-linecap="round"/>`;
+  const w1=2*Math.max(r1,rm),w2=r2+rm;return ln(a,m,w1+2.4,oc)+ln(m,b,w2+2.4,oc)+ln(a,m,w1,fill)+ln(m,b,w2,fill)}
+function ilFrame(arch,t,flip){
+  const J=ilJoints(arch,t,flip),F=J.F,out=[];const S=(c,s)=>out.push(s);
+  const lst=`stroke="${IL.line}" stroke-width="1.1" stroke-linejoin="round"`;
+  const T=(f,u)=>v2.add(v2.add(J.hip,v2.mul(J.fw,f)),v2.mul(J.up,u));const pt=q=>f1(q[0])+","+f1(q[1]);
+  const curve=arr=>{let d="M"+pt(arr[0]);for(let i=1;i<arr.length;i++){const p0=arr[i-1],p1=arr[i],mm=[(p0[0]+p1[0])/2,(p0[1]+p1[1])/2];d+=" Q"+pt(p0)+" "+pt(mm)}return d+" L"+pt(arr[arr.length-1])+"Z"};
+  const det=(p,q,c)=>`<path d="M${pt(p)} Q${pt(c)} ${pt(q)}" stroke="${IL.det}" stroke-width=".8" fill="none" stroke-linecap="round" opacity=".85"/>`;
+  const leg=(L,far)=>{const sk=far?IL.skinD:IL.skin,oc=far?IL.lineD:IL.line;let s=`<g ${lst}>`;s+=ilLimb(L[1],L[2],4.2,4.6,2.6,sk,oc);s+=ilLimb(L[0],L[1],6.4,6.4,4.2,sk,oc);
+    {const d=v2.norm(v2.sub(L[1],L[0])),n=v2.perp(d),a=v2.add(L[0],v2.mul(d,10)),b=v2.add(L[0],v2.mul(d,22));s+=det(v2.add(a,v2.mul(n,2.5)),v2.add(b,v2.mul(n,1)),v2.add(v2.add(a,v2.mul(d,6)),v2.mul(n,3.6)));
+     const d2=v2.norm(v2.sub(L[2],L[1])),n2=v2.perp(d2),c1=v2.add(L[1],v2.mul(d2,3)),c2=v2.add(L[1],v2.mul(d2,12));s+=det(v2.add(c1,v2.mul(n2,-2.6)),v2.add(c2,v2.mul(n2,-1.6)),v2.add(v2.add(c1,v2.mul(d2,4)),v2.mul(n2,-4.2)))}
+    s+=ilLimb(L[0],v2.add(L[0],v2.mul(v2.norm(v2.sub(L[1],L[0])),SEG.th*.44)),6.9,6.9,6.6,IL.shorts,oc);{const d=v2.norm(v2.sub(L[1],L[0])),n=v2.perp(d),e=v2.add(L[0],v2.mul(d,SEG.th*.44));s+=det(v2.add(e,v2.mul(n,-5)),v2.add(e,v2.mul(n,5)),v2.add(e,v2.mul(d,-.6)))}
+    const a=L[2],toe=L[3],d=v2.norm(v2.sub(toe,a)),n0=v2.perp(d),n=J.front?[0,1]:(n0[1]>0?n0:v2.mul(n0,-1));
+    const heel=v2.add(a,v2.mul(d,-2.6)),tip=v2.add(a,v2.mul(d,SEG.ft+1.5));
+    s+=`<path d="M${pt(v2.add(heel,v2.mul(n,-2.4)))} L${pt(v2.add(tip,v2.mul(n,-1.2)))} Q${pt(v2.add(tip,v2.mul(n,1.8)))} ${pt(v2.add(tip,v2.mul(n,2.6)))} L${pt(v2.add(heel,v2.mul(n,2.8)))} Z" fill="${IL.shoe}"/>`;
+    s+=`<path d="M${pt(v2.add(heel,v2.mul(n,2.8)))} L${pt(v2.add(tip,v2.mul(n,2.6)))}" stroke="${IL.sole}" stroke-width="1.6" fill="none"/>`;
+    return s+"</g>"};
+  const arm=(A,far)=>{const sk=far?IL.skinD:IL.skin,oc=far?IL.lineD:IL.line,d=v2.norm(v2.sub(A[1],A[0])),n=v2.perp(d);
+    const dl=det(v2.add(A[0],v2.add(v2.mul(d,2),v2.mul(n,4))),v2.add(A[0],v2.add(v2.mul(d,7),v2.mul(n,-4.5))),v2.add(A[0],v2.add(v2.mul(d,8.5),v2.mul(n,2))));
+    const bi=det(v2.add(A[0],v2.add(v2.mul(d,9),v2.mul(n,2.6))),v2.add(A[0],v2.add(v2.mul(d,15),v2.mul(n,1.6))),v2.add(A[0],v2.add(v2.mul(d,12),v2.mul(n,4.4))));
+    return`<g ${lst}>${ilLimb(A[1],A[2],3.4,3.6,2.4,sk,oc)}${ilLimb(A[0],A[1],4.6,4.9,3.4,sk,oc)}${far?"":dl+bi}</g>`};
+  /* material detrás / delante */
+  const h0=J.arms[0][2],h1=J.arms[1][2],imp=F.imp;let back="",front="";
+  const plate=q=>`<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="9.6" fill="${IL.plate}" stroke="${IL.rim}" stroke-width="1.6"/><circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="2" fill="${IL.steel}"/>`;
+  const dbell=(q,big)=>{const w=big?13:10,h=big?7:5.6;return`<rect x="${f1(q[0]-w/2)}" y="${f1(q[1]-h/2)}" width="${w}" height="${h}" rx="1.6" fill="${IL.db}" stroke="${IL.line}" stroke-width=".8"/>`};
+  const band=(q,an)=>`<path d="M${pt(q)} L${pt(an)}" stroke="${IL.band}" stroke-width="1.8" stroke-linecap="round" fill="none"/>`;
+  if(imp==="bar"){if(J.front){const m=[(h0[0]+h1[0])/2,(h0[1]+h1[1])/2];front+=`<rect x="${f1(m[0]-34)}" y="${f1(m[1]-1)}" width="68" height="2" fill="${IL.steel}"/><rect x="${f1(m[0]-31)}" y="${f1(m[1]-9)}" width="4" height="18" rx="1" fill="${IL.plate}"/><rect x="${f1(m[0]+27)}" y="${f1(m[1]-9)}" width="4" height="18" rx="1" fill="${IL.plate}"/>`}else back+=plate(v2.add(h0,v2.mul(v2.norm(v2.sub(h0,J.arms[0][1])),1.5)))}
+  else if(imp==="db"){back+=dbell(h1);front+=dbell(h0)}
+  else if(imp==="db1"){front+=dbell([(h0[0]+h1[0])/2,(h0[1]+h1[1])/2-2],1)}
+  else if(imp==="dbone"){front+=dbell([h0[0],h0[1]+2])}
+  else if(imp==="wheel"){const m=[(h0[0]+h1[0])/2,(h0[1]+h1[1])/2+3];front+=`<circle cx="${f1(m[0])}" cy="${f1(m[1])}" r="6" fill="${IL.plate}" stroke="${IL.rim}" stroke-width="1.4"/><circle cx="${f1(m[0])}" cy="${f1(m[1])}" r="1.6" fill="${IL.steel}"/>`}
+  else if(imp==="bandUp"){const an=J.front?[0,-118]:[J.hip[0]+12,-118];back+=band(h0,an)+(J.front?band(h1,an):"")+`<rect x="${f1(an[0]-3)}" y="${f1(an[1]-3)}" width="6" height="4" fill="${IL.db}"/>`}
+  else if(imp==="bandSide"){const an=[h0[0]-38,h0[1]];back+=band(h0,an)+`<rect x="${f1(an[0]-3)}" y="${f1(an[1]-3)}" width="4" height="6" fill="${IL.db}"/>`}
+  else if(imp==="bandFront"){const an=[J.hip[0]+44,h0[1]-4];front+=band(h0,an)+`<rect x="${f1(an[0])}" y="${f1(an[1]-3)}" width="4" height="6" fill="${IL.db}"/>`}
+  else if(imp==="rings"){[h0,h1].forEach((q,i)=>{const s=`<path d="M${pt(q)} L${f1(q[0])},-120" stroke="${IL.line}" stroke-width="1.2"/><circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="3.4" fill="none" stroke="${IL.db}" stroke-width="1.6"/>`;if(i)back+=s;else front+=s})}
+  /* cuerpo */
+  let torso;
+  if(J.front){const W=(u,w)=>[[w,u],[-w,u]];const pts=[[-9.6,-3],[-8.2,6],[-8.6,13],[-11.5,22],[-12.5,27.5],[-4,30],[4,30],[12.5,27.5],[11.5,22],[8.6,13],[8.2,6],[9.6,-3]].map(([x,u])=>v2.add(v2.add(J.hip,[x,0]),v2.mul(J.up,u)));
+    torso=`<path d="${curve(pts)}" fill="${IL.skin}" ${lst}/>`+`<path d="M${pt(T(0,7))} L${pt(T(0,19))} M${pt(v2.add(T(0,10),[-4,0]))} L${pt(v2.add(T(0,10),[4,0]))} M${pt(v2.add(T(0,14),[-4.5,0]))} L${pt(v2.add(T(0,14),[4.5,0]))} M${pt(v2.add(T(0,23),[-8,0]))} Q${pt(T(0,21))} ${pt(v2.add(T(0,23),[8,0]))}" stroke="${IL.det}" stroke-width=".85" fill="none" opacity=".85"/>`;
+    torso+=`<path d="M${pt(v2.add(J.hip,[-9.8,-6]))} L${pt(v2.add(J.hip,[9.8,-6]))} L${pt(v2.add(J.hip,[9.6,3.5]))} L${pt(v2.add(J.hip,[-9.6,3.5]))}Z" fill="${IL.shorts}" ${lst}/>`;
+    [-1,1].forEach(s=>{const q=v2.add(T(0,26.5),[s*11.4,0]);torso+=`<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="5.2" fill="${IL.skin}" ${lst}/>`})}
+  else{const back_=[[-4.2,-5.5],[-6.4,0],[-5.8,6],[-4.6,11],[-6.6,18],[-7.2,23],[-5.6,27.5],[-2.8,30.2]],front_=[[2.6,31.2],[5.2,28],[7.6,24.5],[7.4,20.5],[5.4,17.8],[5.6,12],[5.8,6],[5.2,0],[3,-4]];
+    const pts=back_.concat(front_).map(([f,u])=>T(f,u));torso=`<path d="${curve(pts)}" fill="${IL.skin}" ${lst}/>`;
+    torso+=`<path d="M${pt(T(5.2,15))} L${pt(T(4.4,15))} M${pt(T(5.5,11))} L${pt(T(4.6,11))} M${pt(T(5.6,7))} L${pt(T(4.7,7))} M${pt(T(7,20.5))} Q${pt(T(4.6,19.2))} ${pt(T(2.6,20.5))}" stroke="${IL.det}" stroke-width=".85" fill="none" opacity=".85"/>`;
+    torso+=`<path d="${curve([T(-4.6,-7),T(-7,0),T(-6.4,4.5),T(5.6,4.5),T(5.8,-2),T(3.4,-7)])}" fill="${IL.shorts}" ${lst}/>`}
+  /* cabeza */
+  const nk1=T(0,28),nk2=T(J.front?0:.8,34.5),hc=T(J.front?0:1.2,39.5);
+  const neck=`<g ${lst}>${ilLimb(nk1,nk2,3.6,3.6,3.3,IL.skin)}</g>`;
+  let head=`<circle cx="${f1(hc[0])}" cy="${f1(hc[1])}" r="6.6" fill="${IL.skin}" ${lst}/>`;
+  const hairA=v2.add(hc,v2.mul(J.up,2.2)),fwn=J.front?[0,0]:J.fw;
+  {const side=v2.perp(J.up);let hs="";for(let i=-3;i<=3;i++){const ang=i*.42,dir=v2.add(v2.mul(J.up,Math.cos(ang)),v2.mul(side,Math.sin(ang))),b0=v2.add(hc,v2.mul(dir,6.4)),tip=v2.add(hc,v2.add(v2.mul(dir,9.4),v2.mul(side,(i%2?1:-1)*.9)));hs+=`M${pt(b0)} L${pt(tip)} `}head+=`<path d="${hs}" stroke="${IL.hair}" stroke-width="1" stroke-linecap="round" fill="none"/>`}
+  
+  if(!J.front){const q=v2.add(hc,v2.mul(fwn,-1.2));head+=`<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="1.5" fill="none" stroke="#fff" stroke-width=".7"/>`}
+  /* orden de dibujo */
+  if(J.front){S(0,back);S(0,leg(J.legs[0],0));S(0,leg(J.legs[1],0));S(0,neck);S(0,torso);S(0,head);S(0,arm(J.arms[0],0));S(0,arm(J.arms[1],0));S(0,front)}
+  else{S(0,back);S(0,arm(J.arms[1],1));S(0,leg(J.legs[1],1));S(0,neck);S(0,torso);S(0,head);S(0,leg(J.legs[0],0));S(0,arm(J.arms[0],0));S(0,front)}
+  return{svg:out.join(""),J};
+}
+function ilBounds(arch,flip){const k="b|"+arch+"|"+(flip?1:0);if(ilCache[k])return ilCache[k];let mn=[1e9,1e9],mx=[-1e9,-1e9];
+  for(const t of[0,.5,1]){const J=ilJoints(arch,t,flip);for(const[q,r]of J.pts){mn=[Math.min(mn[0],q[0]-r),Math.min(mn[1],q[1]-r)];mx=[Math.max(mx[0],q[0]+r),Math.max(mx[1],q[1]+r)]}
+    const F=J.F;if(F.imp==="bar"&&!J.front)J.arms.forEach(a=>{mn=[Math.min(mn[0],a[2][0]-11),Math.min(mn[1],a[2][1]-11)];mx=[Math.max(mx[0],a[2][0]+11),Math.max(mx[1],a[2][1]+11)]});
+    if(F.imp==="bar"&&J.front){mn[0]=Math.min(mn[0],-36);mx[0]=Math.max(mx[0],36)}}
+  mx[1]=Math.max(mx[1],2);return ilCache[k]={mn,mx}}
+function ilSVG(arch,t,flip){const key=arch+"|"+t+"|"+(flip?1:0);if(ilCache[key])return ilCache[key];
+  const b=ilBounds(arch,flip),{svg}=ilFrame(arch,t,flip),w=b.mx[0]-b.mn[0],h=b.mx[1]-b.mn[1],s=Math.max(w,h)+12,cx=(b.mn[0]+b.mx[0])/2,cy=(b.mn[1]+b.mx[1])/2;
+  const vb=[cx-s/2,cy-s/2,s,s].map(f1).join(" ");
+  const out=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}"><defs><filter id="gl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="1.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="${f1(cx-s/2)}" y="${f1(cy-s/2)}" width="${f1(s)}" height="${f1(s)}" fill="#000"/><line x1="${f1(cx-s*.42)}" y1="1.4" x2="${f1(cx+s*.42)}" y2="1.4" stroke="#fff" stroke-width=".6" opacity=".25"/><g filter="url(#gl)">${svg}</g></svg>`;
+  return ilCache[key]=out}
+const ILPNG={},ILQ={};
+function ilRaster(rk,u){if(ILQ[rk])return;ILQ[rk]=1;const im=new Image();im.onload=()=>{try{const c=document.createElement("canvas");c.width=c.height=360;c.getContext("2d").drawImage(im,0,0,360,360);ILPNG[rk]=c.toDataURL("image/png");document.querySelectorAll('img[data-ilk="'+rk+'"]').forEach(i=>{i.src=ILPNG[rk]})}catch(e){}};im.src=u}
+const ilURL=(arch,t,flip)=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(ilSVG(arch,t,flip));
+
+
+/* ============ Músculos que trabaja cada ejercicio ============ */
+const MREG={delt:"Deltoides",pec:"Pectoral",bic:"Bíceps",fore:"Antebrazo",abs:"Recto abdominal",obl:"Oblicuos",quad:"Cuádriceps",add:"Aductores",calf:"Gemelos",trap:"Trapecio",lat:"Dorsal ancho",rdelt:"Deltoide posterior",tri:"Tríceps",low:"Lumbar",glu:"Glúteos",ham:"Isquiotibiales"};
+const MUSX={cmj:[["quad","glu"],["calf","ham"]],bulg:[["quad","glu"],["add","ham"]],nordico:[["ham"],["glu","calf"]],rdl:[["ham","glu"],["low","fore"]],gemelo:[["calf"],[]],frontal:[["quad"],["glu","abs","low"]],rueda:[["abs"],["lat","obl","delt"]],pallof:[["obl","abs"],["glu"]],militar:[["delt"],["tri","trap","abs"]],face:[["rdelt"],["trap","delt"]],flexdef:[["pec"],["tri","delt","abs"]],invertido:[["lat"],["rdelt","bic","trap"]],lean:[["delt"],["trap"]],extri:[["tri"],[]],dragon:[["abs"],["obl"]],hollow:[["abs"],["obl"]],latband:[["delt"],["trap"]],curlband:[["bic"],["fore"]],triband:[["tri"],[]],copen:[["add"],["obl"]],deadbug:[["abs"],["obl"]],pendlay:[["lat","trap"],["rdelt","bic","low"]],flexplio:[["pec"],["tri","delt"]],jalon1:[["lat"],["bic","rdelt"]],pullover:[["lat"],["pec","tri"]],curlb:[["bic"],["fore"]],bayes:[["bic"],["fore"]],pajaro:[["rdelt"],["trap"]],lsit:[["abs"],["quad","tri"]],broad:[["glu","quad"],["ham","calf"]],skater:[["glu","quad"],["add","calf"]],cosaca:[["quad","add"],["glu"]],hipunil:[["glu"],["ham"]],maleta:[["obl","fore"],["trap","abs"]],tgu:[["delt","abs"],["glu","obl"]],pallofp:[["obl","abs"],["glu"]],floor:[["pec","tri"],["delt"]],invsup:[["lat"],["bic","rdelt"]],fondos:[["tri"],["pec","delt"]],latmyo:[["delt"],["trap"]],martillo:[["bic","fore"],[]],dominada:[["lat"],["bic","rdelt","trap"]],chinup:[["lat","bic"],["rdelt"]],colgado:[["abs"],["obl","fore"]],fondosan:[["pec","tri"],["delt"]],remoan:[["lat","rdelt"],["bic"]],crunchb:[["abs"],["obl"]],revcrunch:[["abs"],["obl"]],pullapart:[["rdelt"],["trap"]],triover:[["tri"],[]],domsub:[["lat"],["bic"]],pushpress:[["delt"],["tri","quad","glu"]],emom:[["quad","delt"],["glu","pec","abs"]]};
+const GRP2REG={hombro:[["delt"],["trap"]],pecho:[["pec"],["tri","delt"]],espalda:[["lat"],["bic","rdelt"]],biceps:[["bic"],["fore"]],triceps:[["tri"],[]],cuadriceps:[["quad"],["glu"]],isquios:[["ham"],["glu"]],gluteo:[["glu"],["ham"]],gemelo:[["calf"],[]],core:[["abs"],["obl"]],lumbar:[["low"],["glu"]],trapecio:[["trap"],[]],antebrazo:[["fore"],[]],aductor:[["add"],[]],full:[["quad","delt"],["glu","abs"]]};
+function musOf(id){if(MUSX[id])return MUSX[id];ensureEx(id);const e=EX[id];return e&&GRP2REG[e.m]||null}
+function bodyMap(mp,h){if(!mp)return"";const[P,S]=mp,st=r=>P.includes(r)?`fill="#3D7BFF" fill-opacity=".95" stroke="#9DBBFF"`:S.includes(r)?`fill="#3D7BFF" fill-opacity=".35" stroke="#5B8CFF"`:`fill="none" stroke="#fff" stroke-opacity=".35"`;
+  const E=(r,x,y,rx,ry,dx)=>`<ellipse ${st(r)} stroke-width=".6" cx="${x+dx}" cy="${y}" rx="${rx}" ry="${ry}"/><ellipse ${st(r)} stroke-width=".6" cx="${60-x+dx}" cy="${y}" rx="${rx}" ry="${ry}"/>`;
+  const sil=dx=>`<g fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".7"><circle cx="${30+dx}" cy="9" r="6"/><path d="M${26+dx} 15v4M${34+dx} 15v4"/><path d="M${12+dx} 25 Q${30+dx} 18 ${48+dx} 25 L${45+dx} 60 Q${30+dx} 66 ${15+dx} 60Z"/><path d="M${12+dx} 25 L${7+dx} 66M${48+dx} 25 L${53+dx} 66M${19+dx} 62 L${21+dx} 114M${41+dx} 62 L${39+dx} 114"/></g>`;
+  const front=sil(0)+E("delt",17,26,5,5,0)+E("pec",24,31,6,4.5,0)+E("bic",12.5,39,3.2,7,0)+E("fore",9.5,55,2.8,8,0)+`<rect ${st("abs")} stroke-width=".6" x="25.5" y="37" width="9" height="22" rx="3"/>`+E("obl",21,47,2.6,8,0)+E("quad",24,77,5,13,0)+E("add",28.4,74,1.5,8,0)+E("calf",24,101,3.5,9,0);
+  const dx=64,back=sil(dx)+`<path ${st("trap")} stroke-width=".6" d="M${30+dx} 17 L${41+dx} 25 L${30+dx} 40 L${19+dx} 25Z"/>`+E("rdelt",17,27,4.5,4.5,dx)+E("lat",22.5,41,5.5,10,dx)+E("tri",12.5,39,3.2,7,dx)+`<rect ${st("low")} stroke-width=".6" x="${26+dx}" y="51" width="8" height="8" rx="2"/>`+E("glu",25,66,5.5,5.5,dx)+E("ham",24,82,4.5,11,dx)+E("calf",24,102,4,8.5,dx);
+  return`<svg class="bmap" viewBox="-2 0 128 118" style="height:${h||120}px" aria-hidden="true"><text x="30" y="117" font-size="6" fill="#9AA4BC" text-anchor="middle">DELANTE</text><text x="94" y="117" font-size="6" fill="#9AA4BC" text-anchor="middle">DETRÁS</text>${front}${back}</svg>`}
+function musTxt(mp){if(!mp)return"";return`<div class="mus"><span class="p">${mp[0].map(r=>MREG[r]).join(" · ")}</span>${mp[1].length?`<span class="s">${mp[1].map(r=>MREG[r]).join(" · ")}</span>`:""}</div>`}
+function musCard(id){const mp=musOf(id);if(!mp)return"";return`<div class="muscard">${bodyMap(mp,130)}<div><div class="eyebrow">Qué trabajas</div>${musTxt(mp)}</div></div>`}
+
 /* fotos propias en IndexedDB */
 const ODB={open(){return new Promise((ok,ko)=>{try{const r=indexedDB.open("entreno-fotos",1);r.onupgradeneeded=()=>r.result.createObjectStore("f");r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)}catch(e){ko(e)}})},
   async all(){const db=await this.open();return new Promise(ok=>{const out={},tx=db.transaction("f").objectStore("f").openCursor();tx.onsuccess=e=>{const c=e.target.result;if(c){out[c.key]=c.value;c.continue()}else ok(out)};tx.onerror=()=>ok(out)})},
@@ -1321,7 +1436,7 @@ function itemRow(i,ix){
   if(i.run)return`<button class="row" data-run="${ix}"><span class="thumb">${figThumb("run",.5)}</span><div style="min-width:0"><div class="row-n">${RUN_NAME[i.run]||"Carrera"}</div><div class="row-c">${esc(runLabel(i))}</div></div><div class="row-t"><span class="num">${Math.round(i.ph.reduce((a,x)=>a+x.s,0)/60)}</span><small>${rated(i.run)?"min · nv "+i.lv:"min"}</small></div></button>`;
   const flags=[];if(i.cal)flags.push(`<span class="tq">calibración</span>`);if(i.tech)flags.push(`<span class="tq">técnica</span>`);if(i.myo)flags.push(`<span class="tq">myo-reps</span>`);
   const last=i.p.last?`la vez anterior: ${i.p.last.t}`:"";
-  return`<button class="row" data-ex="${i.id}" data-orig="${i.orig||i.id}"><span class="thumb">${thumbFig(i.id)}<b>${i.g+i.gi}</b></span><div style="min-width:0"><div class="row-n">${esc(exName(i.e,i.p.vi))}</div><div class="row-c">${[last].concat(flags).filter(Boolean).join(" · ")||esc(loadTxt(i.id))}</div></div><div class="row-t"><span class="num">${i.myo?"1+4":i.sets+"×"+targetOf(i)}</span><small>${unitShort(i.e)}</small></div></button>`;
+  return`<button class="row" data-ex="${i.id}" data-orig="${i.orig||i.id}"><span class="thumb">${thumbFig(i.id)}<b>${i.g+i.gi}</b></span><div style="min-width:0"><div class="row-n">${esc(exName(i.e,i.p.vi))}</div><div class="row-c">${(()=>{const mp=musOf(i.id);return mp?`<span class="mtag">${mp[0].map(r=>MREG[r]).join(" · ")}</span> `:""})()}${[last].concat(flags).filter(Boolean).join(" · ")||esc(loadTxt(i.id))}</div></div><div class="row-t"><span class="num">${i.myo?"1+4":i.sets+"×"+targetOf(i)}</span><small>${unitShort(i.e)}</small></div></button>`;
 }
 function dial(score,color,size){const r=40,c=2*Math.PI*r;return`<svg viewBox="0 0 92 92"><circle cx="46" cy="46" r="${r}" fill="none" stroke="var(--s3)" stroke-width="8"/><circle cx="46" cy="46" r="${r}" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(c*score/100).toFixed(1)} ${c.toFixed(1)}"/></svg>`}
 function readyCard(d,ses){
@@ -1425,7 +1540,7 @@ function vPlan(){
      <p class="sub" id="msg" style="font-size:13px" aria-live="polite"></p>
      <div class="btns"><button class="btn" data-act="reset1" style="color:var(--bad)">Empezar de cero</button></div>
      <div id="reset2" hidden class="btns"><span class="sub" style="font-size:13px;align-self:center">Se borrará todo tu historial.</span><button class="btn" data-act="reset" style="color:var(--bad)">Borrar todo</button><button class="btn" data-act="reset0">Cancelar</button></div></div>
-  <p class="sub" style="font-size:11px;color:var(--fg3)">Ilustraciones de ejercicios: Everkinetic, licencia CC BY-SA 3.0 (vía Wikimedia Commons y opentraining-exercises). Tus fotos se guardan solo en este dispositivo.</p>
+  <p class="sub" style="font-size:11px;color:var(--fg3)">Ilustraciones de ejercicios generadas por la propia app. Tus fotos se guardan solo en este dispositivo.</p>
   </section>`;
 }
 function pathCard(){
@@ -1468,7 +1583,7 @@ function sheetEx(id,orig){ensureEx(id);orig=orig||id;
   const ladder=e.v.length>1?`<dt>Variantes</dt><dd>${e.v.map((v,j)=>`<span style="${j===p.vi?"color:var(--accent)":j<p.vi?"color:var(--muted);text-decoration:line-through":"color:var(--muted);font-weight:500"}">${esc(v||"básica")}</span>`).join(" → ")}</dd>`:"";
   $("#layer").innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t">
    <div class="eyebrow">Rango ${e.r[0]}${e.r[0]!==e.r[1]?"–"+e.r[1]:""} ${unitShort(e)}${e.rest?" · descanso "+e.rest+" s":""}</div>
-   ${(()=>{const k=imgFolder(id);return k?imgPair(k,"expair big")+`<div class="credit">${imgCredit(k)}</div>`:`<div class="noimg">Sin ilustración libre exacta. Abajo tienes el vídeo y las imágenes de referencia, o hazte tu foto de inicio y final.</div>`})()}${photoTools(id)}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
+   ${(()=>{const k=imgFolder(id);return k?imgPair(k,"expair big")+`<div class="credit">${imgCredit(k)}</div>`:`<div class="noimg">Sin ilustración libre exacta. Abajo tienes el vídeo y las imágenes de referencia, o hazte tu foto de inicio y final.</div>`})()}${musCard(id)}${photoTools(id)}<h2 id="sh-t" style="font-size:30px">${esc(exName(e,p.vi))}</h2><p style="margin:0">${esc(e.c)}</p>
    <dl class="kv"><dt>Objetivo</dt><dd>${p.t} ${unitTxt(e)}${rir?" · RIR "+rir:" · calidad máxima, sin fatiga"}</dd>${e.tp?`<dt>Tempo ${e.tp}</dt><dd>${tempoTxt(e.tp)}</dd>`:""}${tech?`<dt>Técnica</dt><dd>${esc(tech)}</dd>`:""}${p.last?`<dt>La última vez</dt><dd>${p.last.t} · ${RATE_TXT[p.last.r]}</dd>`:""}${ladder}</dl>
    <div class="field"><label for="load" class="eyebrow">Peso o banda que usas</label><input type="text" id="load" value="${esc((S.prog[id]&&S.prog[id].load)||e.load)}">${S.prog[id]&&S.prog[id].kg?`<span class="sub" style="font-size:13px">Más ${kgTxt(S.prog[id].kg)} kg ganados con la progresión.</span>`:""}</div>
    <div class="refs"><a class="secondary" href="${vidUrl(e,id)}" target="_blank" rel="noopener">▶ Vídeo de la técnica</a><a class="secondary" href="${picUrl(exQuery(id)+" exercise")}" target="_blank" rel="noopener">Imágenes de referencia</a></div>
@@ -1779,7 +1894,7 @@ function showPR(i){
 function goTick(s,el){
   const rarc=document.getElementById("rarc");
   if(rarc){const fill=setFill(s,el);rarc.style.strokeDashoffset=(RC*(1-fill)).toFixed(1)}
-  const gi=document.getElementById("goimg");if(gi){const b=gi.querySelector("img.b");if(b){const t=TEMPOPH.has(s.ph)||s.ph==="work"?figPos(s,el):(.5-.5*Math.cos(2*Math.PI*(Date.now()/1000%2.4)/2.4));b.style.opacity=t>.5?1:0}}
+  const gi=document.getElementById("goimg");if(gi){const b=gi.querySelector("img.b");if(b){const t=TEMPOPH.has(s.ph)||s.ph==="work"?figPos(s,el):(.5-.5*Math.cos(2*Math.PI*(Date.now()/1000%2.4)/2.4));const o=t>.5?"1":"0";if(b.style.opacity!==o)b.style.opacity=o}}
   const fg=document.getElementById("fig");
   if(fg&&G.fig){const p=figPos(s,el);if(Math.abs(p-(G.lastPos??-1))>.002){G.lastPos=p;if(F3.ok&&F3.live&&F3.live.domElement.parentNode===fg)f3Live(G.fig.a,p,G.fig.f);else fg.innerHTML=figSVG(G.fig.a,p,G.fig.f)}}
 }
@@ -1816,7 +1931,7 @@ function drawGo(){
     <div class="go-top"><div class="eyebrow">${esc(G.ses.day.n)} · ${mmss(Math.max(0,Math.round(G.T.total-s.at-el)))} restantes</div><button class="link" data-g="exit">Salir</button></div>
     <div class="prog"><i id="gp" style="width:${((s.at+el)/G.T.total*100).toFixed(2)}%"></i></div>
     <div class="go-body"><div class="go-main">${head}
-      <div class="stage${goImg?" withimg":""}">${goImg?`<div class="goimg" id="goimg">${imgPair(goImg,"expair live")}</div>`:""}
+      <div class="stage${goImg?" withimg":""}">${goImg?`<div class="goimg" id="goimg">${imgPair(goImg,"expair live")}${fx&&musOf(fx.id)?bodyMap(musOf(fx.id),78)+musTxt(musOf(fx.id)):""}</div>`:""}
         <div class="ringwrap${center?" center":""}"><svg class="gring" viewBox="0 0 300 300"><circle class="rtrack" cx="150" cy="150" r="130"/><circle id="rarc" class="rarc" cx="150" cy="150" r="130" stroke-dasharray="${RC.toFixed(1)}" style="stroke-dashoffset:${(RC*(1-fill)).toFixed(1)}" transform="rotate(-90 150 150)"/>${ticks}</svg>
           ${center?`<div class="rin"><div class="fig in" id="fig">${figLive(G.fig.a,figPos(s,el),G.fig.f)}</div></div>`:`<div class="rin"><div class="big num${!tempo&&left>=60?" long":""}">${big}</div><div class="ph">${phw}</div>${sm?`<div class="sm">${sm}</div>`:""}</div>`}</div></div>
       ${center?`<div class="under"><span class="uph">${phw}</span><span class="ureps num">${tempo?`<b>${s.rep}</b>/${s.reps}`:`<b id="cd">${fmtLeft(left)}</b>s`}</span></div>${sm?`<div class="sm" style="color:var(--fg2)">${sm}</div>`:""}`:""}
