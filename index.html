@@ -1455,7 +1455,7 @@ function kpiStrip(){const t=todayISO(),cs=consistency();let ld=0,ld0=0;for(let i
 function csvExport(){const rows=[["fecha","estado","minutos","dureza","carga","ejercicios"]];Object.keys(S.logs).sort().forEach(d=>{const l=S.logs[d];rows.push([d,l.st,l.dur||"",l.srpe||"",l.load?Math.round(l.load):"",(l.ex||[]).map(x=>{ensureEx(x.id);return(EX[x.id]?EX[x.id].n:x.id)+" "+(x.s||"")+"s"}).join(" | ")])});
   const csv=rows.map(r=>r.map(v=>{v=String(v);return/[",;\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(",")).join("\n");
   try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"}));a.download="entreno-historial.csv";document.body.appendChild(a);a.click();a.remove()}catch(e){}
-  try{navigator.clipboard&&navigator.clipboard.writeText(csv)}catch(e){}toast("Historial exportado (CSV). También se ha copiado al portapapeles.")}
+  try{navigator.clipboard&&navigator.clipboard.writeText(csv)}catch(e){}toast("Historial descargado en CSV y copiado al portapapeles.")}
 
 /* ============ Análisis (inspirado en Focus OS) ============ */
 const MTARGET={delt:[14,22],lat:[12,20],rdelt:[10,16],abs:[10,16],bic:[10,16],tri:[10,16],pec:[10,14],quad:[8,12],ham:[6,10],glu:[6,10],calf:[6,10]};
