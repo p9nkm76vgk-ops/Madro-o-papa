@@ -446,7 +446,7 @@ const EX={
  bulgara:{ld:"w",n:"Sentadilla búlgara",k:"c",s:3,r:[8,15],u:"/pierna",rest:60,load:"2 × 7,5 kg",tp:"3-1-1-0",c:"Empeine de atrás sobre el banco, paso largo. Baja recto hasta que la rodilla de atrás casi toque el suelo y sube con el talón de delante.",v:["sin peso","con mancuernas","con pausa 2 s abajo","con barra a la espalda"]},
  remopecho:{ld:"w",n:"Remo con pecho apoyado",k:"c",s:3,r:[8,15],rest:90,load:"2 × 7,5 kg",tp:"2-0-1-1",c:"Tumbado boca abajo en el banco inclinado. Tira de las mancuernas llevando los codos atrás y aprieta 1 s arriba. Sin impulso posible.",v:["","pausa 2 s arriba","con banda añadida"]},
  curlinc:{ld:"w",n:"Curl inclinado",k:"i",s:3,r:[8,15],rest:60,load:"2 × 7,5 kg",tp:"3-0-1-0",c:"Sentado en el banco inclinado, brazos colgando por detrás del cuerpo. Curl sin adelantar el codo: bíceps en estiramiento.",v:["","alterno","pausa abajo"]},
- fondosb:{ld:"bw",n:"Fondos en banco",k:"c",s:3,r:[8,20],rest:60,load:"",tp:"2-0-1-0",c:"Manos en el borde del banco, piernas delante. Baja hasta 90° de codo con la espalda pegada al banco y sube.",v:["rodillas dobladas","piernas estiradas","con disco en el regazo"]},
+ fondosb:{ld:"bw",n:"Fondos en banco",k:"c",s:3,r:[8,20],rest:60,load:"",tp:"2-0-1-0",c:"Manos en el borde del banco, piernas delante. Baja hasta 90° de codo con la espalda pegada al banco y sube.",v:["rodillas dobladas","piernas estiradas","pies elevados","con disco de 5 kg en el regazo","con disco de 10 kg en el regazo"]},
  muscleup:{ld:"bw",n:"Camino al muscle-up",k:"c",s:4,r:[3,6],rest:120,load:"barra de dominadas",tp:"X-0-2-0",c:"Habilidad de calistenia. Cada nivel prepara el siguiente: tirón explosivo hasta el pecho, transición y fondo final.",v:["dominada explosiva al pecho","dominada explosiva a la cintura","negativas de muscle-up 5 s","muscle-up con banda","muscle-up estricto"]},
  frontlever:{ld:"bw",n:"Camino al front lever",k:"core",s:4,r:[8,20],u:"s",rest:90,load:"barra de dominadas",tp:"",c:"Habilidad de calistenia. Colgado con los brazos rectos y las escápulas hacia abajo, cuerpo horizontal mirando arriba. Aguanta el tiempo marcado.",v:["colgado activo escápulas abajo","tuck lever","tuck avanzado","una pierna estirada","piernas abiertas","front lever completo"]},
  pino:{ld:"bw",n:"Camino al pino (handstand)",k:"core",s:4,r:[15,45],u:"s",rest:75,load:"pared",tp:"",c:"Habilidad de calistenia. Brazos bloqueados, hombros empujando hacia las orejas, abdomen y glúteo duros. Aguanta el tiempo marcado.",v:["pike en el suelo con pies en alto","pino con el pecho hacia la pared","pino pecho a la pared con hombros arriba","toques de una mano a la pared","pino libre"]},
@@ -617,7 +617,7 @@ const PHASES={
  vuelta2:{n:"Reintroducción",rc:"2–3",ri:"2–3",desc:"Vuelven las series completas, aún sin fallo. La semana que viene empieza el primer bloque."},
  acum:{n:"Acumulación",rc:"2–3",ri:"1–2",desc:"Semana base. Las series marcadas como calibración van al fallo real para afinar tu RIR."},
  intens:{n:"Intensificación",rc:"1–2",ri:"0–1",desc:"Más cerca del límite. En aislamiento, parciales en la parte estirada al acabar la última serie."},
- pico:{n:"Pico",rc:"1",ri:"0",desc:"La semana dura del bloque. Técnicas de intensidad en aislamiento; press militar y saltos nunca al fallo."},
+ pico:{n:"Intensificación alta",rc:"1–2",ri:"0–1",desc:"La semana más exigente del bloque, sin competición que preparar: compuestos a 1–2 en reserva y aislamiento cerca del fallo. Press y saltos nunca al fallo."},
  mant:{n:"Exámenes",rc:"2–3",ri:"2–3",desc:"Semana de mantenimiento: 3 sesiones cortas de cuerpo completo y paseos. Una semana así no te quita músculo; dormir 8–10 h (recomendación para adolescentes de la AASM; con tu horario de 23:00 a 7:00 estás en el mínimo, intenta 8,5–9) es lo prioritario."},
  desc:{n:"Descarga",rc:"3–4",ri:"2–3",desc:"40 % menos series y sin fallo. Aquí es cuando el cuerpo asimila el bloque."},
 };
@@ -665,6 +665,15 @@ function save(){
 /* Semanas efectivas de plan: no cuentan las de exámenes */
 function effWeek(date){const ws=weekStartOf(date),st=weekStartOf(S.settings.start);if(ws<st)return 0;let n=Math.floor(daysBetween(st,ws)/7)+1;(S.maint||[]).forEach(m=>{if(m>=st&&m<ws)n--});return n}
 function weekNo(date){return Math.max(1,effWeek(date))}
+/* Descarga reactiva (informe A6): solo si hay ≥2 señales, o si ya van 8 semanas sin descargar */
+const DLCACHE={};
+function deloadNeeded(ws,i){if(DLCACHE[ws]!=null)return DLCACHE[ws];const t=todayISO();if(ws>t){return DLCACHE[ws]=Math.floor(i/4)%2===1}
+  let sig=0;const prev=addDays(ws,-14);
+  let stalls=0;Object.values(S.prog||{}).forEach(p=>{if((p.dz||0)>=1)stalls++});if(stalls>=3)sig++;
+  let low=0;for(let k=1;k<=7;k++){const c=S.checkin[addDays(ws,-k)];if(c&&((c.sleep||0)+(c.energy||0)-(c.sore||0)-(c.stress||0))<=-2)low++}if(low>=4)sig++;
+  try{const arr=loadSeries(addDays(ws,-1),84),A7=ewma(arr,7).pop(),A42=ewma(arr,42).pop();if(A42>0&&A7>1.3*A42)sig++}catch(e){}
+  let pain=0;for(let k=1;k<=14;k++){const l=S.logs[addDays(ws,-k)];if(l&&l.joints&&l.joints.length)pain++}if(pain>=2)sig++;
+  return DLCACHE[ws]=sig>=2||Math.floor(i/4)%2===1}
 function phaseOf(date){
   const ws=weekStartOf(date);
   if((S.maint||[]).includes(ws))return{k:"mant",w:1,...PHASES.mant};
@@ -672,7 +681,8 @@ function phaseOf(date){
   if(w<=1)return{k:"vuelta1",w:1,...PHASES.vuelta1};
   if(w===2)return{k:"vuelta2",w:2,...PHASES.vuelta2};
   if(S.forced.includes(ws))return{k:"desc",forced:true,block:0,w:4,...PHASES.desc};
-  const i=S.anchor&&ws>=S.anchor?effWeek(date)-effWeek(S.anchor):w-3,k=CYCLE[i%4];
+  const i=S.anchor&&ws>=S.anchor?effWeek(date)-effWeek(S.anchor):w-3;let k=CYCLE[i%4];
+  if(k==="desc"&&!deloadNeeded(ws,i))return{k:"acum",w:4,block:Math.floor(i/4)+1,skipDeload:true,...PHASES.acum,n:"Acumulación (descarga no necesaria)"};
   return{k,w:i%4+1,block:Math.floor(i/4)+1,...PHASES[k]};
 }
 function evaluateWeeks(){
@@ -793,6 +803,7 @@ function sessionFor(date){
   /* Estrés alto con energía normal: se mantiene la sesión y se añade calma al final */
   if(!day.calm&&ci.stress===2&&ci.energy!==-1)items.push(mk("seq:calma"));
   const ses={day,swapped,items,ph,short,tired,auto,mode,rd,prot,joints:Object.keys(jc),target:durOf(date)*60};
+  items.forEach(applyLadder);autoFill(ses,date);
   fitSession(ses);
   /* Si sobra tiempo, se rellena con trabajo útil, no con descansos más largos */
   const gapNow=()=>ses.target-buildTimeline(ses,true).total,dw=dow(date);
@@ -813,6 +824,24 @@ function sessionFor(date){
 }
 
 /* ============ Progresión por ejercicio ============ */
+/* Escalera de 9 pasos cuando la carga no puede subir (informe A3): reps → series → tempo → pausa → unilateral/palanca → myo-reps → parciales → banda */
+const LADDER=[["+1 serie","Una serie más con la misma carga."],["bajada en 3 s","Misma carga, cada bajada dura 3 segundos."],["pausa en el estiramiento","Pausa de 2 s en la parte estirada de cada repetición."],["más palanca","Versión a una mano/pierna o con más recorrido si el ejercicio lo permite."],["myo-reps","Serie de activación cerca del fallo y mini series de 3–5 con 15 s de descanso (solo aislamiento)."],["parciales al final","Tras la última serie, 4–6 repeticiones parciales en la parte estirada."],["banda añadida","Añade una banda a la carga para más tensión arriba."]];
+function applyLadder(i){const p=S.prog[i.id];if(!p||!p.lad||!i.e)return;const L=p.lad,iso=i.e.k==="i";
+  if(L>=1)i.sets=Math.min(5,(i.sets||3)+1);
+  if(L>=2){const tp=(i.e.tp||"2-0-1-0").split("-");tp[0]=String(Math.max(3,+tp[0]||0));if(L>=3)tp[1]="2";i.e=Object.assign({},i.e,{tp:tp.join("-")})}
+  if(L>=5&&iso)i.myo=true;
+  i.lad=L;i.ladTxt=LADDER.slice(0,L).map(x=>x[0]).join(" · ")}
+/* Autorrelleno de déficits (informe A9): de jueves a domingo, si un músculo prioritario va corto, +2 series de su aislamiento (máx. +4 por sesión) */
+const PRIO={delt:1,lat:.9,rdelt:.8,abs:.75,bic:.7,tri:.7,pec:.6,quad:.5,ham:.5,glu:.5,calf:.3};
+let ENG_GUARD=false;
+function weekFrac(ws,until,withPlan){const o={};for(let i=0;i<7;i++){const d=addDays(ws,i);if(d>=until&&!withPlan)break;let list=null;const l=S.logs[d];
+   if(l&&l.st==="done"&&l.ex)list=l.ex.map(x=>({id:x.id,s:+x.s||0}));else if(withPlan&&d>=until){try{ENG_GUARD=true;list=sessionFor(d).items.filter(x=>x.id).map(x=>({id:x.id,s:+x.sets||0}))}catch(e){}finally{ENG_GUARD=false}}
+   (list||[]).forEach(x=>{const mp=musOf(x.id);if(!mp)return;mp[0].forEach(r=>o[r]=(o[r]||0)+x.s);mp[1].forEach(r=>o[r]=(o[r]||0)+x.s*.5)})}return o}
+function autoFill(ses,date){if(ENG_GUARD)return;const dw=dow(date),ph=ses.ph.k;if(dw<3||ph==="desc"||ph==="mant"||ph.startsWith("vuelta")||ses.day.calm||ses.tired)return;
+  const ws=weekStartOf(date),V=weekFrac(ws,date,true);let added=0;const notes=[];
+  Object.keys(PRIO).sort((a,b)=>PRIO[b]-PRIO[a]).forEach(m=>{if(added>=4)return;const tgt=MTARGET[m];if(!tgt)return;const def=tgt[0]-(V[m]||0);if(def<=2)return;
+    const it=ses.items.find(i=>i.id&&i.e&&i.e.k==="i"&&musOf(i.id)&&musOf(i.id)[0].includes(m));if(!it)return;const add=Math.min(2,4-added);it.sets=(it.sets||2)+add;added+=add;notes.push(MREG[m]+" +"+add)});
+  if(notes.length)ses.fill=notes}
 function progressExercise(id,rating,date,wins){
   const e=EX[id];if(!e||e.k==="p"||e.k==="time"&&!rating)return;
   const p=Object.assign({t:e.r[0],vi:0,hits:0,dz:0},S.prog[id]);
@@ -826,7 +855,8 @@ function progressExercise(id,rating,date,wins){
   if(p.hits>=2){
     if(p.vi<e.v.length-1){p.vi++;p.t=e.r[0];p.hits=0;wins.push({t:"Nueva variante: "+exName(e,p.vi),s:"Vuelves a "+e.r[0]+" con la versión más difícil."})}
     else if((e.ld==="w"&&S.equip.cargables)||(e.ld==="bw"&&S.equip.chaleco)){p.kg=(p.kg||0)+2.5;p.t=e.r[0];p.hits=0;p.maxed=false;wins.push({t:"+2,5 kg en "+e.n,s:"Vuelves a "+e.r[0]+" reps con más carga. Ahora: "+loadTxt(id,p)})}
-    else if(!p.maxed){p.maxed=true;wins.push({t:e.n+": al tope",s:"Para seguir subiendo hará falta más carga."})}
+    else if((p.lad||0)<LADDER.length){p.lad=(p.lad||0)+1;p.t=e.r[0];p.hits=0;wins.push({t:e.n+": nuevo reto · "+LADDER[p.lad-1][0],s:LADDER[p.lad-1][1]})}
+    else if(!p.maxed){p.maxed=true;wins.push({t:e.n+": al tope",s:"Has agotado la escalera: para seguir hace falta más carga (mancuernas ajustables o lastre)."})}
   }else if(p.t>before)wins.push({t:"+"+(p.t-before)+(step===5?(e.u==="m/lado"?" m":" s"):" rep"+(p.t-before>1?"s":""))+" en "+e.n,s:"La próxima vez: "+p.t});
   if(p.dz>=2&&p.t<=e.r[0]&&p.vi>0){p.vi--;p.dz=0;wins.push({t:e.n+": variante anterior",s:"Dos sesiones duras seguidas en el mínimo. Consolida y vuelve a subir."})}
   S.prog[id]=p;
@@ -1135,7 +1165,7 @@ function musCard(id){const mp=musOf(id);if(!mp)return"";return`<div class="musca
 
 
 /* ============ Análisis (inspirado en Focus OS) ============ */
-const MTARGET={delt:[16,20],lat:[14,18],pec:[10,12],bic:[10,14],tri:[10,14],quad:[8,12],ham:[8,12],glu:[8,12],abs:[8,12],rdelt:[6,10],calf:[6,10]};
+const MTARGET={delt:[14,22],lat:[12,20],rdelt:[10,16],abs:[10,16],bic:[10,16],tri:[10,16],pec:[10,14],quad:[8,12],ham:[6,10],glu:[6,10],calf:[6,10]};
 function weekSets(ws){const o={};for(let i=0;i<7;i++){const l=S.logs[addDays(ws,i)];if(!l||l.st!=="done"||!l.ex)continue;l.ex.forEach(x=>{const mp=musOf(x.id);if(!mp)return;const n=+x.s||0;mp[0].forEach(r=>o[r]=(o[r]||0)+n);mp[1].forEach(r=>o[r]=(o[r]||0)+n*.5)})}return o}
 function plannedSets(ws){const o={};for(let i=0;i<7;i++){const d=addDays(ws,i);let ses;try{ses=sessionFor(d)}catch(e){continue}(ses.items||[]).forEach(x=>{if(!x.id)return;const mp=musOf(x.id);if(!mp)return;const n=+x.sets||0;mp[0].forEach(r=>o[r]=(o[r]||0)+n);mp[1].forEach(r=>o[r]=(o[r]||0)+n*.5)})}return o}
 function skillCard(){const SK=[["pino","Pino (handstand)",""],["frontlever","Front lever","dominadas"],["muscleup","Muscle-up","dominadas"]];
@@ -1541,7 +1571,7 @@ function itemRow(i,ix){
   if(i.seq){const secs=seqSecs(i.seqKey),a=i.seq[0][0]==="int"?i.seq[0][5]:i.seq[0][2];return`<button class="row" data-seqref="${i.seqKey}"><span class="thumb">${figThumb(a,.4)}</span><div style="min-width:0"><div class="row-n">${esc(i.name)}</div><div class="row-c">${esc(i.seq.slice(0,3).map(e=>(e[0]==="int"?e[1]:e[0]).split(" · ")[0].split(":")[0]).join(" · "))}${i.seq.length>3?" …":""}</div></div><div class="row-t"><span class="num">${Math.round(secs/60)}</span><small>min</small></div></button>`}
   if(i.mob)return`<div class="row" style="cursor:default"><span class="thumb">${figThumb("lunge",.5)}</span><div><div class="row-n">Movilidad</div><div class="row-c">Cadera, tobillo, torácica y hombro</div></div><div class="row-t"><span class="num">10</span><small>min</small></div></div>`;
   if(i.run)return`<button class="row" data-run="${ix}"><span class="thumb">${figThumb("run",.5)}</span><div style="min-width:0"><div class="row-n">${RUN_NAME[i.run]||"Carrera"}</div><div class="row-c">${esc(runLabel(i))}</div></div><div class="row-t"><span class="num">${Math.round(i.ph.reduce((a,x)=>a+x.s,0)/60)}</span><small>${rated(i.run)?"min · nv "+i.lv:"min"}</small></div></button>`;
-  const flags=[];if(i.cal)flags.push(`<span class="tq">calibración</span>`);if(i.tech)flags.push(`<span class="tq">técnica</span>`);if(i.myo)flags.push(`<span class="tq">myo-reps</span>`);
+  const flags=[];if(i.lad)flags.push(`<span class="tq">${esc(LADDER[i.lad-1][0])}</span>`);if(i.cal)flags.push(`<span class="tq">calibración</span>`);if(i.tech)flags.push(`<span class="tq">técnica</span>`);if(i.myo)flags.push(`<span class="tq">myo-reps</span>`);
   const last=i.p.last?`la vez anterior: ${i.p.last.t}`:"";
   return`<button class="row" data-ex="${i.id}" data-orig="${i.orig||i.id}"><span class="thumb">${thumbFig(i.id)}<b>${i.g+i.gi}</b></span><div style="min-width:0"><div class="row-n">${esc(exName(i.e,i.p.vi))}</div><div class="row-c">${(()=>{const mp=musOf(i.id);return mp?`<span class="mtag">${mp[0].map(r=>MREG[r]).join(" · ")}</span> `:""})()}${[last].concat(flags).filter(Boolean).join(" · ")||esc(loadTxt(i.id))}</div></div><div class="row-t"><span class="num">${i.myo?"1+4":i.sets+"×"+targetOf(i)}</span><small>${unitShort(i.e)}</small></div></button>`;
 }
@@ -1592,6 +1622,8 @@ function vHoy(){
   if(ses.swapped)notes.push(`<b>Hoy, recuperación.</b> Tu disposición está muy baja, así que ${esc(ses.swapped)} pasa a movilidad y respiración. <button class="link" data-act="noauto">Prefiero entrenar</button>`);
   if(isToday){const c0=S.checkin[d]||{},c1=S.checkin[addDays(d,-1)]||{};if(c0.mood===-1&&c1.mood===-1)notes.push(`<b>Llevas dos días con el ánimo bajo.</b> Entrenar ayuda, pero no tienes que llevarlo solo: habla con alguien de confianza o con tu médico. Si alguna vez tienes pensamientos de hacerte daño, llama al <b>024</b> (gratuito, 24 horas).`)}
   if(isToday&&testDue(d))notes.push(`<b>Toca test de atleta y medidas.</b> Salto, flexiones, rueda, laterales, carrera y perímetros, siempre en el mismo orden. Hazte también las fotos (frente, perfil y espalda, misma luz). <button class="link" data-act="test">Abrir el test</button>`);
+  if(ses.fill&&ses.fill.length)notes.push(`<b>Ajuste automático de volumen.</b> Esta semana te faltaban series en ${esc(ses.fill.join(", "))}: se han añadido aquí para llegar al objetivo.`);
+  if(ph.skipDeload)notes.push(`<b>Descarga no necesaria.</b> Tus datos no muestran fatiga acumulada, así que esta semana sigues acumulando. La descarga llegará cuando la necesites o, como mucho, cada 8 semanas.`);
   if(S.autoDeload&&S.autoDeload===weekStartOf(d))notes.push(`<b>Descarga anticipada.</b> La semana pasada hubo señales de fatiga.`);
   return`<section class="view">
    ${isToday?"":`<div class="viewing"><span>Viendo el ${fmtDate(d)}</span><button class="link" data-act="today">Volver a hoy</button></div>`}
