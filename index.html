@@ -481,6 +481,7 @@ svg.chart,svg.donut,svg.heat{touch-action:pan-y;cursor:crosshair;-webkit-user-se
 .hc{fill:#201b20}.hc.h1{fill:#5b4a59}.hc.h2{fill:#8a6f87}.hc.h3{fill:#b99bb5}.hc.h4{fill:#e6bde1}.hc.fut{fill:transparent;stroke:#ffffff18;stroke-dasharray:2 2}.hc.now{stroke:#f6f4f6;stroke-width:1.5}.hc.hot{stroke:#f6d1ef;stroke-width:1.5}
 .sheet h2{text-transform:none;color:var(--fg);font-weight:500;letter-spacing:-.01em;font-family:var(--f-ui)}
 .pgrid .wide svg.chart{max-width:640px;margin-inline:auto}
+.vclass>span:first-child{background:var(--acc);color:#1a0f19}
 #ctip{position:fixed;z-index:95;pointer-events:none;display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:14px;background:#0a0a0bf2;border:1px solid #ffffff2e;box-shadow:0 14px 34px -10px #000;opacity:0;transform:translateY(4px);transition:opacity .1s,transform .1s;white-space:nowrap}
 #ctip.on{opacity:1;transform:none}#ctip small{color:var(--fg2);font-size:.8rem}#ctip b{font-size:.95rem;color:var(--acc)}
 </style>
@@ -618,7 +619,7 @@ const PLAN=[
  {n:"Torso B",s:"Espalda primero, bíceps, deltoide posterior y abdomen",w:"sup",int:3,
   long:["0:muscleup*3","A1:pendlay","A2:flexplio","B1:jalon1","B2:pullover","C1:curlb","C2:bayes","D1:pajaro","D2:lean","E:revcrunch"],
   short:["A1:pendlay*3","A2:flexplio*2","B1:jalon1*2","B2:pullover*2","C:bayes!m","E:revcrunch*2"]},
- {n:"Atleta",s:"Cuestas, saltos, pierna unilateral, transporte y hombro",w:"run",int:3,
+ {n:"Pierna B y cuestas",s:"Cuestas en la cinta, saltos, pierna unilateral, transporte y hombro",w:"run",int:3,
   long:["sprint","A1:broad","A2:skater","B1:cosaca","B2:hipunil","C1:maleta","C2:tgu","D:pallofp","E:lean*2"],
   short:["sprint","A1:cosaca","A2:hipunil","E:lean*2"]},
  {n:"Torso C",s:"Pecho primero, brazos y hombro en myo-reps",w:"sup",int:2,
@@ -636,6 +637,12 @@ const MANT_WALK={n:"Paseo activo",s:"Caminar a paso vivo: despeja la cabeza para
    o intervalos: ["int", nombre, trabajo, descanso, rondas, figura]. */
 const R3=(a,n)=>Array.from({length:n},()=>a).flat();
 const SEQ={
+ izzy0:{n:"Pilates · Izzy Samuel",els:[["Clase de Izzy Samuel · 50 min cuerpo completo con pesas",3000,"hundred"]]},
+ izzy1a:{n:"Pilates · Izzy Samuel",els:[["Clase de Izzy Samuel · 40 min cuerpo completo con pesas",2400,"hundred"]]},
+ izzy1b:{n:"Pilates · Izzy Samuel",els:[["Clase de Izzy Samuel · 15 min core profundo",900,"hundred"]]},
+ izzy2a:{n:"Pilates · Izzy Samuel",els:[["Clase de Izzy Samuel · 30 min glúteo sin estar de pie",1800,"bridge"]]},
+ izzy2b:{n:"Pilates · Izzy Samuel",els:[["Clase de Izzy Samuel · 25 min tren superior con pesas",1500,"hundred"]]},
+ izzyc:{n:"Pilates · Izzy Samuel",els:[["Clase de Izzy Samuel · 15 min core profundo",900,"hundred"]]},
  yoga_base:{n:"Yoga para deportistas",els:[["Postura del niño · respira 4 s dentro, 6 fuera",120,"child"],["Gato-vaca, despacio",60,"catcow",0,"c"],["Perro boca abajo",45,"downdog"],["Perro boca abajo · pedalea los talones",45,"downdog",0,"c"],["Saludo al sol: plancha, cobra y perro",90,"cobra",0,"c"],["Guerrero I",30,"warrior",1],["Guerrero II",30,"warrior2",1],["Triángulo",30,"triangle",1],["Lagartija",45,"lizard",1],["Paloma",60,"pigeon",1],["Cobra",30,"cobra"],["Esfinge",30,"sphinx"],["Torsión tumbado",45,"twist",1],["Hilo en la aguja",30,"thread",1],["Savasana · suelta todo el cuerpo",180,"savasana"]]},
  yoga_45:{n:"Yoga · fuerza y equilibrio",els:[["Guerrero III",20,"warrior3",1],["Puente · 3 × 30 s",90,"bridge"],["Plancha lateral",20,"sideplank",1],["Pinza sentado",60,"pike"]]},
  yoga_60:{n:"Yoga · relajación profunda",els:[["Rana · cadera abierta",120,"frog"],["Mariposa",120,"butterfly"],["Relajación guiada: recorre el cuerpo de los pies a la cabeza",300,"savasana"]]},
@@ -661,6 +668,16 @@ const ATH={
  futbol:{n:"Atleta · Fútbol",s:"FIFA 11+, resistencia intermitente y cambios de dirección",w:"run",int:3,long:["seq:fifa1","seq:fifa2","1:nordico*3","intermit","E:lean*3","seq:fifa_cod?"],short:["seq:fifa1","seq:fifa2","E:lean*2"]},
  hiit:{n:"Atleta · HIIT",s:"Boxeo de sombra, intervalos en cuesta y core (el EMOM queda solo el sábado)",w:"run",int:3,long:["seq:boxeo","hiitcinta","E:lean*3","seq:hiit_core?"],short:["seq:boxeo","E:lean*2"]},
 };
+/* Domingo fijo: clase de pilates de Izzy Samuel (YouTube), rotando 3 clases para no repetir cada semana */
+const IZZYV={izzy0:["50 min · cuerpo completo con pesas","nkc7upm5naA","Pilates x fuerza, nivel intermedio · usa tus mancuernas de 2,5 kg"],
+ izzy1a:["40 min · cuerpo completo con pesas","5DkCYKmKKrs","Nivel intermedio-avanzado · mancuernas de 2,5 kg"],
+ izzy1b:["15 min · core profundo","cPVrEm3C-N4","Justo después del anterior"],
+ izzy2a:["30 min · glúteo, sin estar de pie","nMvgVFvuIXM","Reto 25 días T2, día 24"],
+ izzy2b:["25 min · tren superior con pesas","5ZpQibgtpJs","Reto 25 días, día 5 · mancuernas de 2,5 kg"],
+ izzyc:["15 min · core profundo","cPVrEm3C-N4","Clase corta"]};
+const IZ=(k,long,mid)=>({n:"Pilates · Izzy Samuel",s:"Clase fija del domingo: sigue el vídeo y marca «Ya lo he hecho»",w:"calma",int:1,calm:1,izzy:k,long,mid,short:["seq:izzyc","seq:movilidad?"]});
+const IZZY_DAYS=[IZ(0,["seq:izzy0","seq:movilidad?"],["seq:izzy1a"]),IZ(1,["seq:izzy1a","seq:izzy1b","seq:movilidad?"],["seq:izzy1a"]),IZ(2,["seq:izzy2a","seq:izzy2b","seq:movilidad?"],["seq:izzy2a","seq:movilidad?"])];
+const IZZY_MANT=IZ("c",["seq:izzyc","seq:movilidad?"],["seq:izzyc","seq:movilidad?"]);
 const CALM_DAYS={
  yoga:{n:"Yoga",s:"Movilidad, respiración y calma para la semana",w:"calma",int:1,calm:1,long:["seq:yoga_base","seq:yoga_45?","seq:yoga_60?","seq:movilidad?"],short:["seq:yoga_base"]},
  pilates:{n:"Pilates",s:"Core profundo, control y movilidad",w:"calma",int:1,calm:1,long:["seq:pilates_base","seq:pilates_45?","seq:pilates_60?","seq:movilidad?"],short:["seq:pilates_base"]},
@@ -671,9 +688,8 @@ function athType(date){const ph=phaseOf(date);if(ph.k.startsWith("vuelta"))retur
 /* Día del plan según calendario (sin ajustes por disposición) */
 function dayFor(date){
   const dw=dow(date),ph=phaseOf(date);
-  if(ph.k==="mant")return[0,2,4].includes(dw)?MANT_FULL:dw===3?CALM_DAYS.movil:CALM_DAYS.paseoyoga;
-  if(dw===4)return ATH[athType(date)];
-  if(dw===6)return effWeek(date)%2?CALM_DAYS.yoga:CALM_DAYS.pilates;
+  if(ph.k==="mant")return[0,2,4].includes(dw)?MANT_FULL:dw===6?IZZY_MANT:MANT_WALK;
+  if(dw===6)return IZZY_DAYS[((effWeek(date)%3)+3)%3];
   return PLAN[dw];
 }
 
@@ -845,7 +861,7 @@ function sessionFor(date){
   /* Disposición muy baja con energía baja o agujetas fuertes: el día de fuerza pasa a movilidad (reversible) */
   let swapped=null;
   if(!over&&!day.calm&&day.int>=2&&rd.st==="recuperar"&&(ci.energy===-1||ci.sore===2)){swapped=day.n;day=CALM_DAYS.movil}
-  let list=(short?day.short:day.long).slice();
+  let list=(short?day.short:day.mid&&durOf(date)<55?day.mid:day.long).slice();
   list=list.filter(r=>{const p=parseItem(r);if(p.id&&CURATED_REQ[p.id]&&!canUse(CURATED_REQ[p.id]))return false;if(p.id==="muscleup"){const d=S.prog.dominada||{};if((d.vi||0)<2||(d.t||0)<8)return false}if(p.id==="emom"&&rd.score<70)return false;return true});
   const prot=[];
   const mk=raw=>{
@@ -1455,7 +1471,7 @@ function kpiStrip(){const t=todayISO(),cs=consistency();let ld=0,ld0=0;for(let i
 function csvExport(){const rows=[["fecha","estado","minutos","dureza","carga","ejercicios"]];Object.keys(S.logs).sort().forEach(d=>{const l=S.logs[d];rows.push([d,l.st,l.dur||"",l.srpe||"",l.load?Math.round(l.load):"",(l.ex||[]).map(x=>{ensureEx(x.id);return(EX[x.id]?EX[x.id].n:x.id)+" "+(x.s||"")+"s"}).join(" | ")])});
   const csv=rows.map(r=>r.map(v=>{v=String(v);return/[",;\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(",")).join("\n");
   try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"}));a.download="entreno-historial.csv";document.body.appendChild(a);a.click();a.remove()}catch(e){}
-  try{navigator.clipboard&&navigator.clipboard.writeText(csv)}catch(e){}toast("Historial descargado en CSV y copiado al portapapeles.")}
+  try{navigator.clipboard&&navigator.clipboard.writeText(csv)}catch(e){}toast("Historial copiado al portapapeles en formato CSV. En la app instalada también se descarga como archivo.")}
 
 /* ============ Análisis (inspirado en Focus OS) ============ */
 const MTARGET={delt:[14,22],lat:[12,20],rdelt:[10,16],abs:[10,16],bic:[10,16],tri:[10,16],pec:[10,14],quad:[8,12],ham:[6,10],glu:[6,10],calf:[6,10]};
@@ -1912,10 +1928,10 @@ function vHoy(){
    ${isToday?kpiStrip():""}
    <div class="bento2">${weekRing()}${nextCard(d)}</div>
    ${future?"":readyCard(d,ses)}
-   ${(()=>{const k=ses.day===CALM_DAYS.yoga?"yoga":ses.day===CALM_DAYS.pilates?"pilates":ses.day===CALM_DAYS.movil?"movil":ses.day===ATH.futbol?"futbol":ses.day===ATH.hiit?"hiit":ses.day===ATH.nfl?"nfl":null;if(!k)return"";return`<div class="card"><h2>Clase en vídeo</h2><p class="sub" style="font-size:13px">Si prefieres seguir una clase completa, dale a una y después marca «Ya lo he hecho».</p>${CLASSV[k].map(([n,v,d])=>`<a class="vclass" href="https://www.youtube.com/watch?v=${v}" target="_blank" rel="noopener"><span>▶</span><div><b>${esc(n)}</b><small>${esc(d)}</small></div></a>`).join("")}</div>`})()}
+   ${(()=>{if(ses.day.izzy==null)return"";const vs=ses.items.filter(x=>x.seqKey&&IZZYV[x.seqKey]).map(x=>IZZYV[x.seqKey]);return`<div class="card"><h2>Clase de hoy · Izzy Samuel</h2><p class="sub" style="font-size:13px">${vs.length>1?"Haz los vídeos seguidos.":"Pon el vídeo y síguelo entero."} El modo entreno te lleva el tiempo y, si sobra hueco, unos minutos de movilidad. Al acabar, marca «Ya lo he hecho».</p>${vs.map(([n,v,d])=>`<a class="vclass" href="https://www.youtube.com/watch?v=${v}" target="_blank" rel="noopener"><span>▶</span><div><b>${esc(n)}</b><small>${esc(d)}</small></div></a>`).join("")}<a class="vclass" href="https://www.youtube.com/@izzy.samuel/videos" target="_blank" rel="noopener"><span>↗</span><div><b>Ver todas sus clases</b><small>Canal de Izzy Samuel en YouTube</small></div></a></div>`})()}
    ${notes.map(n=>`<div class="note">${n}</div>`).join("")}
    <div class="block"><div class="block-h"><h2>La sesión</h2><span class="eyebrow">A1 + A2 = superserie</span></div>
-     <div class="thin">Calentamiento guiado · ${(WARMSEQ[ses.day.w]||WARMSEQ.sup).filter(e=>!ses.short||e[e.length-1]===1).slice(0,3).map(e=>(e[0]==="int"?e[1]:e[0]).split(" · ")[0]).join(" · ")}</div>
+     ${ses.day.izzy!=null?"":`<div class="thin">Calentamiento guiado · ${(WARMSEQ[ses.day.w]||WARMSEQ.sup).filter(e=>!ses.short||e[e.length-1]===1).slice(0,3).map(e=>(e[0]==="int"?e[1]:e[0]).split(" · ")[0]).join(" · ")}</div>`}
      ${ses.items.map(itemRow).join("")}
      <div class="thin">Vuelta a la calma y movilidad hasta completar ${ses.min} min exactos</div></div>
   </section>`;
@@ -2090,7 +2106,7 @@ function buildTimeline(ses,dry){
       const[nm,d,a,sides,m]=e,base=Object.assign({ph:"hold",d,big:m?"Muévete":"Mantén",title:nm,arch:a,anim:!!m,cd:true,seqn},extra);
       if(sides){push(Object.assign({},base,{label:"Lado derecho"}));push(Object.assign({ph:"switch",d:6,big:"Cambia de lado",cd:true,seqn},extra));push(Object.assign({},base,{label:"Lado izquierdo"}))}else push(base);
       grp++});
-  const warm=(WARMSEQ[ses.day.w]||WARMSEQ.sup).filter(e=>!ses.short||e[e.length-1]===1||e[6]===1);
+  const warm=ses.day.izzy!=null?[]:(WARMSEQ[ses.day.w]||WARMSEQ.sup).filter(e=>!ses.short||e[e.length-1]===1||e[6]===1);
   pushEls(warm,"Calentamiento",{warm:true});
   const groups=[];ses.items.forEach(i=>{const last=groups[groups.length-1];if(i.g&&last&&last.g===i.g&&!last.solo)last.items.push(i);else groups.push({g:i.g,solo:!i.g,items:[i]})});
   groups.forEach((gr,gi)=>{
