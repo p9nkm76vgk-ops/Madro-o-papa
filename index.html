@@ -742,6 +742,18 @@ function migrate(s){
     s.run=s.run||{lv:1};s.run.lv=Math.max(s.run.lv||1,4);
     s.v=7;
   }
+  if((s.v||0)<8){
+    /* Auditoría inicial (5 nov 2026): ~44 flexiones/min, 5–10 dominadas, 15–30 min corriendo seguido,
+       15+ fondos en banco, press militar 20–25 kg × 8, sentadilla 30–37,5 kg × 8–10, plancha 45 s–1:30, sin lesiones */
+    s.audit={d:"2026-11-05",flex:"~44 en 1 min",dom:"5–10",run:"15–30 min",fondosb:"15+",militar:"20–25 kg × 8",sent:"30–37,5 kg × 8–10",plancha:"45 s–1:30",lesion:"ninguna"};
+    s.prog=s.prog||{};const st=(id,o)=>{s.prog[id]=Object.assign({},s.prog[id],o,{hits:0})};
+    st("flexdef",{vi:1,t:12});st("fondos",{vi:1,t:12});st("flexplio",{vi:1});st("fondosb",{vi:2,t:12});
+    st("militar",{load:"barra + 15 kg",t:8});st("pressb",{load:"barra + 20 kg",t:8});
+    st("bulgara",{vi:1,t:10});st("frontal",{load:"barra + 20 kg"});st("rdl",{load:"barra + 30 kg",t:12});st("pendlay",{load:"barra + 25 kg",t:10});
+    st("dominada",{vi:2,t:5});st("chinup",{vi:2,t:6});if(!s.pull||s.pull.max==null)s.pull={max:6,d:"2026-11-05",est:true};
+    s.run=s.run||{};s.run.lv=Math.max(s.run.lv||1,10);
+    s.v=8;
+  }
   return s;
 }
 function normalize(o){const d=defaults();const s=Object.assign(d,o||{});s.settings=Object.assign(defaults().settings,s.settings||{});["prog","run","logs","short","tired","evald","equip","dur","swap","noauto","tests","pull","checkin","vol","volLog","pr","prlog","repSeen","ui"].forEach(k=>{if(!s[k]||typeof s[k]!=="object")s[k]=d[k]});if(!Array.isArray(s.forced))s.forced=[];if(!Array.isArray(s.maint))s.maint=[];return migrate(s)}
