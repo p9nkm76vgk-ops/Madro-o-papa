@@ -718,7 +718,7 @@ function addDays(s,n){const d=parse(s);d.setDate(d.getDate()+n);return iso(d)}
 const daysBetween=(a,b)=>Math.round((parse(b)-parse(a))/864e5);
 const dow=s=>(parse(s).getDay()+6)%7;
 const weekStartOf=s=>addDays(s,-dow(s));
-function defaults(){return{v:3,updated:0,settings:{start:todayISO(),exam:false,voice:true,sarge:true,coach:"duro",dur:60,hora:"17:00"},dur:{},swap:{},noauto:{},maint:[],tests:{},pull:{},checkin:{},vol:{},volLog:{},pr:{},prlog:{},repSeen:{},ui:{},prog:{},run:{lv:1},logs:{},short:{},tired:{},equip:{dominadas:false,anillas:false,cargables:false,chaleco:false,banco:true},forced:[],anchor:null,evald:{},live:null}}
+function defaults(){return{v:3,updated:0,settings:{start:todayISO(),exam:false,voice:true,sarge:true,coach:"duro",dur:60,hora:"17:00",duro:true},dur:{},swap:{},noauto:{},maint:[],tests:{},pull:{},checkin:{},vol:{},volLog:{},pr:{},prlog:{},repSeen:{},ui:{},prog:{},run:{lv:1},logs:{},short:{},tired:{},equip:{dominadas:false,anillas:false,cargables:false,chaleco:false,banco:true},forced:[],anchor:null,evald:{},live:null}}
 function migrate(s){
   if((s.v||0)<4){
     if(s.settings&&s.settings.start>="2026-10-26"&&s.settings.start<"2026-11-02")s.settings.start="2026-11-02";
@@ -735,6 +735,13 @@ function migrate(s){
     s.v=5;
   }
   if((s.v||0)<6)s.v=6;
+  if((s.v||0)<7){
+    /* Modo duro desde el inicio: sin semanas de reintroducción, +1 serie por grupo y carrera más exigente */
+    if(s.settings)s.settings.duro=true;
+    s.vol=s.vol||{};["hombro","empuje","tiron","pierna","core"].forEach(g=>{s.vol[g]=Math.max(s.vol[g]||0,1)});
+    s.run=s.run||{lv:1};s.run.lv=Math.max(s.run.lv||1,4);
+    s.v=7;
+  }
   return s;
 }
 function normalize(o){const d=defaults();const s=Object.assign(d,o||{});s.settings=Object.assign(defaults().settings,s.settings||{});["prog","run","logs","short","tired","evald","equip","dur","swap","noauto","tests","pull","checkin","vol","volLog","pr","prlog","repSeen","ui"].forEach(k=>{if(!s[k]||typeof s[k]!=="object")s[k]=d[k]});if(!Array.isArray(s.forced))s.forced=[];if(!Array.isArray(s.maint))s.maint=[];return migrate(s)}
@@ -764,16 +771,17 @@ function phaseOf(date){
   const ws=weekStartOf(date);
   if((S.maint||[]).includes(ws))return{k:"mant",w:1,...PHASES.mant};
   const w=effWeek(date);
-  if(w<=1)return{k:"vuelta1",w:1,...PHASES.vuelta1};
-  if(w===2)return{k:"vuelta2",w:2,...PHASES.vuelta2};
+  const duro=S.settings.duro!==false;
+  if(!duro&&w<=1)return{k:"vuelta1",w:1,...PHASES.vuelta1};
+  if(!duro&&w===2)return{k:"vuelta2",w:2,...PHASES.vuelta2};
   if(S.forced.includes(ws))return{k:"desc",forced:true,block:0,w:4,...PHASES.desc};
-  const i=S.anchor&&ws>=S.anchor?effWeek(date)-effWeek(S.anchor):w-3;let k=CYCLE[i%4];
+  const i=S.anchor&&ws>=S.anchor?effWeek(date)-effWeek(S.anchor):Math.max(0,w-(duro?1:3));let k=CYCLE[i%4];
   if(k==="desc"&&!deloadNeeded(ws,i))return{k:"acum",w:4,block:Math.floor(i/4)+1,skipDeload:true,...PHASES.acum,n:"Acumulación (descarga no necesaria)"};
   return{k,w:i%4+1,block:Math.floor(i/4)+1,...PHASES[k]};
 }
 function evaluateWeeks(){
   const ws=weekStartOf(todayISO()),lw=addDays(ws,-7);
-  if(S.evald[lw]||effWeek(lw)<3||lw<weekStartOf(S.settings.start))return;
+  if(S.evald[lw]||effWeek(lw)<(S.settings.duro!==false?1:3)||lw<weekStartOf(S.settings.start))return;
   const ph=phaseOf(lw);S.evald[lw]=true;
   const vch=weeklyVolume(lw);if(vch.length)S.volLog[ws]=vch;
   if(ph.k==="desc"||ph.k==="mant"){save();return}
@@ -901,7 +909,7 @@ function sessionFor(date){
   const g=gapNow();
   if(g>=240&&!day.calm){
     /* Freno de carrera: relleno corriendo solo con base (semana ≥ 5) y sin superar el 110 % de tu salida más larga */
-    const cap=maxRecentRun(date)*1.1,easy=mant||effWeek(date)<5||mode==="recuperar"||dw===0||dw===4||dw===2||dw===6;
+    const cap=maxRecentRun(date)*1.1,easy=mant||(S.settings.duro===false&&effWeek(date)<5)||mode==="recuperar"||dw===0||dw===4||dw===2||dw===6;
     let kind=easy?"cuesta":"fin";const sec=Math.floor((g-30)/30)*30;
     if(sec>=180){let p=finPhases(kind,sec,runLevel());if(kind==="fin"&&p.filter(x=>x.k==="run").reduce((a,x)=>a+x.s,0)>cap){kind="cuesta";p=finPhases(kind,sec,runLevel())}ses.items.push({run:kind,lv:runLevel(),ph:p,g:"F",gi:""})}
   }
@@ -1473,6 +1481,22 @@ function csvExport(){const rows=[["fecha","estado","minutos","dureza","carga","e
   try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"}));a.download="entreno-historial.csv";document.body.appendChild(a);a.click();a.remove()}catch(e){}
   try{navigator.clipboard&&navigator.clipboard.writeText(csv)}catch(e){}toast("Historial copiado al portapapeles en formato CSV. En la app instalada también se descarga como archivo.")}
 
+/* ============ Reto de la semana: un desafío medible cada semana desde el primer día ============ */
+const RETOS=[
+ {k:"flex100",n:"100 flexiones",u:"tiempo",d:"100 flexiones en el menor tiempo posible. Pecho al suelo y brazos estirados en cada una; descansa lo que necesites pero el reloj no para.",m:"Pecho, tríceps y hombro"},
+ {k:"milla",n:"La milla en la cinta",u:"tiempo",d:"1,6 km en la cinta lo más rápido que puedas, con un 1 % de inclinación. Calienta 5 min antes.",m:"Corazón y piernas"},
+ {k:"plancha",n:"5 minutos de plancha",u:"pausas",d:"Acumula 5 minutos de plancha en antebrazos con el menor número de pausas. Cuerpo recto: si cae la cadera, cuenta como pausa.",m:"Abdomen, hombros y glúteo"},
+ {k:"burpees",n:"Muerte por burpees",u:"minutos",d:"Minuto 1: 1 burpee; minuto 2: 2; minuto 3: 3… Sigue hasta que no completes los del minuto. Tu marca es el último minuto completo.",m:"Cuerpo completo"},
+ {k:"bulg",n:"Escalera búlgara",u:"tiempo",d:"Sentadilla búlgara con mancuernas: 1 por pierna, luego 2, 3… hasta 10 por pierna (110 en total) en el menor tiempo.",m:"Cuádriceps y glúteo"},
+ {k:"300",n:"Los 300",u:"tiempo",d:"100 sentadillas, 75 flexiones, 75 crunches y 50 zancadas, en el orden que quieras, lo más rápido posible.",m:"Cuerpo completo"},
+ {k:"5k",n:"5 km en la cinta",u:"tiempo",d:"5 km a tope en la cinta con un 1 % de inclinación. Divídelo: ritmo cómodo el primer km, aprieta en los dos últimos.",m:"Corazón y piernas"},
+ {k:"hombro",n:"Hombros de acero",u:"repeticiones",d:"Elevaciones laterales con las mancuernas de 2,5 kg sin soltarlas hasta no poder más, y sin balancear. Tu marca: repeticiones totales.",m:"Deltoides lateral"}];
+function retoOf(d){const w=Math.max(1,effWeek(d));return RETOS[(w-1)%RETOS.length]}
+function retoCard(d){if(phaseOf(d).k==="mant")return"";const r=retoOf(d),ws=weekStartOf(d),done=(S.retos||{})[ws],prev=Object.entries(S.retos||{}).filter(([w,x])=>w<ws&&x.k===r.k).map(([w,x])=>x.v);
+  return`<div class="card bc reto"><div class="bch"><div><span class="lab">Reto de la semana</span><b style="font-size:1.35rem;display:block;margin-top:2px">${esc(r.n)}</b></div><span class="chip acc">${done?"superado":"hazlo cualquier día"}</span></div>
+   <p style="margin:6px 0">${esc(r.d)}</p><small style="color:var(--acc)">Trabajas: ${esc(r.m)}</small>${prev.length?`<small style="display:block;color:var(--fg2);margin-top:4px">Tu marca anterior: ${esc(prev[prev.length-1])}</small>`:""}
+   ${done?`<p class="sub" style="margin:8px 0 0">Tu marca: <b style="color:var(--fg)">${esc(done.v)}</b>. La próxima vez que salga este reto, bátela.</p>`:`<div style="display:flex;gap:8px;margin-top:10px"><input id="retov" placeholder="Tu marca (${r.u})" style="flex:1;min-height:44px;border-radius:14px;border:1px solid #ffffff24;background:#131114;color:var(--fg);padding:0 14px;font:inherit"><button class="primary" data-act="reto" style="min-height:44px;padding:0 18px">Guardar</button></div>`}</div>`}
+
 /* ============ Análisis (inspirado en Focus OS) ============ */
 const MTARGET={delt:[14,22],lat:[12,20],rdelt:[10,16],abs:[10,16],bic:[10,16],tri:[10,16],pec:[10,14],quad:[8,12],ham:[6,10],glu:[6,10],calf:[6,10]};
 function weekSets(ws){const o={};for(let i=0;i<7;i++){const l=S.logs[addDays(ws,i)];if(!l||l.st!=="done"||!l.ex)continue;l.ex.forEach(x=>{const mp=musOf(x.id);if(!mp)return;const n=+x.s||0;mp[0].forEach(r=>o[r]=(o[r]||0)+n);mp[1].forEach(r=>o[r]=(o[r]||0)+n*.5)})}return o}
@@ -1927,6 +1951,7 @@ function vHoy(){
    </div>
    ${isToday?kpiStrip():""}
    <div class="bento2">${weekRing()}${nextCard(d)}</div>
+   ${retoCard(d)}
    ${future?"":readyCard(d,ses)}
    ${(()=>{if(ses.day.izzy==null)return"";const vs=ses.items.filter(x=>x.seqKey&&IZZYV[x.seqKey]).map(x=>IZZYV[x.seqKey]);return`<div class="card"><h2>Clase de hoy · Izzy Samuel</h2><p class="sub" style="font-size:13px">${vs.length>1?"Haz los vídeos seguidos.":"Pon el vídeo y síguelo entero."} El modo entreno te lleva el tiempo y, si sobra hueco, unos minutos de movilidad. Al acabar, marca «Ya lo he hecho».</p>${vs.map(([n,v,d])=>`<a class="vclass" href="https://www.youtube.com/watch?v=${v}" target="_blank" rel="noopener"><span>▶</span><div><b>${esc(n)}</b><small>${esc(d)}</small></div></a>`).join("")}<a class="vclass" href="https://www.youtube.com/@izzy.samuel/videos" target="_blank" rel="noopener"><span>↗</span><div><b>Ver todas sus clases</b><small>Canal de Izzy Samuel en YouTube</small></div></a></div>`})()}
    ${notes.map(n=>`<div class="note">${n}</div>`).join("")}
@@ -2567,6 +2592,7 @@ document.addEventListener("click",e=>{
   if(act==="saveload"){const id=a.dataset.id;S.prog[id]=Object.assign({},S.prog[id],{load:$("#load").value.trim()||EX[id].load});save();closeSheet();render()}
   if(act==="varback"){const id=a.dataset.id;const p=Object.assign({},S.prog[id]);p.vi=Math.max(0,(p.vi||0)-1);p.t=EX[id].r[1];p.hits=0;p.maxed=false;S.prog[id]=p;save();closeSheet();render()}
   if(act==="csv"){csvExport();return}
+  if(act==="reto"){const ws=weekStartOf(viewDate),inp=document.getElementById("retov"),v=(inp&&inp.value||"").trim();if(!v){toast("Escribe tu marca antes de guardar.");return}S.retos=S.retos||{};S.retos[ws]={k:retoOf(viewDate).k,v,d:viewDate};save();toast("Reto superado. Marca guardada: "+v);render();return}
   if(act==="export"){const txt=JSON.stringify(S);const m=$("#msg");navigator.clipboard.writeText(txt).then(()=>m.textContent="Copia copiada. Guárdala en Notas.").catch(()=>{$("#imp").hidden=false;$("#impt").value=txt;$("#impt").select();m.textContent="Selecciona el texto y cópialo."})}
   if(act==="showimport"){$("#imp").hidden=false;$("#impt").value="";$("#impt").focus()}
   if(act==="import"){try{const o=JSON.parse($("#impt").value);if(!o.logs||!o.settings)throw 0;S=normalize(o);save();$("#msg").textContent="Copia restaurada.";setTimeout(render,700)}catch(err){$("#msg").textContent="Ese texto no es una copia de Entreno OS. Pega la copia completa."}}
