@@ -739,6 +739,22 @@ a{color:var(--acc3)}
 .vin{animation:vin .35s cubic-bezier(.2,.8,.2,1)}
 @keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (max-width:420px){.dsp .firma{left:44%}}
+/* Árbol de habilidades */
+.skt{padding:22px 18px;gap:14px;overflow:hidden}
+.skg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.skc{display:flex;flex-direction:column;align-items:center}
+.skn{font-weight:600;font-size:15px;margin-bottom:12px;text-align:center}
+.sknode{width:clamp(54px,15vw,72px);height:clamp(54px,15vw,72px);border-radius:50%;display:grid;place-items:center;border:2px solid transparent;cursor:pointer;flex:none;transition:transform .2s,box-shadow .2s;background:none;padding:0}
+.sknode svg{width:42%;height:42%}
+.sknode.ok{background:var(--ink);color:var(--acc2)}
+.sknode.now{background:var(--acc2);box-shadow:0 0 0 5px #fff,0 0 26px 8px #D9B6D8cc;transform:scale(1.12)}
+.sknode.lk{border-color:#B9B9BF;color:#9A9AA0;background:transparent}
+.sknode.sel{outline:2px solid var(--acc);outline-offset:4px}
+.sknode:active{transform:scale(.93)}
+.skl{display:block;width:2px;height:18px;background:#C8C8CE}
+.skd{padding:22px 20px 20px;gap:8px;margin-top:4px;position:relative}
+.skh{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:36px;height:4px;border-radius:2px;background:#ffffff33}
+.skb{height:12px;border-radius:999px;border:1px solid #D9B6D8aa;margin-top:6px;overflow:hidden}.skb i{display:block;height:100%;background:var(--acc2);border-radius:999px}
 /* ajustes finos Niebla */
 @media (min-width:900px){.wrap{margin:0;max-width:1240px;padding-left:276px}}
 .cycle div b{font-size:11.5px;hyphens:auto;-webkit-hyphens:auto}
@@ -1803,11 +1819,18 @@ function retoCard(d){if(phaseOf(d).k==="mant")return"";const r=retoOf(d),ws=week
 const MTARGET={delt:[14,22],lat:[12,20],rdelt:[10,16],abs:[10,16],bic:[10,16],tri:[10,16],pec:[10,14],quad:[8,12],ham:[6,10],glu:[6,10],calf:[6,10]};
 function weekSets(ws){const o={};for(let i=0;i<7;i++){const l=S.logs[addDays(ws,i)];if(!l||l.st!=="done"||!l.ex)continue;l.ex.forEach(x=>{const mp=musOf(x.id);if(!mp)return;const n=+x.s||0;mp[0].forEach(r=>o[r]=(o[r]||0)+n);mp[1].forEach(r=>o[r]=(o[r]||0)+n*.5)})}return o}
 function plannedSets(ws){const o={};for(let i=0;i<7;i++){const d=addDays(ws,i);let ses;try{ses=sessionFor(d)}catch(e){continue}(ses.items||[]).forEach(x=>{if(!x.id)return;const mp=musOf(x.id);if(!mp)return;const n=+x.sets||0;mp[0].forEach(r=>o[r]=(o[r]||0)+n);mp[1].forEach(r=>o[r]=(o[r]||0)+n*.5)})}return o}
-function skillCard(){const SK=[["pino","Pino (handstand)",""],["frontlever","Front lever","dominadas"],["muscleup","Muscle-up","dominadas"]];
-  const rows=SK.map(([id,n,req])=>{const e=EX[id],p=S.prog[id]||{},vi=p.vi||0,steps=e.v.map((v,j)=>`<span class="sk${j<vi?" ok":j===vi?" now":""}">${esc(v)}</span>`).join("");
-    let lock="";if(req&&!S.equip[req])lock="Se activa cuando marques la barra de dominadas.";else if(id==="muscleup"){const d=S.prog.dominada||{};if((d.vi||0)<2||(d.t||0)<8)lock="Se desbloquea al hacer 8 dominadas completas seguidas."}
-    return`<div class="skrow"><div class="topbar"><b>${n}</b><span class="chip">${lock?"bloqueado":"nivel "+(vi+1)+"/"+e.v.length}</span></div><div class="sks">${steps}</div>${lock?`<p class="sub" style="font-size:12px">${lock}</p>`:`<p class="sub" style="font-size:12px">Subes de nivel cuando completas el objetivo con buenas sensaciones dos sesiones seguidas.</p>`}</div>`}).join("");
-  return`<div class="card"><h2>Habilidades de calistenia</h2>${rows}</div>`}
+let SKSEL=null;
+function skillCard(){const SK=[["muscleup","Muscle-up","dominadas"],["frontlever","Front lever","dominadas"],["pino","Pino",""]];
+  const st=SK.map(([id,n,req])=>{ensureEx(id);const e=EX[id],p=S.prog[id]||{},vi=p.vi||0;let lock="";if(req&&!S.equip[req])lock="Necesitas la barra de dominadas: márcala en Perfil → Tu material.";else if(id==="muscleup"){const d=S.prog.dominada||{};if((d.vi||0)<2||(d.t||0)<8)lock="Requisito: 8 dominadas estrictas seguidas."}return{id,n,e,p,vi,lock}});
+  const mx=Math.max(...st.map(x=>x.e.v.length));
+  const cols=st.map(x=>`<div class="skc"><div class="skn">${x.n}</div>${x.e.v.map((v,j)=>{const cls=x.lock?"lk":j<x.vi?"ok":j===x.vi?"now":"lk";const sel=SKSEL&&SKSEL[0]===x.id&&SKSEL[1]===j;return`<button class="sknode ${cls}${sel?" sel":""}" data-sk="${x.id}|${j}" aria-label="${esc(x.n)}: ${esc(v||"básico")}">${cls==="ok"?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>':cls==="lk"?'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V8a3 3 0 0 0-6 0z"/></svg>':""}</button>`}).join('<i class="skl"></i>')}</div>`).join("");
+  const cur=SKSEL?st.find(x=>x.id===SKSEL[0]):st.find(x=>!x.lock)||st[0],j=SKSEL?SKSEL[1]:cur.vi,name=cur.e.v[j]||"Nivel básico";
+  let req,pc;if(cur.lock&&j>=cur.vi){req=cur.lock;if(cur.id==="muscleup"&&S.equip.dominadas){const d=S.prog.dominada||{};pc=Math.min(1,((d.vi||0)>=2?(d.t||0):0)/8)}else pc=0}
+  else if(j<cur.vi){req="Superado.";pc=1}else if(j===cur.vi){const t=targetOf({e:cur.e,p:cur.p,id:cur.id})||cur.p.t||cur.e.r[0];req=`Objetivo: ${t} ${unitWord(cur.e)} con buenas sensaciones dos sesiones seguidas.`;pc=Math.min(1,(cur.p.hits||0)/2)}
+  else{req=`Antes tienes que superar «${cur.e.v[j-1]||"el nivel anterior"}».`;pc=0}
+  return`<div class="card skt"><div class="dsp" style="margin:0 0 6px"><h1 style="font-size:clamp(52px,15vw,78px)">Habilidades</h1><span class="firma" style="left:auto;right:4%;bottom:auto;top:-24px;font-size:clamp(34px,9vw,48px)">Sin límites</span></div>
+   <div class="skg" style="--mx:${mx}">${cols}</div>
+   <div class="card obs skd"><span class="skh"></span><div class="eyebrow">${esc(cur.n)} · nivel ${j+1} de ${cur.e.v.length}</div><div style="font-family:var(--f-dsp);font-size:30px;line-height:.95;color:#fff;text-transform:uppercase">${esc(name)}</div><p style="margin:2px 0 0;color:#F5F5F7">${esc(req)}</p><div class="skb"><i style="width:${Math.round(pc*100)}%"></i></div></div></div>`}
 function adaptCard(){const L=(S.adapt||[]).slice(0,10);
   return`<div class="card"><h2>Motor de adaptación</h2><p class="sub" style="font-size:13px">Todo lo que la app ha cambiado sola: tras cada encuesta sube o baja repeticiones, carga, variante y series por músculo; con tu disposición suaviza el día; con el material nuevo cambia ejercicios.</p>${L.length?L.map(a=>`<div class="alog"><small>${fmtDate(a.d)}${a.k==="eq"?" · material":" · tras la sesión"}</small>${(a.w.length?a.w:[{t:"Sin cambios: repite objetivos",s:""}]).map(w=>`<div><b>${esc(w.t)}</b>${w.s?" — "+esc(w.s):""}</div>`).join("")}</div>`).join(""):`<p class="sub">Aún no hay cambios: aparecerán al terminar tu primera sesión.</p>`}</div>`}
 function progTable(){const ids=new Set();Object.values(S.logs).forEach(l=>(l.ex||[]).forEach(x=>ids.add(x.id)));const rows=[...ids].filter(id=>EX[id]||ensureEx(id)||EX[id]).slice(0,40).map(id=>{const e=EX[id],p=S.prog[id]||{};if(!e)return"";const last=Object.keys(S.logs).sort().reverse().map(d=>(S.logs[d].ex||[]).find(x=>x.id===id)).find(Boolean);return`<tr><td>${esc(exName(e,p.vi||0))}</td><td>${p.t||e.r[0]} ${unitShort(e)}</td><td>${esc(loadTxt(id)||"—")}</td><td>${last&&last.r?RATE_TXT[last.r]||last.r:"—"}</td></tr>`}).join("");
@@ -2364,8 +2387,7 @@ function vProgreso(){
   const prs=Object.entries(S.pr).filter(([,p])=>p.d).sort((a,b)=>b[1].d.localeCompare(a[1].d)).slice(0,8);
   return`<section class="view">${dsp("Tu progreso","A por ello")}
    <div class="hero-stats"><div class="hs acc"><span class="num">${cs.count}</span><span>entrenos</span></div><div class="hs"><span class="num">${cs.total}</span><span>semanas cumplidas</span></div><div class="hs"><span class="num">${cs.streak}</span><span>racha de semanas</span></div></div>
-   <div class="pgrid"><div class="wide">${areaCard()}</div>${rankCard()}${donutCard()}${planCard()}${trendCard()}${heatCard()}${muscleCard()}${readyCard28()}</div>
-   ${skillCard()}
+   <div class="pgrid"><div class="wide">${areaCard()}</div><div class="wide">${skillCard()}</div>${rankCard()}${donutCard()}${planCard()}${trendCard()}${heatCard()}${muscleCard()}${readyCard28()}</div>
    ${adaptCard()}
    ${progTable()}
    <div class="card"><div class="topbar"><h2>Constancia</h2><span class="chip">${cs.now}/5 esta semana</span></div><div class="weeks">${sq.join("")}</div><p class="sub" style="font-size:13px">Una semana se cumple con 5 sesiones: tienes 2 comodines. Un día perdido nunca borra lo hecho.</p></div>
@@ -2944,6 +2966,7 @@ document.addEventListener("click",e=>{
   const st2=t.closest("[data-swapto]");if(st2){const[o,id]=st2.dataset.swapto.split("|");S.swap[o]=id;save();closeSheet();render();return}
   const mn=t.closest("[data-min]");if(mn){S.dur[viewDate]=+mn.dataset.min;if(S.short)delete S.short[viewDate];save();render();return}
   const mo=t.closest("[data-mo]");if(mo){MOFF+=+mo.dataset.mo;render();return}
+  const skn=t.closest("[data-sk]");if(skn){const[a,b]=skn.dataset.sk.split("|");SKSEL=[a,+b];buzz(8);render();return}
   const gt=t.closest("[data-goto]");if(gt){G_TABCHANGE=true;tab=gt.dataset.goto;render();window.scrollTo(0,0);return}
   const pr=t.closest("[data-prot]");if(pr){S.prot=S.prot||{};const k=todayISO();S.prot[k]=Math.max(0,(S.prot[k]||0)+(+pr.dataset.prot));buzz(10);save();render();return}
   const crb=t.closest("[data-cr]");if(crb){const[k,v]=crb.dataset.cr.split("|");CR[k]=v;CT.clear();render();return}
