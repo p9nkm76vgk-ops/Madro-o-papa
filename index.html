@@ -2414,16 +2414,12 @@ function vPerfil(){
      <div class="field" style="margin-top:14px"><h3>Hora del entreno</h3><input type="time" data-hora value="${esc(S.settings.hora||"17:00")}" style="font:inherit;font-size:17px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--fg)"><p class="sub" style="font-size:13px">Igual que en Focus OS: cada día de ${hhmm(horaIni())} a ${hhmm(horaIni()+60)} (1 hora). En la semana de exámenes, 30 min y la otra media hora es para estudiar. Focus OS te avisa 10 min antes si importas su calendario.</p></div></div>
    <div class="card"><div class="toggle"><div><h3>Esta semana es de exámenes</h3><p class="sub" style="font-size:13px">Mantenimiento: lunes, miércoles y viernes 30 min de cuerpo completo; el resto, paseo. No cuenta como semana del plan.</p></div><button class="switch" data-act="maint" aria-pressed="${(S.maint||[]).includes(ws)}" aria-label="Semana de exámenes"></button></div>
      <div class="toggle"><div><h3>Voz</h3><p class="sub" style="font-size:13px">Repeticiones, descansos y lo que viene.</p></div>${sw("voice",S.settings.voice)}</div>
-     <div class="field" style="background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px"><h3>Voz del sargento (IA)</h3>
-       <div style="display:flex;flex-direction:column;gap:8px;margin:4px 0 10px;padding:12px;border-radius:14px;background:var(--s1)"><b>Tu voz «Entreno OS» de ElevenLabs</b>
-         <p class="sub" style="font-size:12.5px;margin:0">${elKey()?"Clave guardada en este dispositivo.":"Pega tu clave de API de ElevenLabs (Ajustes → API Keys, con permiso de «Text to Speech»). Se guarda solo en este dispositivo: no la compartas."}</p>
-         <div style="display:flex;gap:8px"><input id="elkey" type="password" placeholder="${elKey()?"••••••••  (guardada)":"sk_…"}" autocomplete="off" style="flex:1;min-width:0;min-height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;padding:0 12px;font:inherit"><button class="btn" data-act="elsave">Guardar</button></div>
-         ${elKey()?`<button class="primary" data-act="elgen" style="min-height:48px">${ELBUSY?"Generando…":"Generar las "+VOZ.length+" frases con mi voz"}</button><span id="elprog" class="sub" style="font-size:12.5px">${Object.keys(VCLIP).filter(k=>/^\d+$/.test(k)).length} de ${VOZ.length} frases listas · unas 2.000 letras de tus créditos, una sola vez</span>
-         <div class="toggle"><div><b>Todo con mi voz, también nombres y tiempos</b><p class="sub" style="font-size:12px;margin:0">Genera en directo lo que no está grabado y lo guarda para la próxima vez. Gasta créditos y necesita internet; si tarda, habla la voz del móvil.</p></div>${sw("ellive",!!S.settings.ellive)}</div>
-         <button class="btn" data-act="eldel" style="align-self:flex-start">Borrar la clave</button>`:""}</div><p class="sub" style="font-size:13px">${Object.keys(VCLIP).length?`<b>${Object.keys(VCLIP).length} de ${VOZ.length}</b> frases cargadas. Las frases fijas suenan con tu voz grabada; nombres de ejercicios y tiempos, con la voz del sistema.`:`Sube los audios que generes (01.mp3, 02.mp3…). Cada número es una frase de la lista.`}</p>
-       <div class="btns"><label class="btn" style="display:inline-flex;align-items:center;padding:0 16px;cursor:pointer">Subir audios<input type="file" id="vozfiles" accept="audio/*" multiple hidden></label>${Object.keys(VCLIP).length?`<button class="btn" data-act="vozclear">Quitar audios</button>`:""}<button class="btn" data-act="vozlist">Ver la lista de frases</button></div>
-       <div class="toggle" style="margin-top:6px"><div><b>Usar la voz grabada</b></div>${sw("vozia",S.settings.vozia!==false)}</div>
-       <div id="vozlist" hidden><ol style="font-size:12.5px;color:var(--fg2);padding-left:2.2em;margin:8px 0 0;max-height:260px;overflow:auto">${VOZ.map((t,i)=>`<li value="${i+1}"><b style="color:var(--fg)">${vozId(i)}.mp3</b> · ${esc(t)}</li>`).join("")}</ol></div></div>
+     <div class="field" style="background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px"><h3>Voz del móvil</h3>
+       <p class="sub" style="font-size:12.5px;margin:0 0 8px">Elige la voz en español que mejor suene en este teléfono. Las marcadas con ★ son las de más calidad.</p>
+       <select data-vozsel aria-label="Voz" style="width:100%;min-height:46px;border-radius:12px;border:1px solid var(--line);background:#fff;color:#0B0B0C;padding:0 12px;font:inherit;font-size:15px">${vozOpts()}</select>
+       <div class="seg" role="group" style="margin-top:10px">${[[.9,"Pausada"],[1,"Normal"],[1.12,"Rápida"]].map(([r,l])=>`<button data-vrate="${r}" aria-pressed="${(S.settings.vrate||1)===r}">${l}</button>`).join("")}</div>
+       <div class="toggle" style="margin-top:6px"><div><b>Claves de técnica</b><p class="sub" style="font-size:12px;margin:0">Te dice cómo colocarte y en qué fijarte en cada ejercicio, sin repetirse.</p></div><button class="switch" data-vcue aria-pressed="${S.settings.vcue!==false}" aria-label="Claves de técnica"></button></div>
+       <p class="sub" style="font-size:12px;margin:8px 0 0">Para que suene mucho más natural, descarga una voz de calidad y luego elígela aquí. En iPhone: Ajustes → Accesibilidad → Contenido leído → Voces → Español (España) → «Mónica (mejorada)» o «Jorge (mejorada)». En Android: Ajustes → Texto a voz → motor de Google → español (España) → descargar la voz de alta calidad.</p></div>
      <button class="secondary" data-testvoice>🔊 Probar la voz ahora</button>
      <p class="sub" style="font-size:12px">Si no se oye: sube el volumen multimedia, quita el modo silencio (en iPhone, el interruptor lateral) y comprueba que el móvil no esté conectado a otro altavoz. En iPhone la voz se activa al tocar «Empezar».</p>
      <div class="toggle"><div><h3>Modo sargento</h3><p class="sub" style="font-size:13px">La voz te habla como un instructor militar: órdenes, presión en las últimas repeticiones y ascensos de rango.</p></div>${sw("sarge",S.settings.sarge!==false)}</div>
@@ -2630,19 +2626,37 @@ function fitExact(T,target){
 }
 
 let G=null,tick=null,wake=null,actx=null;
-function unlockAudio(){vozUnlock();try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}try{speechSynthesis.cancel();speechSynthesis.resume();const u0=new SpeechSynthesisUtterance("Vamos");u0.lang="es-ES";if(VOICE)u0.voice=VOICE;u0.volume=1;speechSynthesis.speak(u0)}catch(e){}try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();const o=actx.createOscillator(),g=actx.createGain();g.gain.value=0;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.01)}catch(e){}}
+function unlockAudio(){vozUnlock();try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}try{speechSynthesis.cancel();speechSynthesis.resume();const u0=vozUtt("Vamos");u0.volume=0;speechSynthesis.speak(u0)}catch(e){}try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();const o=actx.createOscillator(),g=actx.createGain();g.gain.value=0;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.01)}catch(e){}}
 function beep(f=880,ms=160,vol=.22){try{if(!actx)return;const o=actx.createOscillator(),g=actx.createGain();o.type="sine";o.frequency.value=f;o.connect(g);g.connect(actx.destination);const t=actx.currentTime;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+ms/1000);o.start(t);o.stop(t+ms/1000+.02)}catch(e){}}
 let VOICE=null;
-function pickVoice(){try{const v=speechSynthesis.getVoices().filter(x=>/^es/i.test(x.lang)),es=v.filter(x=>/es-ES/i.test(x.lang));
-  VOICE=es.find(x=>/premium|mejorad|enhanced|neural|natural/i.test(x.name))||es.find(x=>/m[oó]nica|jorge|helena|elvira|alvaro|google/i.test(x.name))||es[0]||v[0]||null}catch(e){}}
+function vozScore(x){let n=0;const nm=x.name||"";if(/es[-_]ES/i.test(x.lang))n+=30;else if(/^es/i.test(x.lang))n+=12;
+  if(/premium|mejorad|enhanced|neural|natural|online|wavenet|alta calidad/i.test(nm))n+=40;if(/google/i.test(nm))n+=14;
+  if(/m[oó]nica|jorge|paulina|diego|marisol|helena|elvira|[aá]lvaro|pablo|lucia|luc[ií]a/i.test(nm))n+=10;if(/compact|eloquence|grandp|grandm|rocko|shelley|sandy|reed|flo\b|eddy/i.test(nm))n-=25;if(x.localService===false)n+=4;return n}
+function vozList(){try{return speechSynthesis.getVoices().filter(x=>/^es/i.test(x.lang)).sort((a,b)=>vozScore(b)-vozScore(a))}catch(e){return[]}}
+function vozPref(){try{return localStorage.getItem("entreno-voz-name")||""}catch(e){return""}}
+function pickVoice(){try{const v=vozList(),pref=vozPref();VOICE=(pref&&v.find(x=>x.name===pref))||v[0]||null}catch(e){}}
+function vozOpts(){const v=vozList();if(!v.length)return`<option>Voz del sistema (no se han cargado voces todavía)</option>`;const cur=VOICE?VOICE.name:"";
+  return v.map((x,i)=>`<option value="${esc(x.name)}"${x.name===cur?" selected":""}>${vozScore(x)>=60?"★ ":""}${esc(x.name+(/es[-_]ES/i.test(x.lang)?"":" · "+x.lang))}${i===0?" · recomendada":""}</option>`).join("")}
 try{pickVoice();speechSynthesis.addEventListener("voiceschanged",pickVoice)}catch(e){}
 /* Voz fluida: frases cortas, nunca se corta una frase a medias.
    urgent: corta lo que esté sonando (solo para avisos que no pueden esperar).
    skip: si ya está hablando, esta frase se descarta (conteos que pierden sentido si llegan tarde). */
-function say(txt,o){if(!S.settings.voice||!txt)return;o=o||{};if(vozOn()){try{vozSay(txt,o)}catch(e){}return}try{
+const PRON=[[/\bmuscle-?ups?\b/gi,"másel ap"],[/\bfront lever\b/gi,"front líver"],[/\bback lever\b/gi,"bac líver"],[/\blever\b/gi,"líver"],[/\btuck\b/gi,"tac"],[/\bplanche\b/gi,"planch"],[/\blean\b/gi,"lin"],[/\bstraddle\b/gi,"strádel"],[/\bskin the cat\b/gi,"skin de cat"],[/\bgerman hang\b/gi,"yérman jang"],[/\bpike\b/gi,"paik"],[/\bhandstand\b/gi,"jándstand"],[/\bV-sit\b/gi,"uve sit"],[/\bL-sit\b/gi,"ele sit"],[/\bL completo\b/g,"ele completo"],[/\bdragon flag\b/gi,"drágon flag"],[/\bpistol\b/gi,"pístol"],[/\bface pull\b/gi,"feis pul"],[/\bpull-?over\b/gi,"pul óver"],[/\bpull-?apart\b/gi,"pul apárt"],[/\bhollow hold\b/gi,"jólou jold"],[/\bhollow\b/gi,"jólou"],[/\bdead bug\b/gi,"ded bag"],[/\bpendlay\b/gi,"péndlei"],[/\bbayesian\b/gi,"bayesiano"],[/\bmyo-?reps\b/gi,"maio reps"],[/\bEMOM\b/g,"émom"],[/\bpush press\b/gi,"push pres"],[/\bpallof\b/gi,"pálof"],[/\bswing\b/gi,"suin"],[/\bsprint\b/gi,"esprint"],[/\bfitness\b/gi,"fítnes"]];
+function habla(t){t=String(t);PRON.forEach(([r,w])=>{t=t.replace(r,w)});
+  return t.replace(/(\d+),5\s*kg\b/g,"$1 kilos y medio").replace(/\b1\s*kg\b/g,"un kilo").replace(/(\d)\s*kg\b/g,"$1 kilos").replace(/(\d)\s*km\b/g,"$1 kilómetros")
+   .replace(/(\d+)\s*½/g,"$1 y medio").replace(/½/g,"medio").replace(/\b3\/4\b/g,"tres cuartos").replace(/(\d)\s*[–-]\s*(\d)/g,"$1 a $2").replace(/(\d)\s*°/g,"$1 grados")
+   .replace(/(\d)\s*min\b/g,"$1 minutos").replace(/\b1\s*s\b/g,"un segundo").replace(/(\d)\s*s\b/g,"$1 segundos").replace(/\breps\b/gi,"repeticiones").replace(/\brep\b/gi,"repetición")
+   .replace(/\s*\+\s*/g," más ").replace(/\s*·\s*/g,", ").replace(/\s*[()]\s*/g,", ").replace(/\s*[\/]\s*/g," o ").replace(/\s*:\s*/g,", ").replace(/,\s*([.,!?])/g,"$1").replace(/\s{2,}/g," ").trim()}
+function vozUtt(t){const u=new SpeechSynthesisUtterance(t);u.lang=VOICE?VOICE.lang:"es-ES";if(VOICE)u.voice=VOICE;u.rate=(S.settings.vrate||1)*(duro()?1.04:1);u.pitch=duro()?.82:sarge()?.92:1;u.volume=1;return u}
+/* Frases cortas, una por enunciado: suena con pausas naturales y Chrome en Android no corta las largas */
+function say(txt,o){if(!S.settings.voice||!txt)return;o=o||{};try{
   const busy=speechSynthesis.speaking||speechSynthesis.pending;
   if(o.urgent)speechSynthesis.cancel();else if(busy&&o.skip)return;
-  try{speechSynthesis.resume()}catch(e){}const u=new SpeechSynthesisUtterance(txt);u.lang="es-ES";if(VOICE)u.voice=VOICE;u.rate=duro()?1.04:1;u.pitch=duro()?.82:sarge()?.92:1;u.volume=1;speechSynthesis.speak(u)}catch(e){}}
+  try{speechSynthesis.resume()}catch(e){}
+  (habla(txt).match(/[^.!?]+[.!?]*/g)||[]).map(x=>x.trim()).filter(x=>x.replace(/[\s.,!?¡¿]/g,"")).forEach(t=>speechSynthesis.speak(vozUtt(t)))}catch(e){}}
+/* Claves de técnica: la primera frase es la colocación; las siguientes, en qué fijarse. Cada clave se dice una vez, sin repetir */
+function cueList(e){if(!e||!e.c)return[];return (e.c.match(/[^.]+\.?/g)||[]).map(x=>x.trim()).filter(x=>x&&!/^Habilidad de calistenia/i.test(x)&&x.length<=130)}
+function cueNext(x){if(S.settings.vcue===false||!x||!x.e||!G)return"";G.cued=G.cued||{};const k=G.cued[x.id]||0,c=cueList(x.e)[k];if(!c)return"";G.cued[x.id]=k+1;return c}
 /* ============ Voz del sargento grabada (ElevenLabs u otra): frases fijas en audio, el resto con la voz del sistema ============ */
 const VOZ_FIX=["Prepárate.","Siguiente.","Cambio.","Descansa.","Respira.","Mitad.","Última.","Bien.","Seguimos.","¡Seguimos! Aquí nadie se rinde.","Aguanta.","Camina.","Vamos.","Luego,","Trabajas","Quedan dos.","¡Ascenso!","¡Firmes!","Si me oyes, la voz funciona.","Prueba de voz.","¡Misión cumplida, soldado! Rellena el informe.","Hoy has ganado a la versión cómoda de ti. Mañana, otra vez. Rellena el informe."];
 const NUMS=["uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez","once","doce","trece","catorce","quince","dieciséis","diecisiete","dieciocho","diecinueve","veinte"];
@@ -2657,7 +2671,7 @@ async function vozLoad(){try{const db=await vozDB();const tx=db.transaction("c")
   if(location.protocol.startsWith("http")&&!/claude/.test(location.host)){try{const r=await fetch("voz/lista.json",{cache:"no-store"});if(r.ok){(await r.json()).forEach(id=>{if(!VCLIP[id])VCLIP[id]="voz/"+id+".mp3"})}}catch(e){}}}
 async function vozSave(files){const db=await vozDB();let n=0;for(const f of files){const m=f.name.match(/(\d{1,3})/);if(!m)continue;const id=String(+m[1]).padStart(2,"0");if(+id<1||+id>VOZ.length)continue;await new Promise(ok=>{const tx=db.transaction("c","readwrite");tx.objectStore("c").put(f,id);tx.oncomplete=ok;tx.onerror=ok});VCLIP[id]=URL.createObjectURL(f);n++}return n}
 async function vozClear(){try{const db=await vozDB();await new Promise(ok=>{const tx=db.transaction("c","readwrite");tx.objectStore("c").clear();tx.oncomplete=ok})}catch(e){}VCLIP={}}
-function vozOn(){return S.settings.vozia!==false&&(Object.keys(VCLIP).length>0||(S.settings.ellive&&!!elKey()))}
+function vozOn(){return false}
 function vozSplit(txt){const T=String(txt).split(/\s+/).filter(Boolean).map(r=>({r,n:vnorm(r)})),out=[];let i=0,buf=[];
   const nx=(from,cnt)=>{const ws=[];let k=from;while(k<T.length&&ws.length<cnt){if(T[k].n)ws.push(...T[k].n.split(" "));k++}return{ws,end:k}};
   while(i<T.length){if(!T[i].n){buf.push(T[i].r);i++;continue}let hit=null,end=i;
@@ -2689,7 +2703,7 @@ function vozNext(){if(!VQ.length){VPLAY=false;return}VPLAY=true;const it=VQ.shif
 function vozSay(txt,o){if(o.urgent){VQ=[];try{VAUD&&VAUD.pause()}catch(e){}try{speechSynthesis.cancel()}catch(e){}VPLAY=false}else if(VPLAY&&o.skip)return;
   VQ.push(...vozSplit(txt));if(!VPLAY)vozNext()}
 function vozUnlock(){try{VAUD=VAUD||new Audio();VAUD.muted=true;VAUD.src="data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";const p=VAUD.play();if(p&&p.then)p.then(()=>{VAUD.pause();VAUD.muted=false}).catch(()=>{VAUD.muted=false})}catch(e){}}
-vozLoad();
+try{localStorage.removeItem("entreno-el-key")}catch(e){}vozClear();
 /* Pitidos programados con el reloj de audio: suenan exactamente cuando cambia el número */
 let SCHED=[];
 function sbeep(at,f,ms,vol){try{if(!actx)return;const t=actx.currentTime+Math.max(0,at);const o=actx.createOscillator(),g=actx.createGain();o.type="sine";o.frequency.value=f;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.006);g.gain.exponentialRampToValueAtTime(.001,t+ms/1000);o.start(t);o.stop(t+ms/1000+.03);SCHED.push(o)}catch(e){}}
@@ -2750,7 +2764,7 @@ function loop(){
     else if(left===10&&s.d>=25)t=s.ph==="rest"&&!s.mini?"Diez segundos":s.ph==="hold"?"Diez segundos, aguanta":"Diez segundos";
     if(t){G.beeped["L"+left]=1;say(t)}
   }
-  if(s.ph==="rest"&&!s.mini&&s.d>=25&&left===15&&!G.beeped.pre){G.beeped.pre=1;const nx=G.T.slice(G.idx+1).find(x=>x.ex);if(nx){const nm=exName(nx.ex.e,nx.ex.p.vi),ld=loadTxt(nx.ex.id);beep(660,90,.2);setTimeout(()=>beep(990,140,.22),110);{const mp=musOf(nx.ex.id);say("Prepárate. Siguiente: "+nm+". "+targetOf(nx.ex)+" "+unitWord(nx.ex.e)+(ld?", con "+ld:"")+"."+(mp?" Trabajas "+mp[0].map(r=>MREG[r].toLowerCase()).join(" y ")+".":""),{urgent:1})}}}
+  if(s.ph==="rest"&&!s.mini&&s.d>=25&&left===15&&!G.beeped.pre){G.beeped.pre=1;const nx=G.T.slice(G.idx+1).find(x=>x.ex);if(nx){const nm=exName(nx.ex.e,nx.ex.p.vi),ld=loadTxt(nx.ex.id);beep(660,90,.2);setTimeout(()=>beep(990,140,.22),110);{const mp=musOf(nx.ex.id),cu=cueNext(nx.ex);say("Prepárate. Siguiente: "+nm+". "+targetOf(nx.ex)+" "+unitWord(nx.ex.e)+(ld?", con "+ld:"")+"."+(mp?" Trabajas "+mp[0].map(r=>MREG[r].toLowerCase()).join(" y ")+".":"")+(cu?" "+cu:""),{urgent:1})}}}
   if(s.ph==="hold"&&s.d>=30&&!G.beeped.half&&el>=s.d/2&&Math.ceil(s.d-el)>14){G.beeped.half=1;say("Mitad",{skip:1})}
   const go=document.querySelector(".go");if(go){const fin=s.cd&&s.d>=4&&left<=3;if(fin!==go.classList.contains("final"))go.classList.toggle("final",fin)}
   const cd=document.getElementById("cd");if(cd){const v=fmtLeft(left);if(cd.textContent!==v)cd.textContent=v}
@@ -2770,12 +2784,12 @@ function enterSeg(prev){
   const durTxt=d0=>{const d=Math.round(d0/5)*5||d0;if(d<60)return d+" segundos";const m=Math.floor(d/60),r=d%60,mt=m===1?"un minuto":m+" minutos";return r===30?mt+" y medio":r?mt+" y "+r+" segundos":mt};
   const reps=x=>{const t=targetOf(x);return t+" "+unitWord(x.e)+(SIDE[x.e.u]?" por "+SIDE[x.e.u]:"")};
   if(s.ph==="switch"&&s.big.startsWith("Cambia de")){const nx=G.T[G.idx+1];flashSide(nx&&nx.label?nx.label:s.big);say(nx&&nx.label?nx.label:s.big,{urgent:1})}
-  else if(s.ph==="prep"&&(beep(660,90,.2),setTimeout(()=>beep(990,140,.22),110),true))say(`${sarge()&&s.set===1?SG(duro()?DU_PREP:SG_PREP)+" ":""}${name}. ${reps(s.ex)}${s.set===1&&loadTxt(s.ex.id)?", con "+loadTxt(s.ex.id):""}${s.of>1?", serie "+s.set+" de "+s.of:""}. ${s.set===1?tempoSpoken(s.ex):""}`,{urgent:1});
-  else if(s.ph==="switch"){beep(660,90,.2);setTimeout(()=>beep(990,140,.22),110);say("Cambio. "+name+". "+reps(s.ex)+(loadTxt(s.ex.id)?", con "+loadTxt(s.ex.id):"")+".",{urgent:1})}
+  else if(s.ph==="prep"&&(beep(660,90,.2),setTimeout(()=>beep(990,140,.22),110),true))say(`${sarge()&&s.set===1?SG(duro()?DU_PREP:SG_PREP)+" ":""}${s.set>1&&s.of>1?"Serie "+s.set+" de "+s.of+". ":""}${name}. ${reps(s.ex)}${s.set===1&&loadTxt(s.ex.id)?", con "+loadTxt(s.ex.id):""}${s.set===1&&s.of>1?". "+s.of+" series":""}. ${s.set===1?tempoSpoken(s.ex):""} ${cueNext(s.ex)}`,{urgent:1});
+  else if(s.ph==="switch"){beep(660,90,.2);setTimeout(()=>beep(990,140,.22),110);say("Cambio. "+name+". "+reps(s.ex)+(loadTxt(s.ex.id)?", con "+loadTxt(s.ex.id):"")+". "+cueNext(s.ex),{urgent:1})}
   else if(s.ph==="rest"&&!s.mini){
     const remain=Math.round((G.T.total-s.at-s.d)/60),slot=Math.floor(remain/10);let extra="";
     if(G.lastSlot!==undefined&&slot<G.lastSlot&&remain>3)extra=" Quedan "+remain+" minutos de sesión.";G.lastSlot=slot;
-    say((sarge()?SG(duro()?DU_REST:SG_REST):"Bien.")+" Descansa "+durTxt(s.d)+". Luego, "+s.next.split(" · ")[0]+"."+extra);
+    say((sarge()?SG(duro()?DU_REST:SG_REST):"Bien.")+" Descansa "+durTxt(s.d)+". Luego, "+s.next.split(" · ")[0]+"."+extra+(()=>{const nx=G.T.slice(G.idx+1).find(x=>x.ex);return nx&&nx.ph!=="prep"&&nx.ex.id===(G.T.slice(G.idx+1).find(x=>x.ex)||{}).ex.id?" "+cueNext(nx.ex):""})());
   }
   else if(s.ph==="rest"&&s.mini)say(s.seqn?"Descansa":"Respira",{skip:1});
   else if(s.ph==="hold"&&s.title)say(s.title.split(" · ")[0]+(s.label?", "+s.label.toLowerCase():"")+". "+durTxt(s.d)+".",{urgent:1});
@@ -3022,7 +3036,7 @@ function sheetAlts(orig){
 }
 
 /* ============ Eventos ============ */
-document.addEventListener("change",e=>{if(e.target&&e.target.id==="pfname"){S.settings.name=e.target.value.trim().slice(0,18);save()}if(e.target&&e.target.id==="vozfiles"&&e.target.files.length){vozSave([...e.target.files]).then(n=>{toast(n+" audios cargados. Pulsa el altavoz de arriba para probar.");render()})}});
+document.addEventListener("change",e=>{if(e.target&&e.target.matches&&e.target.matches("[data-vozsel]")){try{localStorage.setItem("entreno-voz-name",e.target.value)}catch(x){}pickVoice();unlockAudio();setTimeout(()=>say("Esta es mi voz. Vamos a trabajar.",{urgent:1}),300);return}if(e.target&&e.target.id==="pfname"){S.settings.name=e.target.value.trim().slice(0,18);save()}if(e.target&&e.target.id==="vozfiles"&&e.target.files.length){vozSave([...e.target.files]).then(n=>{toast(n+" audios cargados. Pulsa el altavoz de arriba para probar.");render()})}});
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;if(tab!==b.dataset.tab){G_TABCHANGE=true;buzz(8)}tab=b.dataset.tab;if(tab==="hoy")viewDate=todayISO();render();window.scrollTo(0,0)});
 document.addEventListener("click",e=>{
   const t=e.target;
@@ -3056,6 +3070,8 @@ document.addEventListener("click",e=>{
   const co=t.closest("[data-coach]");if(co){S.settings.coach=co.dataset.coach;save();render();say(co.dataset.coach==="duro"?SG(DU_PREP):SG(SG_PREP),{urgent:1});return}
   const sq=t.closest("[data-seqref]");if(sq){sheetSeq(sq.dataset.seqref);return}
   const oc=t.closest("[data-ownclear]");if(oc){clearOwn(oc.dataset.ownclear).then(()=>{sheetEx(oc.dataset.ownclear);render()});return}
+  const vr=t.closest("[data-vrate]");if(vr){S.settings.vrate=+vr.dataset.vrate;save();render();say("Así sueno a esta velocidad.",{urgent:1});return}
+  if(t.closest("[data-vcue]")){S.settings.vcue=S.settings.vcue===false;save();render();return}
   const dm=t.closest("[data-defmin]");if(dm){S.settings.dur=+dm.dataset.defmin;save();render();return}
   const ex=t.closest("[data-ex]");if(ex){sheetEx(ex.dataset.ex,ex.dataset.orig);return}
   const rn=t.closest("[data-run]");if(rn){sheetRun(+rn.dataset.run);return}
@@ -3136,6 +3152,4 @@ loadOwn();
 })();
 </script>
 
-
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}</script>
-</body></html>
