@@ -800,6 +800,14 @@ a{color:var(--acc3)}
 .pfbtn{display:flex;gap:8px}.pfbtn .primary{flex:1;min-height:46px}
 .pflog{margin-top:12px;display:flex;flex-direction:column}.pflog div{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.pflog b{font-weight:600}.pflog button{width:32px;height:32px;border-radius:50%;border:0;background:var(--s2,#f2f2f4);font-size:16px;cursor:pointer;color:var(--fg2)}
 #pfed:empty{display:none}.toast{color:#fff}.pfmy{margin-top:12px}.pfmy summary{cursor:pointer;font-size:13.5px;font-weight:600}.pfmyf{display:grid;gap:8px}.pfmyf input{min-height:44px;border-radius:12px;border:1px solid var(--line);padding:0 12px;font:inherit;font-size:16px;background:#fff;color:var(--ink)}
+
+.pfind textarea{width:100%;box-sizing:border-box;min-height:64px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:12px 14px;font:inherit;font-size:16px;line-height:1.35;resize:vertical}
+.meal{margin-top:8px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:6px 14px 14px;display:flex;flex-direction:column}
+.mrow2{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.mrow2 b{display:block;font-size:14.5px;font-weight:600}.mrow2 small{display:block;color:var(--fg2);font-size:12px;margin-top:1px}
+.mrow2 label{display:flex;align-items:center;gap:3px;color:var(--fg2);font-size:12px}.mrow2 input{width:58px;min-height:34px;border-radius:9px;border:1px solid var(--line);padding:0 6px;font:inherit;font-size:15px;color:var(--ink);text-align:right;background:#fff}
+.mrow2 span{font-weight:700;font-size:14px;min-width:48px;text-align:right}.mrow2 button{width:30px;height:30px;border-radius:50%;border:0;background:var(--s2,#f2f2f4);color:var(--fg2);font-size:15px;cursor:pointer}
+.mbad{font-size:12.5px;color:#9a3b3b;margin:10px 0 0}.meal .pfres-t{margin-top:10px}.meal .pfbtn{margin-top:10px}
 </style>
 
 <nav class="tabs" aria-label="Secciones">
@@ -2422,8 +2430,8 @@ const FOODS=[
 ["Leche desnatada","leche",3.4,"ml",[["1 vaso (250 ml)",250],["1 taza (200 ml)",200]]],
 ["Leche sin lactosa","leche",3.2,"ml",[["1 vaso (250 ml)",250]]],
 ["Leche proteica","leche proteinas|leche +proteinas|batido proteico",6,"ml",[["1 vaso (250 ml)",250],["1 botella (330 ml)",330]]],
-["Café con leche","cafe|cortado|cafe con leche",1.7,"ml",[["1 taza (200 ml)",200],["1 cortado (100 ml)",100]]],
-["Batido de cacao","cacaolat|colacao|cola cao|chocolate con leche bebida|batido de chocolate",3.3,"ml",[["1 botella (200 ml)",200],["1 vaso (250 ml)",250]]],
+["Café con leche","cafe|cortado|cafe con leche|cafe con leche de avena|manchado",1.7,"ml",[["1 taza (200 ml)",200],["1 cortado (100 ml)",100]]],
+["Batido de cacao","cacaolat|chocolate con leche bebida|batido de chocolate|batido de cacao",3.3,"ml",[["1 botella (200 ml)",200],["1 vaso (250 ml)",250]]],
 ["Bebida de soja","leche de soja|soja",3.3,"ml",[["1 vaso (250 ml)",250]]],
 ["Bebida de avena","leche de avena",0.8,"ml",[["1 vaso (250 ml)",250]]],
 ["Bebida de almendra","leche de almendra",0.5,"ml",[["1 vaso (250 ml)",250]]],
@@ -2538,7 +2546,7 @@ const FOODS=[
 ["Semillas de chía, lino o sésamo","chia|lino|sesamo|semillas",18,"g",[["1 cucharada (12 g)",12]]],
 /* Cereales, pan y platos */
 ["Pan (barra blanca)","pan|barra|baguette|bocadillo pan|pa amb oli",8.5,"g",[["1/4 de barra (60 g)",60],["1/2 barra (120 g)",120],["1 rebanada (30 g)",30]]],
-["Pan integral","pan integral|pan de centeno|pan multicereal",9,"g",[["1 rebanada (35 g)",35],["1/4 de barra (60 g)",60]]],
+["Pan integral","pan integral|pan moreno|pan negro|pan de centeno|pan multicereal|pan de semillas",9,"g",[["1 rebanada (35 g)",35],["1/4 de barra (60 g)",60]]],
 ["Pan de molde","pan bimbo|pan de molde|sandwich",8,"g",[["1 rebanada (25 g)",25],["2 rebanadas (50 g)",50]]],
 ["Biscotes o tostadas","tostadas|biscotes|pan tostado|picos|regañas",11,"g",[["1 tostada (8 g)",8],["3 tostadas (24 g)",24]]],
 ["Tortilla de trigo (wrap)","wrap|fajitas|tortilla mexicana|burrito",8.5,"g",[["1 tortilla (60 g)",60]]],
@@ -2578,8 +2586,10 @@ const FOODS=[
 ["Chocolate con leche","chocolate con leche|kinder|bombones",7.5,"g",[["2 onzas (20 g)",20]]],
 ["Crema de cacao","nutella|nocilla",6,"g",[["1 cucharada (20 g)",20]]],
 ["Cacao puro en polvo","cacao puro|cacao desgrasado",20,"g",[["1 cucharada (10 g)",10]]],
+["Cacao soluble","cola cao|colacao|nesquik|cacao soluble|cacao en polvo",6,"g",[["2 cucharadas (15 g)",15]]],
+["Aceite, mantequilla o mermelada","aceite|aceite de oliva|aove|mantequilla|margarina|mermelada|miel|azucar|tomate rallado",0.5,"g",[["1 cucharada (10 g)",10]]],
 ["Aceitunas","aceitunas|olivas",1,"g",[["10 aceitunas (40 g)",40]]],
-["Cerveza","cerveza|caña",0.4,"ml",[["1 caña (200 ml)",200],["1 tercio (330 ml)",330]]]
+["Cerveza","cerveza|caña|tercio|cervezas|cañas",0.4,"ml",[["1 caña (200 ml)",200],["1 tercio (330 ml)",330]]]
 ].map((f,i)=>({id:"f"+i,n:f[0],al:f[1],p:f[2],u:f[3],por:f[4]}));
 const fnorm=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9ñ ]/g," ").replace(/\s+/g," ").trim();
 const FSTOP=new Set(["de","del","la","el","los","las","un","una","unos","unas","con","y","a","al","en","mi","me","he","comido","tomado"]);
@@ -2618,6 +2628,74 @@ function protLogHTML(t){const L=((S.protlog||{})[t]||[]);if(!L.length)return"";
   return`<div class="pflog">${L.map((x,i)=>`<div><span>${esc(x.q)}</span><b>${String(x.p).replace(".",",")} g</b><button data-pfdel="${i}" aria-label="Quitar">×</button></div>`).join("")}</div>`}
 function protAdd(q,p){const k=todayISO();S.prot=S.prot||{};S.protlog=S.protlog||{};p=fround(p);(S.protlog[k]=S.protlog[k]||[]).push({q,p,at:Date.now()});S.prot[k]=fround((S.prot[k]||0)+p)}
 
+/* ============ Comida escrita en lenguaje normal → proteína estimada ============
+   «4 tostadas de pan moreno, dos de jamón serrano y dos de atún» → pan integral ×4, jamón para 2 tostadas, atún para 2 tostadas */
+const MNUM={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,dieciseis:16,veinte:20,treinta:30,medio:.5,media:.5,par:2,docena:12};
+/* Pan de base y cuánto relleno lleva cada tipo de «envase» respecto a una tostada */
+const CONT={tostada:{bread:"Pan (barra blanca)",bg:30,k:1},rebanada:{bread:"Pan (barra blanca)",bg:30,k:1},bocadillo:{bread:"Pan (barra blanca)",bg:100,k:2.5},bocata:{bread:"Pan (barra blanca)",bg:100,k:2.5},sandwich:{bread:"Pan de molde",bg:50,k:1.5},wrap:{bread:"Tortilla de trigo (wrap)",bg:60,k:2},montadito:{bread:"Pan (barra blanca)",bg:25,k:.8},pulga:{bread:"Pan (barra blanca)",bg:40,k:1}};
+const CONTW={tostada:"tostada",tostadas:"tostada",rebanada:"rebanada",rebanadas:"rebanada",bocadillo:"bocadillo",bocadillos:"bocadillo",bocata:"bocata",bocatas:"bocata",sandwich:"sandwich",sandwiches:"sandwich",sandwichs:"sandwich",wrap:"wrap",wraps:"wrap",montadito:"montadito",montaditos:"montadito",pulga:"pulga",pulgas:"pulga"};
+/* Lo que se pone encima de UNA tostada (g) */
+const TOPG={"Jamón serrano":20,"Jamón ibérico":20,"Jamón cocido (york)":20,"Pechuga de pavo en lonchas":20,"Lomo embuchado":15,"Chorizo":15,"Salchichón o fuet":15,"Sobrasada":20,"Mortadela":15,"Atún en lata (escurrido)":28,"Salmón ahumado":25,"Sardinas en lata":30,"Caballa en lata":30,"Anchoas en aceite":10,"Huevo":55,"Queso tierno":20,"Queso semicurado":20,"Queso curado":15,"Queso de Mahón":20,"Queso fresco (tipo Burgos)":30,"Mozzarella":30,"Queso crema":20,"Queso en lonchas fundido":17,"Queso de cabra (rulo)":25,"Aguacate":35,"Crema de cacahuete":16,"Hummus":30,"Verdura (otras)":30,"Tortilla de patatas":60,"Pechuga de pollo (cocinada)":40,"Crema de cacao":20,"Requesón":30,"Beicon (cocinado)":15};
+const UNITW={plato:"plato",platos:"plato",vaso:"vaso",vasos:"vaso",lata:"lata",latas:"lata",loncha:"loncha",lonchas:"loncha",punado:"punado",punados:"punado",cucharada:"cucharada",cucharadas:"cucharada",filete:"filete",filetes:"filete",pieza:"pieza",piezas:"pieza",bol:"bol",boles:"bol",bowl:"bol",taza:"taza",tazas:"taza",racion:"racion",raciones:"racion",bote:"bote",botes:"bote",sobre:"sobre",sobres:"sobre",onza:"onza",onzas:"onza",cacito:"cacito",cacitos:"cacito",scoop:"cacito",scoops:"cacito",botella:"botella",botellas:"botella",tarrina:"tarrina",tarrinas:"tarrina",unidad:"",unidades:"",trozo:"",trozos:"",porcion:"porcion",porciones:"porcion",cuna:"cuna",bola:"bola",bolas:"bola",pinchos:"pincho",pincho:"pincho",};
+const MSTOP=new Set(["de","del","la","el","los","las","con","a","al","en","mi","me","he","comido","tomado","cenado","desayunado","almorzado","merendado","bebido","hoy","para","sin","poco","poca","algo","tipo","grande","grandes","pequeno","pequena","pequenos","mediano","mediana","casero","casera"]);
+const mstem=w=>w.length>4?w.replace(/(es|s)$/,""):w;
+function fByName(n){return foodAll().find(f=>f.n===n)}
+/* El alimento que mejor encaja con unas palabras; acepta palabras de sobra si lo esencial coincide */
+const anorm=a=>fnorm(a).split(" ").filter(w=>w&&!MSTOP.has(w)).join(" ");
+function fMatch(words){if(!words.length)return null;let best=null;
+  for(const f of foodAll()){const nm=" "+fnorm(f.n),hay=nm+" "+fnorm(f.al||"").replace(/\|/g," | ");let m=0,sc=0;
+    for(const w0 of words){const w=mstem(w0);if(hay.includes(" "+w)){m++;sc+=nm.includes(" "+w)?3:1}}
+    if(!m)continue;const qj=words.join(" ");if((f.al||"").split("|").some(a=>anorm(a)===qj)||anorm(f.n)===qj)sc+=6;
+    if((f.al||"").split("|").some(a=>{const A=anorm(a);return A.length>3&&(" "+qj+" ").includes(" "+A+" ")}))sc+=4;
+    const all=m===words.length;sc+=all?5:0;sc+=f.mine?2:0;sc-=(f.mine?0:+f.id.slice(1))/1000;
+    if(!all&&m<Math.ceil(words.length/2))continue;if(!best||sc>best.sc)best={f,sc}}
+  return best&&best.f}
+function porFor(f,unit){if(unit){const syn=unit==="tostada"||unit==="rebanada"?["rebanada","tostada"]:[unit];const i=f.por.findIndex(p=>syn.some(u=>fnorm(p[0]).includes(u)));if(i>=0)return f.por[i]}return f.por[0]}
+const topG=f=>TOPG[f.n]||Math.min(f.por[0][1],30);
+let MPROT=null;function mealProt(){if(MPROT)return MPROT;const set=new Set();foodAll().forEach(f=>[f.n,...String(f.al||"").split("|")].forEach(a=>{const A=fnorm(a);if(/ (con|y|e|mas) /.test(" "+A+" ")&&A.split(" ").length>1)set.add(A)}));return MPROT=[...set].sort((a,b)=>b.length-a.length)}
+function mealNorm(t){t=String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/(\d),(\d)/g,"$1.$2").replace(/(\d)\/(\d)/g,(m,a,b)=>String(+a/+b)).replace(/[^a-z0-9.,;+ ]/g," ").replace(/\.(?!\d)/g," ").replace(/([,;+])/g," $1 ").replace(/\s+/g," ").trim();
+  t=" "+t+" ";mealProt().forEach(a=>{t=t.split(" "+a+" ").join(" "+a.replace(/ /g,"_")+" ")});t=t.trim().replace(/\bmedia docena\b/g,"6").replace(/\bun par\b/g,"2");
+  return t.replace(/\b[a-z]+\b/g,w=>MNUM[w]!==undefined?String(MNUM[w]):w)}
+function mealParse(text){const raw=String(text||"");if(!raw.trim())return{items:[],bad:[]};
+  /* separadores: coma, punto y coma, salto de línea, «y», «más», «+», «con» (este último = encima de lo anterior) */
+  const parts=mealNorm(raw.replace(/\n/g," , ")).split(/\s*(,|;|\+|\by\b|\be\b|\bmas\b|\bcon\b|\bjunto a\b)\s*/);
+  const items=[],bad=[];let last=null,lastItem=null;
+  for(let i=0;i<parts.length;i+=2){const seg=(parts[i]||"").replace(/_/g," ").trim(),sep=i?parts[i-1]:"";if(!seg)continue;
+    let qty=null,g=null,ml=false;const mg=seg.match(/(\d+(?:\.\d+)?)\s*(kg|g|gr|grs|gramos|ml|l|litro|litros|cl)\b/);
+    if(mg){g=+mg[1];const u=mg[2];if(u==="kg"){g*=1000}else if(u==="l"||u.startsWith("litro")){g*=1000;ml=true}else if(u==="cl"){g*=10;ml=true}else if(u==="ml")ml=true}
+    const mq=seg.replace(mg?mg[0]:"\u0000","").match(/(\d+(?:\.\d+)?)/);if(mq)qty=+mq[1];
+    const toks=seg.replace(mg?mg[0]:"\u0000"," ").replace(/\d+(\.\d+)?/g," ").split(" ").filter(Boolean);
+    const startsDe=toks[0]==="de"||toks[0]==="del";
+    let cont=null,unit=null;const words=[];
+    for(const w of toks){if(CONTW[w]&&!cont)cont=CONTW[w];else if(UNITW[w]!==undefined&&!unit)unit=UNITW[w]||null;else if(!MSTOP.has(w))words.push(w)}
+    if(cont){/* tostadas / bocadillo / sándwich: pan + relleno */
+      const n=qty||1,C=CONT[cont];let bread=fByName(C.bread),fill=null;
+      if(words.length){const f=fMatch(words);if(f&&/^(Pan|Biscotes|Tortilla de trigo)/.test(f.n)){bread=f}else if(f){fill=f}else bad.push(seg)}
+      const bg=(/molde/i.test(bread.n)&&cont!=="sandwich")?25:/integral/i.test(bread.n)&&C.bg===30?35:C.bg;
+      lastItem={f:bread,g:bg*n,d:(n!==1?String(n).replace(".",",")+" × ":"")+(cont==="tostada"||cont==="rebanada"?"tostada":cont)};items.push(lastItem);
+      last={n,k:C.k,cont};
+      if(fill){const fg=topG(fill)*C.k*n;items.push(lastItem={f:fill,g:fg,d:"en "+(n!==1?n+" "+(cont==="tostada"||cont==="rebanada"?"tostadas":cont+"s"):(/^(tostada|rebanada|pulga)$/.test(cont)?"la ":"el ")+(cont==="rebanada"?"tostada":cont))})}
+      continue}
+    if(!words.length&&(qty||unit)&&lastItem&&!cont){/* «pizza, dos porciones»: cantidad para lo anterior */
+      const p=porFor(lastItem.f,unit),n=qty||1;lastItem.g=p[1]*n;lastItem.d=(n!==1?String(n).replace(".",",")+" × ":"")+p[0];continue}
+    const f=fMatch(words);if(!f){if(words.length)bad.push(seg);continue}
+    if(last&&!g&&!unit&&(sep==="con"||startsDe)){/* «dos de jamón», «con tomate»: encima de las tostadas de antes */
+      const n=qty||last.n,fg=topG(f)*last.k*n;items.push(lastItem={f,g:fg,d:"en "+(n!==1?String(n).replace(".",",")+" "+(last.cont==="tostada"||last.cont==="rebanada"?"tostadas":last.cont+"s"):(/^(tostada|rebanada|pulga)$/.test(last.cont)?"la ":"el ")+(last.cont==="rebanada"?"tostada":last.cont))});continue}
+    if(last&&!qty&&!g&&!unit&&(sep==="y"||sep==="e"||sep==="mas")&&TOPG[f.n]){const n=last.n;items.push(lastItem={f,g:topG(f)*last.k*n,d:"en "+(n!==1?String(n).replace(".",",")+" "+(last.cont==="tostada"||last.cont==="rebanada"?"tostadas":last.cont+"s"):(/^(tostada|rebanada|pulga)$/.test(last.cont)?"la ":"el ")+(last.cont==="rebanada"?"tostada":last.cont))});continue}
+    if(sep==="con"&&!last&&!qty&&!g&&!unit){items.push(lastItem={f,g:Math.min(f.por[0][1],100),d:"acompañando"});continue}
+    if(g){items.push(lastItem={f,g,d:Math.round(g)+" "+(ml||f.u==="ml"?"ml":"g")})}
+    else{let p=porFor(f,unit),n=qty||1;if(qty){const one=f.por.find(x=>/^1 /.test(x[0])&&(!unit||fnorm(x[0]).includes(unit)));if(one&&(!unit||fnorm(one[0]).includes(unit)))p=one;else{const lm=p[0].match(/^(\d+)(?:\/(\d+))?\s/);const N=lm?(lm[2]?+lm[1]/+lm[2]:+lm[1]):1;if(N!==1){items.push(lastItem={f,g:p[1]/N*n,d:String(n).replace(".",",")+" "+p[0].replace(/^[\d\/]+\s*/,"").replace(/\s*\(.*\)$/,"")});last=null;continue}}}
+      items.push(lastItem={f,g:p[1]*n,d:(n!==1?String(n).replace(".",",")+" × ":"")+p[0]})}
+    last=null}
+  return{items,bad}}
+let MEAL=null;
+function mealHTML(){if(!MEAL||(!MEAL.items.length&&!MEAL.bad.length))return"";const tot=MEAL.items.reduce((a,x)=>a+fprot(x.f,x.g),0);
+  return`<div class="meal">${MEAL.items.map((x,i)=>`<div class="mrow2"><div><b>${esc(x.f.n)}</b><small>${esc(x.d)}</small></div><label><input data-mg="${i}" type="number" inputmode="decimal" value="${Math.round(x.g)}" aria-label="Gramos">${x.f.u==="ml"?"ml":"g"}</label><span data-mp="${i}">${String(fround(fprot(x.f,x.g))).replace(".",",")} g</span><button data-mdel="${i}" aria-label="Quitar">×</button></div>`).join("")}
+   ${MEAL.bad.length?`<p class="mbad">No he reconocido: ${MEAL.bad.map(b=>"«"+esc(b)+"»").join(", ")}. Escríbelo de otra forma, añádelo con la etiqueta o apúntalo a ojo.</p>`:""}
+   ${MEAL.items.length?`<div class="pfres-t"><span>Proteína estimada</span><b id="mtot">${String(fround(tot)).replace(".",",")} g</b></div><div class="pfbtn"><button class="primary" data-madd>Apuntar comida</button><button class="btn" data-mcancel>Borrar</button></div>`:""}</div>`}
+function mealDraw(){const r=document.getElementById("pfres");if(r)r.innerHTML=mealHTML()}
+function mealTot(){const b=document.getElementById("mtot");if(b&&MEAL)b.textContent=String(fround(MEAL.items.reduce((a,x)=>a+fprot(x.f,x.g),0))).replace(".",",")+" g"}
+
 function protTarget(){const ds=Object.keys(S.tests||{}).sort().reverse();for(const d of ds){const v=numv(S.tests[d].peso);if(v)return Math.round(v*1.8/5)*5}return 130}
 function lastMeas(k){const ds=Object.keys(S.tests||{}).sort().reverse();for(const d of ds){const v=numv(S.tests[d][k]);if(v)return{v,d}}return null}
 function vPerfil(){
@@ -2635,7 +2713,7 @@ function vPerfil(){
      <button class="secondary" data-act="test">Apuntar medidas</button></div>
    <div class="card"><h2>Proteína de hoy</h2><div class="prot"><svg viewBox="0 0 92 92" width="96" height="96"><circle cx="46" cy="46" r="${R}" fill="none" stroke="var(--s3)" stroke-width="9"/><circle cx="46" cy="46" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(C*Math.min(1,pg/pt)).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 46 46)"/><text x="46" y="48" text-anchor="middle" font-family="Bebas Neue" font-size="24" fill="var(--fg)">${Math.round(pg)}</text><text x="46" y="62" text-anchor="middle" font-size="9" fill="var(--fg2)">de ${pt} g</text></svg>
      <div style="flex:1;min-width:170px"><span class="lab">${pg>=pt?"Objetivo cumplido":"Te faltan"}</span><span class="bign">${pg>=pt?"✓":Math.round(pt-pg)+" g"}</span></div></div>
-     <div class="pfind"><input id="pfq" type="search" placeholder="¿Qué has comido? Ej.: 2 huevos" autocomplete="off" enterkeyhint="search" aria-label="Buscar alimento"><div id="pfres"></div></div>
+     <div class="pfind"><textarea id="pfq" rows="2" placeholder="¿Qué has comido? Escríbelo como lo dirías: «2 tostadas con jamón y un yogur»" autocomplete="off" enterkeyhint="done" aria-label="Lo que has comido">${MEAL?esc(MEAL.text):""}</textarea><div id="pfres">${mealHTML()}</div></div>
      <div id="pfed">${pfEditor()}</div>
      ${protLogHTML(t)}
      <div class="prot"><div class="btns"><span class="sub" style="font-size:12.5px;align-self:center">A ojo:</span>${[10,20,30].map(g=>`<button class="l" data-prot="${g}">+${g} g</button>`).join("")}</div></div>
@@ -3270,9 +3348,10 @@ function sheetAlts(orig){
 }
 
 /* ============ Eventos ============ */
-document.addEventListener("input",e=>{const el=e.target;if(!el)return;if(el.id==="pfq"){PF=null;const ed=document.getElementById("pfed");if(ed)ed.innerHTML="";pfResults(el.value)}
+document.addEventListener("input",e=>{const el=e.target;if(!el)return;if(el.id==="pfq"){PF=null;const ed=document.getElementById("pfed");if(ed)ed.innerHTML="";MEAL=el.value.trim()?{text:el.value,...mealParse(el.value)}:null;mealDraw()}
+  else if(el.dataset&&el.dataset.mg!==undefined&&MEAL){const i=+el.dataset.mg,x=MEAL.items[i];if(x){x.g=Math.max(0,parseFloat(String(el.value).replace(",","."))||0);const sp=document.querySelector('[data-mp="'+i+'"]');if(sp)sp.textContent=String(fround(fprot(x.f,x.g))).replace(".",",")+" g";mealTot()}}
   else if(el.id==="pfg"&&PF){const f=pfFind(PF.id);PF.g=Math.max(0,parseFloat(String(el.value).replace(",","."))||0);PF.por=PF.por>=0&&Math.abs(PF.g-f.por[PF.por][1]*PF.n)>.5?-1:PF.por;const b=document.querySelector(".pfres-t b");if(b)b.textContent=String(fround(fprot(f,PF.g))).replace(".",",")+" g"}});
-document.addEventListener("keydown",e=>{if(e.target&&e.target.id==="pfq"&&e.key==="Enter"){e.preventDefault();const b=document.querySelector("#pfres [data-pfpick]");if(b)pfOpen(b.dataset.pfpick,e.target.value)}});
+document.addEventListener("keydown",e=>{if(e.target&&e.target.id==="pfq"&&e.key==="Enter"&&!e.shiftKey){e.preventDefault();e.target.blur()}});
 document.addEventListener("change",e=>{if(e.target&&e.target.matches&&e.target.matches("[data-vozsel]")){try{localStorage.setItem("entreno-voz-name",e.target.value)}catch(x){}pickVoice();unlockAudio();setTimeout(()=>say("Esta es mi voz. Vamos a trabajar.",{urgent:1}),300);return}if(e.target&&e.target.id==="pfname"){S.settings.name=e.target.value.trim().slice(0,18);save()}if(e.target&&e.target.id==="vozfiles"&&e.target.files.length){vozSave([...e.target.files]).then(n=>{toast(n+" audios cargados. Pulsa el altavoz de arriba para probar.");render()})}});
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;if(tab!==b.dataset.tab){G_TABCHANGE=true;buzz(8)}tab=b.dataset.tab;if(tab==="hoy")viewDate=todayISO();render();window.scrollTo(0,0)});
 document.addEventListener("click",e=>{
@@ -3302,6 +3381,9 @@ document.addEventListener("click",e=>{
   const skn=t.closest("[data-sk]");if(skn){const[a,b]=skn.dataset.sk.split("|");SKSEL=[a,+b];buzz(8);render();return}
   const gt=t.closest("[data-goto]");if(gt){G_TABCHANGE=true;tab=gt.dataset.goto;render();window.scrollTo(0,0);return}
   const pr=t.closest("[data-prot]");if(pr){protAdd("A ojo",+pr.dataset.prot);buzz(10);save();render();return}
+  const md=t.closest("[data-mdel]");if(md&&MEAL){MEAL.items.splice(+md.dataset.mdel,1);mealDraw();return}
+  if(t.closest("[data-mcancel]")){MEAL=null;const q=$("#pfq");if(q)q.value="";mealDraw();return}
+  if(t.closest("[data-madd]")&&MEAL&&MEAL.items.length){const tot=fround(MEAL.items.reduce((a,x)=>a+fprot(x.f,x.g),0)),q=MEAL.text.trim().replace(/\s+/g," ");protAdd(q.length>90?q.slice(0,88)+"…":q,tot);MEAL=null;buzz(15);save();render();toast("+"+String(tot).replace(".",",")+" g de proteína apuntados");return}
   const pk=t.closest("[data-pfpick]");if(pk){pfOpen(pk.dataset.pfpick,($("#pfq")||{}).value);return}
   const pp=t.closest("[data-pfpor]");if(pp&&PF){const f=pfFind(PF.id);PF.por=+pp.dataset.pfpor;PF.n=1;PF.g=f.por[PF.por][1];drawPF();return}
   const ps=t.closest("[data-pfstep]");if(ps&&PF){const f=pfFind(PF.id),d=+ps.dataset.pfstep;PF.n=d>0?(PF.n<1?1:PF.n+1):(PF.n>1?PF.n-1:0.5);PF.g=f.por[PF.por][1]*PF.n;drawPF();return}
@@ -3312,7 +3394,7 @@ document.addEventListener("click",e=>{
   const pd=t.closest("[data-pfdel]");if(pd){const k=todayISO(),L=(S.protlog||{})[k]||[],x=L.splice(+pd.dataset.pfdel,1)[0];if(x){S.prot[k]=Math.max(0,fround((S.prot[k]||0)-x.p))}save();render();return}
   if(t.closest("[data-mfadd]")){const n=(($("#mfn")||{}).value||"").trim(),pv=parseFloat(String(($("#mfp")||{}).value).replace(",",".")),gv=parseFloat(String(($("#mfg")||{}).value).replace(",","."));
     if(!n||!(pv>=0&&pv<=100)||!(gv>0)){toast("Pon nombre, proteína por 100 g y gramos de la ración.");return}
-    const id="m"+Date.now();S.myfoods=S.myfoods||[];S.myfoods.push({id,n,al:"",p:pv,u:"g",por:[["1 ración ("+Math.round(gv)+" g)",gv]]});save();render();pfOpen(id,"");return}
+    const id="m"+Date.now();S.myfoods=S.myfoods||[];S.myfoods.push({id,n,al:"",p:pv,u:"g",por:[["1 ración ("+Math.round(gv)+" g)",gv]]});MPROT=null;save();render();pfOpen(id,"");return}
   const crb=t.closest("[data-cr]");if(crb){const[k,v]=crb.dataset.cr.split("|");CR[k]=v;CT.clear();render();return}
   if(t.closest("[data-testvoice]")){unlockAudio();setTimeout(()=>say((duro()?SG(DU_PREP):sarge()?SG(SG_PREP):"Prueba de voz.")+" Si me oyes, la voz funciona.",{urgent:1}),400);return}
   const co=t.closest("[data-coach]");if(co){S.settings.coach=co.dataset.coach;save();render();say(co.dataset.coach==="duro"?SG(DU_PREP):SG(SG_PREP),{urgent:1});return}
