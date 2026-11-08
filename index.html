@@ -785,6 +785,21 @@ a{color:var(--acc3)}
 .switch::after{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}.switch[aria-pressed="true"]::after{background:#fff}
 .reto .lab{color:#A1A1A6}.reto p{color:#F5F5F7}
 .dsp .firma{bottom:-2px}
+
+/* Proteína: buscador de alimentos */
+.pfind{margin-top:14px}.pfind input{width:100%;box-sizing:border-box;min-height:48px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:0 14px;font:inherit;font-size:16px}
+#pfres{display:flex;flex-direction:column;gap:6px;margin-top:6px}#pfres:empty{display:none}
+#pfres button{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer;min-height:46px}
+#pfres button small{color:var(--fg2);font-size:12px;white-space:nowrap}#pfres button i{font-style:normal;font-size:11px;background:var(--ink);color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px}
+.pfed{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.pfed-h b{display:block;font-size:16px}.pfed-h span{font-size:12.5px;color:var(--fg2)}
+.pfpor{display:flex;flex-wrap:wrap;gap:6px}.pfpor button{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;min-height:36px;padding:0 12px;font:500 13px var(--f-ui);cursor:pointer}.pfpor button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pfq{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pfq>button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:20px;cursor:pointer;color:var(--ink)}.pfq>b{min-width:28px;text-align:center;font-size:18px}.pfq>span{color:var(--fg2)}
+.pfq label{display:flex;align-items:center;gap:6px;color:var(--fg2);font-size:14px}.pfq input{width:86px;min-height:40px;border-radius:10px;border:1px solid var(--line);padding:0 10px;font:inherit;font-size:16px;color:var(--ink);background:#fff}
+.pfres-t{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:10px}.pfres-t span{color:var(--fg2);font-size:13px}.pfres-t b{font-family:"Bebas Neue",var(--f-ui);font-size:30px;font-weight:400;color:var(--acc3)}
+.pfbtn{display:flex;gap:8px}.pfbtn .primary{flex:1;min-height:46px}
+.pflog{margin-top:12px;display:flex;flex-direction:column}.pflog div{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.pflog b{font-weight:600}.pflog button{width:32px;height:32px;border-radius:50%;border:0;background:var(--s2,#f2f2f4);font-size:16px;cursor:pointer;color:var(--fg2)}
+#pfed:empty{display:none}.toast{color:#fff}.pfmy{margin-top:12px}.pfmy summary{cursor:pointer;font-size:13.5px;font-weight:600}.pfmyf{display:grid;gap:8px}.pfmyf input{min-height:44px;border-radius:12px;border:1px solid var(--line);padding:0 12px;font:inherit;font-size:16px;background:#fff;color:var(--ink)}
 </style>
 
 <nav class="tabs" aria-label="Secciones">
@@ -2391,6 +2406,218 @@ function vPlan(){
   <p class="sub" style="font-size:11px;color:var(--fg3)">Tus fotos de ejercicios se guardan solo en este dispositivo.</p>
   </section>`;
 }
+/* ============ Proteína por alimento ============
+   Gramos de proteína por 100 g (o 100 ml) de la parte comestible, redondeados.
+   Fuentes: BEDCA (Base de Datos Española de Composición de Alimentos, AESAN) y USDA FoodData Central.
+   Formato: [nombre, sinónimos separados por |, proteína/100, "g"|"ml", raciones [[texto, gramos]]] — la primera ración es la habitual. */
+const FOODS=[
+/* Huevos */
+["Huevo","huevos|huevo cocido|huevo frito|tortilla francesa|revuelto",12.6,"g",[["1 huevo (M)",55],["1 huevo (L)",62]]],
+["Clara de huevo","claras|clara liquida|claras pasteurizadas",10.9,"g",[["1 clara",33],["100 ml de claras",100]]],
+["Yema de huevo","yemas",16,"g",[["1 yema",17]]],
+["Tortilla de patatas","tortilla española|pincho de tortilla",6.5,"g",[["1 pincho",110],["1 ración",180]]],
+/* Lácteos */
+["Leche semidesnatada","leche|vaso de leche",3.3,"ml",[["1 vaso (250 ml)",250],["1 taza (200 ml)",200]]],
+["Leche entera","leche",3.2,"ml",[["1 vaso (250 ml)",250],["1 taza (200 ml)",200]]],
+["Leche desnatada","leche",3.4,"ml",[["1 vaso (250 ml)",250],["1 taza (200 ml)",200]]],
+["Leche sin lactosa","leche",3.2,"ml",[["1 vaso (250 ml)",250]]],
+["Leche proteica","leche proteinas|leche +proteinas|batido proteico",6,"ml",[["1 vaso (250 ml)",250],["1 botella (330 ml)",330]]],
+["Café con leche","cafe|cortado|cafe con leche",1.7,"ml",[["1 taza (200 ml)",200],["1 cortado (100 ml)",100]]],
+["Batido de cacao","cacaolat|colacao|cola cao|chocolate con leche bebida|batido de chocolate",3.3,"ml",[["1 botella (200 ml)",200],["1 vaso (250 ml)",250]]],
+["Bebida de soja","leche de soja|soja",3.3,"ml",[["1 vaso (250 ml)",250]]],
+["Bebida de avena","leche de avena",0.8,"ml",[["1 vaso (250 ml)",250]]],
+["Bebida de almendra","leche de almendra",0.5,"ml",[["1 vaso (250 ml)",250]]],
+["Yogur natural","yogur|yogurt",3.8,"g",[["1 yogur",125]]],
+["Yogur griego","yogur griego|griego",3.5,"g",[["1 yogur",125]]],
+["Yogur proteico","yogur proteinas|yogur +proteinas|yopro|danone pro",10,"g",[["1 yogur (200 g)",200],["1 yogur (160 g)",160]]],
+["Skyr","skyr|yogur islandes",11,"g",[["1 envase (150 g)",150]]],
+["Kéfir","kefir",3.5,"g",[["1 vaso (200 g)",200],["1 botella (500 g)",500]]],
+["Queso fresco batido 0%","queso batido|queso fresco batido|quark",8,"g",[["1 tarrina (250 g)",250],["1 ración (125 g)",125]]],
+["Queso fresco batido proteico","queso batido proteinas",12,"g",[["1 tarrina (200 g)",200]]],
+["Queso fresco (tipo Burgos)","queso burgos|queso fresco|burgos",12,"g",[["1 ración (60 g)",60],["1 tarrina (250 g)",250]]],
+["Requesón","requeson|cottage|queso cottage",11,"g",[["1 ración (100 g)",100]]],
+["Mozzarella","mozarella|mozzarella fresca",18,"g",[["1 bola (125 g)",125],["1 ración (50 g)",50]]],
+["Queso curado","queso manchego|manchego curado|queso viejo",32,"g",[["1 cuña o 3 lonchas (30 g)",30]]],
+["Queso semicurado","queso|queso manchego semi",26,"g",[["3 lonchas (30 g)",30]]],
+["Queso de Mahón","mahon|maó|queso menorquin",26,"g",[["3 lonchas (30 g)",30]]],
+["Queso tierno","queso tierno|queso en lonchas|lonchas de queso|havarti|edam|gouda",24,"g",[["1 loncha (20 g)",20],["3 lonchas (60 g)",60]]],
+["Queso en lonchas fundido","tranchetes|queso sandwich|queso fundido",13,"g",[["1 loncha (17 g)",17]]],
+["Parmesano","parmigiano|grana padano|queso rallado parmesano",35,"g",[["1 cucharada rallado (8 g)",8],["1 ración (30 g)",30]]],
+["Queso rallado","queso rallado pizza|emmental rallado",27,"g",[["1 puñado (30 g)",30]]],
+["Queso feta","feta",14,"g",[["1 ración (40 g)",40]]],
+["Queso de cabra (rulo)","rulo de cabra|queso cabra",18,"g",[["2 rodajas (40 g)",40]]],
+["Queso brie o camembert","brie|camembert",20,"g",[["1 ración (30 g)",30]]],
+["Queso crema","philadelphia|queso untar",6,"g",[["1 cucharada (20 g)",20]]],
+["Natillas o flan","natillas|flan|postre lacteo",3.8,"g",[["1 unidad (125 g)",125]]],
+["Helado","helado de nata|helado chocolate",3.5,"g",[["1 bola (60 g)",60],["1 tarrina (100 g)",100]]],
+/* Suplementos */
+["Proteína whey (polvo)","whey|proteina en polvo|batido de proteinas|scoop|cacito|isolate|caseina",78,"g",[["1 cacito (30 g)",30]]],
+["Proteína vegetal (polvo)","proteina vegana|proteina guisante",75,"g",[["1 cacito (30 g)",30]]],
+["Barrita de proteínas","barrita proteica|protein bar",33,"g",[["1 barrita (60 g)",60],["1 barrita (45 g)",45]]],
+/* Aves */
+["Pechuga de pollo (cocinada)","pollo|pechuga|pollo a la plancha|filete de pollo|pollo cocido",31,"g",[["1 filete (120 g)",120],["1 pechuga entera (200 g)",200]]],
+["Pechuga de pollo (peso en crudo)","pollo crudo|pechuga cruda",22.5,"g",[["1 filete (150 g)",150],["1 bandeja (500 g)",500]]],
+["Muslo o contramuslo de pollo (cocinado)","muslo|contramuslo|pollo asado|alitas",25,"g",[["1 muslo sin hueso (90 g)",90],["2 contramuslos (150 g)",150]]],
+["Pollo asado con piel","pollo asado|pollo al ast",27,"g",[["1 cuarto (150 g de carne)",150]]],
+["Pavo (pechuga cocinada)","pavo|filete de pavo",29,"g",[["1 filete (120 g)",120]]],
+["Pechuga de pavo en lonchas","fiambre de pavo|pavo en lonchas|lonchas de pavo|pavo braseado",19,"g",[["1 loncha (12 g)",12],["1 sobre (100 g)",100]]],
+["Pollo empanado o nuggets","nuggets|pollo empanado|tiras de pollo|fingers",15,"g",[["5 nuggets (90 g)",90]]],
+/* Carne */
+["Ternera (filete cocinado)","ternera|filete|bistec|entrecot|solomillo de ternera|vaca|buey",30,"g",[["1 filete (150 g)",150]]],
+["Carne picada (cocinada)","carne picada|picada|bolonesa",26,"g",[["1 ración (120 g)",120]]],
+["Hamburguesa de ternera (peso en crudo)","hamburguesa|burger",18,"g",[["1 hamburguesa (110 g)",110],["1 hamburguesa grande (180 g)",180]]],
+["Lomo de cerdo (cocinado)","lomo|cinta de lomo|cerdo|chuleta|chuletas",29,"g",[["2 filetes (120 g)",120],["1 chuleta sin hueso (150 g)",150]]],
+["Solomillo de cerdo (cocinado)","solomillo|solomillo de cerdo",28,"g",[["1 ración (150 g)",150]]],
+["Secreto o presa ibérica (cocinado)","secreto|presa|pluma|iberico",22,"g",[["1 ración (150 g)",150]]],
+["Costillas de cerdo (cocinadas)","costillas|costilla",24,"g",[["1 ración de carne (150 g)",150]]],
+["Cordero (cocinado)","cordero|chuletillas",25,"g",[["1 ración de carne (130 g)",130]]],
+["Conejo (cocinado)","conejo",29,"g",[["1 ración de carne (150 g)",150]]],
+["Hígado","higado",20,"g",[["1 filete (100 g)",100]]],
+["Albóndigas en salsa","albondigas",12,"g",[["1 plato (250 g)",250],["5 albóndigas (150 g)",150]]],
+["Croquetas","croqueta|croquetas de jamon|croquetas de pollo",7,"g",[["1 croqueta (35 g)",35],["6 croquetas (210 g)",210]]],
+["Filete empanado o San Jacobo","escalope|empanado|san jacobo|milanesa",18,"g",[["1 unidad (130 g)",130]]],
+/* Embutidos */
+["Jamón serrano","jamon|serrano|jamon curado",30,"g",[["1 loncha (15 g)",15],["1 ración (50 g)",50]]],
+["Jamón ibérico","iberico|pata negra",31,"g",[["1 ración (50 g)",50]]],
+["Jamón cocido (york)","york|jamon de york|jamon cocido|fiambre",19,"g",[["1 loncha (15 g)",15],["1 sobre (100 g)",100]]],
+["Lomo embuchado","lomo curado|lomo iberico",45,"g",[["5 lonchas (30 g)",30]]],
+["Chorizo","chorizo",24,"g",[["5 rodajas (30 g)",30]]],
+["Salchichón o fuet","salchichon|fuet|longaniza",26,"g",[["1 ración (30 g)",30]]],
+["Sobrasada","sobrassada|sobrasada mallorquina",14,"g",[["1 ración (30 g)",30]]],
+["Butifarra o botifarró","butifarra|botifarron|botifarro|camaiot",14,"g",[["1 ración (50 g)",50]]],
+["Mortadela","mortadela|chopped",13,"g",[["2 lonchas (30 g)",30]]],
+["Beicon (cocinado)","bacon|beicon|panceta",30,"g",[["3 tiras (30 g)",30]]],
+["Salchichas","salchicha|frankfurt|perrito",12,"g",[["1 salchicha (45 g)",45],["1 salchicha fresca (70 g)",70]]],
+/* Pescado y marisco */
+["Atún en lata (escurrido)","atun|atun en lata|lata de atun|atun claro|bonito",26,"g",[["1 lata pequeña (56 g)",56],["1 lata grande (112 g)",112]]],
+["Atún fresco (cocinado)","atun fresco|tataki",30,"g",[["1 filete (150 g)",150]]],
+["Salmón (cocinado)","salmon",25,"g",[["1 filete (150 g)",150]]],
+["Salmón ahumado","salmon ahumado",22,"g",[["1 sobre (100 g)",100],["2 lonchas (40 g)",40]]],
+["Merluza (cocinada)","merluza|pescado blanco|lenguado|gallo|abadejo",22,"g",[["1 filete (150 g)",150]]],
+["Bacalao (cocinado)","bacalao",23,"g",[["1 lomo (150 g)",150]]],
+["Dorada o lubina (cocinada)","dorada|lubina|corvina|pescado",24,"g",[["1 ración (150 g)",150]]],
+["Emperador o pez espada (cocinado)","emperador|pez espada",25,"g",[["1 rodaja (150 g)",150]]],
+["Sardinas en lata","sardinas|sardinillas",24,"g",[["1 lata (85 g escurridas)",85]]],
+["Caballa en lata","caballa|melva",23,"g",[["1 lata (85 g escurrida)",85]]],
+["Sardinas o boquerones frescos (cocinados)","boquerones|sardinas a la plancha|pescaito frito",25,"g",[["1 ración (120 g)",120]]],
+["Boquerones en vinagre","boquerones en vinagre",18,"g",[["1 ración (60 g)",60]]],
+["Anchoas en aceite","anchoas",29,"g",[["1 lata (30 g)",30]]],
+["Gambas o langostinos (cocidos)","gambas|langostinos|camarones|gambas al ajillo|marisco",22,"g",[["10 gambas peladas (100 g)",100],["1 ración (150 g)",150]]],
+["Calamares o sepia (plancha)","calamar|calamares|sepia|chipirones|pota",18,"g",[["1 ración (150 g)",150]]],
+["Calamares a la romana","calamares fritos|rabas|bocadillo de calamares",11,"g",[["1 ración (150 g)",150]]],
+["Pulpo (cocido)","pulpo|pulpo a la gallega",28,"g",[["1 ración (150 g)",150]]],
+["Mejillones (cocidos)","mejillones|almejas|berberechos",20,"g",[["1 ración de carne (100 g)",100]]],
+["Mejillones en escabeche (lata)","mejillones en lata",16,"g",[["1 lata (70 g escurridos)",70]]],
+["Surimi o palitos de cangrejo","surimi|palitos de cangrejo|gulas",7,"g",[["5 palitos (80 g)",80]]],
+/* Legumbres y proteína vegetal */
+["Lentejas (cocidas)","lentejas|lentejas guisadas|bote de lentejas",9,"g",[["1 plato (250 g)",250],["1 bote escurrido (250 g)",250]]],
+["Lentejas (secas)","lentejas crudas",24,"g",[["1 ración en seco (70 g)",70]]],
+["Garbanzos (cocidos)","garbanzos|cocido|garbanzos de bote",9,"g",[["1 plato (250 g)",250],["1 bote escurrido (250 g)",250]]],
+["Garbanzos (secos)","garbanzos crudos",20,"g",[["1 ración en seco (70 g)",70]]],
+["Alubias o judías blancas (cocidas)","alubias|judias blancas|frijoles|fabada|alubias rojas",8.5,"g",[["1 plato (250 g)",250]]],
+["Guisantes","guisantes|chicharos",5.5,"g",[["1 ración (150 g)",150]]],
+["Habas (cocidas)","habas",7.6,"g",[["1 ración (150 g)",150]]],
+["Edamame","edamame",11,"g",[["1 ración (100 g)",100]]],
+["Hummus","humus|hummus",8,"g",[["2 cucharadas (40 g)",40],["1 tarrina (240 g)",240]]],
+["Tofu firme","tofu",13,"g",[["1 ración (125 g)",125]]],
+["Tempeh","tempe",19,"g",[["1 ración (100 g)",100]]],
+["Seitán","seitan",25,"g",[["1 ración (100 g)",100]]],
+["Soja texturizada (seca)","soja texturizada|proteina de soja",50,"g",[["1 ración en seco (50 g)",50]]],
+["Heura u otra carne vegetal","heura|carne vegetal|hamburguesa vegetal|beyond",20,"g",[["1 ración (100 g)",100]]],
+/* Frutos secos y semillas */
+["Cacahuetes","cacahuete|mani",26,"g",[["1 puñado (30 g)",30]]],
+["Crema de cacahuete","mantequilla de cacahuete|peanut butter",25,"g",[["1 cucharada (16 g)",16]]],
+["Almendras","almendra",21,"g",[["1 puñado (30 g)",30]]],
+["Nueces","nuez",15,"g",[["1 puñado (30 g)",30]]],
+["Anacardos","anacardo",18,"g",[["1 puñado (30 g)",30]]],
+["Pistachos","pistacho",20,"g",[["1 puñado pelados (30 g)",30]]],
+["Avellanas","avellana",15,"g",[["1 puñado (30 g)",30]]],
+["Frutos secos variados","frutos secos|mix de frutos secos",18,"g",[["1 puñado (30 g)",30]]],
+["Pipas de girasol (peladas)","pipas",21,"g",[["1 puñado (30 g)",30]]],
+["Pipas de calabaza","semillas de calabaza",30,"g",[["1 puñado (30 g)",30]]],
+["Semillas de chía, lino o sésamo","chia|lino|sesamo|semillas",18,"g",[["1 cucharada (12 g)",12]]],
+/* Cereales, pan y platos */
+["Pan (barra blanca)","pan|barra|baguette|bocadillo pan|pa amb oli",8.5,"g",[["1/4 de barra (60 g)",60],["1/2 barra (120 g)",120],["1 rebanada (30 g)",30]]],
+["Pan integral","pan integral|pan de centeno|pan multicereal",9,"g",[["1 rebanada (35 g)",35],["1/4 de barra (60 g)",60]]],
+["Pan de molde","pan bimbo|pan de molde|sandwich",8,"g",[["1 rebanada (25 g)",25],["2 rebanadas (50 g)",50]]],
+["Biscotes o tostadas","tostadas|biscotes|pan tostado|picos|regañas",11,"g",[["1 tostada (8 g)",8],["3 tostadas (24 g)",24]]],
+["Tortilla de trigo (wrap)","wrap|fajitas|tortilla mexicana|burrito",8.5,"g",[["1 tortilla (60 g)",60]]],
+["Pasta (cocida)","pasta|macarrones|espaguetis|espagueti|fideos|tallarines|lasaña",5.8,"g",[["1 plato (250 g)",250]]],
+["Pasta (en seco)","pasta cruda|macarrones crudos",12.5,"g",[["1 ración en seco (80 g)",80],["1 ración grande (120 g)",120]]],
+["Arroz (cocido)","arroz|arroz blanco|arroz integral|risotto",2.7,"g",[["1 plato (200 g)",200]]],
+["Arroz (en seco)","arroz crudo",7,"g",[["1 ración en seco (80 g)",80]]],
+["Paella","paella|arroz con pollo|arroz caldoso|arroz brut|arroz a banda",8,"g",[["1 plato (300 g)",300]]],
+["Copos de avena","avena|porridge|gachas",13.5,"g",[["1 ración (40 g)",40],["1 ración grande (60 g)",60]]],
+["Cereales de desayuno","cereales|corn flakes|muesli|granola|special k",8,"g",[["1 bol (40 g)",40]]],
+["Quinoa (cocida)","quinoa",4.4,"g",[["1 ración (150 g)",150]]],
+["Cuscús (cocido)","cuscus",3.8,"g",[["1 ración (150 g)",150]]],
+["Patata (cocida o al horno)","patata|patatas|pure de patata",2,"g",[["1 patata mediana (170 g)",170]]],
+["Patatas fritas","patatas fritas|patatas de bolsa|chips",6.5,"g",[["1 bolsa pequeña (40 g)",40],["1 ración de bar (150 g)",150]]],
+["Boniato","batata|boniato",1.6,"g",[["1 boniato (200 g)",200]]],
+["Pizza","pizza|pizza margarita|pizza barbacoa",11,"g",[["1 porción (110 g)",110],["1 pizza individual (300 g)",300],["1 pizza mediana entera (450 g)",450]]],
+["Hamburguesa completa (bar o cadena)","big mac|whopper|hamburguesa con pan",12,"g",[["1 hamburguesa (220 g)",220]]],
+["Kebab o dürüm","kebab|durum|doner|shawarma",10,"g",[["1 dürüm (350 g)",350],["1 kebab en pan (300 g)",300]]],
+["Sushi","sushi|maki|nigiri|california roll",6,"g",[["1 pieza (30 g)",30],["12 piezas (360 g)",360]]],
+["Ensaimada","ensaimada|ensaimada mallorquina",7.5,"g",[["1 ensaimada individual (60 g)",60]]],
+["Croissant o bollería","croissant|cruasan|bolleria|napolitana|donut|magdalena|muffin",7,"g",[["1 unidad (60 g)",60]]],
+["Galletas","galletas|galletas maria|cookies",7,"g",[["4 galletas (30 g)",30]]],
+/* Fruta y verdura */
+["Plátano","platano|banana",1.2,"g",[["1 plátano (120 g)",120]]],
+["Manzana o pera","manzana|pera",0.3,"g",[["1 pieza (180 g)",180]]],
+["Naranja o mandarina","naranja|mandarina|zumo de naranja",0.9,"g",[["1 pieza (160 g)",160]]],
+["Fruta (otras)","fresas|kiwi|uvas|melocoton|mango|sandia|melon|pina|fruta",0.8,"g",[["1 ración (150 g)",150]]],
+["Aguacate","aguacate|guacamole",2,"g",[["1/2 aguacate (70 g)",70]]],
+["Dátiles o pasas","datiles|pasas|fruta seca|higos secos",2.7,"g",[["1 puñado (30 g)",30]]],
+["Brócoli o espinacas","brocoli|espinacas|acelgas|kale|coles de bruselas",2.8,"g",[["1 ración (150 g)",150]]],
+["Champiñones o setas","champiñones|setas|champinon",3,"g",[["1 ración (150 g)",150]]],
+["Espárragos o alcachofas","esparragos|alcachofas",2.5,"g",[["1 ración (150 g)",150]]],
+["Verdura (otras)","verdura|ensalada|lechuga|tomate|pimiento|calabacin|berenjena|zanahoria|judias verdes|coliflor|cebolla|gazpacho|crema de verduras|pisto",1.3,"g",[["1 ración (200 g)",200],["1 plato de ensalada (150 g)",150]]],
+["Maíz dulce","maiz",3.3,"g",[["1 lata pequeña (140 g)",140]]],
+/* Otros */
+["Chocolate negro","chocolate negro|chocolate 70|chocolate 85",8,"g",[["2 onzas (20 g)",20]]],
+["Chocolate con leche","chocolate con leche|kinder|bombones",7.5,"g",[["2 onzas (20 g)",20]]],
+["Crema de cacao","nutella|nocilla",6,"g",[["1 cucharada (20 g)",20]]],
+["Cacao puro en polvo","cacao puro|cacao desgrasado",20,"g",[["1 cucharada (10 g)",10]]],
+["Aceitunas","aceitunas|olivas",1,"g",[["10 aceitunas (40 g)",40]]],
+["Cerveza","cerveza|caña",0.4,"ml",[["1 caña (200 ml)",200],["1 tercio (330 ml)",330]]]
+].map((f,i)=>({id:"f"+i,n:f[0],al:f[1],p:f[2],u:f[3],por:f[4]}));
+const fnorm=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9ñ ]/g," ").replace(/\s+/g," ").trim();
+const FSTOP=new Set(["de","del","la","el","los","las","un","una","unos","unas","con","y","a","al","en","mi","me","he","comido","tomado"]);
+function foodAll(){return[...(S.myfoods||[]).map(f=>({...f,mine:1})),...FOODS]}
+/* Entiende «2 huevos», «150 g de pollo», «medio plato de lentejas», «250 ml leche» */
+function foodParse(q){let t=fnorm(q).replace(/\bmedio\b|\bmedia\b/,"0.5").replace(/\bun\b|\buna\b/,"1").replace(/\bdos\b/,"2").replace(/\btres\b/,"3").replace(/\bcuatro\b/,"4");
+  const m=String(q).replace(",",".").match(/(\d+(?:\.\d+)?)\s*(kg|g|gr|gramos|ml|l|litros?)?\b/i);let qty=null,unit=null;
+  if(m){qty=+m[1];unit=(m[2]||"").toLowerCase();if(unit==="kg"){qty*=1000;unit="g"}else if(unit==="l"||unit.startsWith("litro")){qty*=1000;unit="ml"}else if(unit.startsWith("g")||unit==="gramos")unit="g";else if(unit!=="ml")unit=null}
+  else{const w=t.match(/^(0\.5|1|2|3|4)\b/);if(w)qty=+w[1]}
+  const words=t.replace(/\d+(\.\d+)?\s*(kg|g|gr|gramos|ml|l|litros?)?\b/g," ").split(" ").filter(w=>w&&!FSTOP.has(w)&&!/^(0\.5|\d+)$/.test(w)&&!/^(plato|platos|racion|raciones|vaso|vasos|lata|latas|puñado|cucharada|cucharadas|unidad|unidades|filete|filetes|loncha|lonchas|trozo|bol|taza|tazas|pieza|piezas|bote|sobre)$/.test(w));
+  return{qty,unit,words}}
+function foodSearch(q){const{words}=foodParse(q);if(!words.length)return[];
+  const stem=w=>w.length>4?w.replace(/(es|s)$/,""):w;
+  return foodAll().map(f=>{const nm=fnorm(f.n),hay=nm+" "+fnorm(f.al||"");let sc=0;
+      for(const w0 of words){const w=stem(w0);if(!(" "+hay).includes(" "+w))return null;sc+=(" "+nm).includes(" "+w)?3:1}
+      const qj=words.join(" ");if((f.al||"").split("|").some(a=>fnorm(a)===qj)||fnorm(f.n)===qj)sc+=6;
+      if(nm.startsWith(stem(words[0])))sc+=3;if(f.mine)sc+=2;return{f,sc:sc-(f.mine?0:+f.id.slice(1))/1000}})
+    .filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,7).map(x=>x.f)}
+const fround=v=>Math.round(v*10)/10;
+const fprot=(f,g)=>f.p*g/100;
+let PF=null;/* {id, g, por, n} alimento abierto para apuntar */
+function pfFind(id){return foodAll().find(f=>f.id===id)}
+function pfOpen(id,q){const f=pfFind(id);if(!f)return;const{qty,unit}=foodParse(q||"");const base=f.por[0][1];
+  PF=unit&&qty?{id,g:qty,por:-1,n:1}:{id,g:base*(qty||1),por:0,n:qty||1};drawPF()}
+function pfEditor(){if(!PF)return"";const f=pfFind(PF.id);if(!f)return"";const pr=fprot(f,PF.g),u=f.u==="ml"?"ml":"g";
+  return`<div class="pfed"><div class="pfed-h"><b>${esc(f.n)}</b><span>${String(f.p).replace(".",",")} g de proteína por 100 ${u}</span></div>
+   <div class="pfpor">${f.por.map((p,i)=>`<button data-pfpor="${i}" aria-pressed="${PF.por===i}">${esc(p[0])}</button>`).join("")}</div>
+   <div class="pfq">${PF.por>=0?`<button data-pfstep="-1" aria-label="Menos">−</button><b>${String(PF.n).replace(".",",")}</b><button data-pfstep="1" aria-label="Más">+</button><span>×</span>`:""}<label><input id="pfg" type="number" inputmode="decimal" min="0" step="5" value="${Math.round(PF.g)}"> ${u}</label></div>
+   <div class="pfres-t"><span>Proteína estimada</span><b>${fround(pr).toString().replace(".",",")} g</b></div>
+   <div class="pfbtn"><button class="primary" data-pfadd>Apuntar</button><button class="btn" data-pfcancel>Cancelar</button></div></div>`}
+function drawPF(){const e=document.getElementById("pfed");if(e)e.innerHTML=pfEditor();const r=document.getElementById("pfres");if(r&&PF)r.innerHTML=""}
+function pfResults(q){const r=document.getElementById("pfres");if(!r)return;const L=foodSearch(q);
+  r.innerHTML=!fnorm(q)?"":L.length?L.map(f=>`<button data-pfpick="${f.id}"><span>${esc(f.n)}${f.mine?' <i>tuyo</i>':""}</span><small>${esc(f.por[0][0])} ≈ ${Math.round(fprot(f,f.por[0][1]))} g</small></button>`).join("")
+   :`<p class="sub" style="font-size:12.5px;margin:6px 2px">No lo tengo. Añádelo abajo con la etiqueta, o apunta a ojo.</p>`}
+function protLogHTML(t){const L=((S.protlog||{})[t]||[]);if(!L.length)return"";
+  return`<div class="pflog">${L.map((x,i)=>`<div><span>${esc(x.q)}</span><b>${String(x.p).replace(".",",")} g</b><button data-pfdel="${i}" aria-label="Quitar">×</button></div>`).join("")}</div>`}
+function protAdd(q,p){const k=todayISO();S.prot=S.prot||{};S.protlog=S.protlog||{};p=fround(p);(S.protlog[k]=S.protlog[k]||[]).push({q,p,at:Date.now()});S.prot[k]=fround((S.prot[k]||0)+p)}
+
 function protTarget(){const ds=Object.keys(S.tests||{}).sort().reverse();for(const d of ds){const v=numv(S.tests[d].peso);if(v)return Math.round(v*1.8/5)*5}return 130}
 function lastMeas(k){const ds=Object.keys(S.tests||{}).sort().reverse();for(const d of ds){const v=numv(S.tests[d][k]);if(v)return{v,d}}return null}
 function vPerfil(){
@@ -2406,9 +2633,16 @@ function vPerfil(){
    <div class="card"><div class="bch"><div><span class="lab">Relación hombros / cintura</span><span class="bign">${ratio?ratio.toFixed(2).replace(".",","):"–"}</span></div><span class="chip acc">objetivo 1,6</span></div>
      ${ratio?`<div class="ratio"><i style="width:${pos(ratio)}%"></i><b style="left:${pos(1.6)}%"></b><span style="left:0%">1,30</span><span style="left:${pos(1.6)}%">1,6</span><span style="left:100%">1,65</span></div><p class="sub" style="font-size:13px">Hombros ${h.v} cm · cintura ${c.v} cm. Es el número que mide la espalda en V: sube cuando crecen los hombros y baja la cintura.</p>`:`<p class="sub" style="font-size:13px">Mide hombros (perímetro por la parte más ancha) y cintura (a la altura del ombligo) y la app calcula tu relación. La espalda en V empieza hacia 1,5; el ideal clásico es 1,6.</p>`}
      <button class="secondary" data-act="test">Apuntar medidas</button></div>
-   <div class="card"><h2>Proteína de hoy</h2><div class="prot"><svg viewBox="0 0 92 92" width="96" height="96"><circle cx="46" cy="46" r="${R}" fill="none" stroke="var(--s3)" stroke-width="9"/><circle cx="46" cy="46" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(C*Math.min(1,pg/pt)).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 46 46)"/><text x="46" y="48" text-anchor="middle" font-family="Bebas Neue" font-size="24" fill="var(--fg)">${pg}</text><text x="46" y="62" text-anchor="middle" font-size="9" fill="var(--fg2)">de ${pt} g</text></svg>
-     <div class="btns">${[20,30,40].map(g=>`<button data-prot="${g}">+${g} g</button>`).join("")}<button class="l" data-prot="-20">−20 g</button></div></div>
-     <p class="sub" style="font-size:12.5px">Objetivo: 1,8 g por kg de peso (${pt} g${lastMeas("peso")?"":", con un peso estimado; apunta tu peso en Medidas"}). Un huevo ≈ 6 g, un yogur griego ≈ 10 g, 100 g de pollo ≈ 25 g, un vaso de leche ≈ 8 g.</p></div>
+   <div class="card"><h2>Proteína de hoy</h2><div class="prot"><svg viewBox="0 0 92 92" width="96" height="96"><circle cx="46" cy="46" r="${R}" fill="none" stroke="var(--s3)" stroke-width="9"/><circle cx="46" cy="46" r="${R}" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(C*Math.min(1,pg/pt)).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 46 46)"/><text x="46" y="48" text-anchor="middle" font-family="Bebas Neue" font-size="24" fill="var(--fg)">${Math.round(pg)}</text><text x="46" y="62" text-anchor="middle" font-size="9" fill="var(--fg2)">de ${pt} g</text></svg>
+     <div style="flex:1;min-width:170px"><span class="lab">${pg>=pt?"Objetivo cumplido":"Te faltan"}</span><span class="bign">${pg>=pt?"✓":Math.round(pt-pg)+" g"}</span></div></div>
+     <div class="pfind"><input id="pfq" type="search" placeholder="¿Qué has comido? Ej.: 2 huevos" autocomplete="off" enterkeyhint="search" aria-label="Buscar alimento"><div id="pfres"></div></div>
+     <div id="pfed">${pfEditor()}</div>
+     ${protLogHTML(t)}
+     <div class="prot"><div class="btns"><span class="sub" style="font-size:12.5px;align-self:center">A ojo:</span>${[10,20,30].map(g=>`<button class="l" data-prot="${g}">+${g} g</button>`).join("")}</div></div>
+     <details class="pfmy"><summary>¿No está tu producto? Añádelo con la etiqueta</summary>
+       <p class="sub" style="font-size:12.5px;margin:6px 0">En la tabla nutricional busca «Proteínas» en la columna «por 100 g». Se guarda para la próxima vez.</p>
+       <div class="pfmyf"><input id="mfn" placeholder="Nombre (ej.: Yogur Hacendado +Prot)" maxlength="40"><input id="mfp" type="number" inputmode="decimal" placeholder="Proteína por 100 g" step="0.1"><input id="mfg" type="number" inputmode="decimal" placeholder="Gramos de una ración" step="1"><button class="primary" data-mfadd>Guardar producto</button></div></details>
+     <p class="sub" style="font-size:12px">Objetivo: 1,8 g por kg de peso (${pt} g${lastMeas("peso")?"":", con un peso estimado; apunta tu peso en Medidas"}). Es una estimación con las tablas de composición BEDCA y USDA: cada marca y receta varía un poco.</p></div>
       <h2 class="section-t">Ajustes</h2>
    <div class="card"><div class="field"><h3>Duración por defecto</h3><div class="seg" role="group">${[30,45,60].map(m=>`<button data-defmin="${m}" aria-pressed="${(S.settings.dur||60)===m}">${m} min</button>`).join("")}</div><p class="sub" style="font-size:13px">La sesión dura exactamente eso.</p></div>
      <div class="field" style="margin-top:14px"><h3>Hora del entreno</h3><input type="time" data-hora value="${esc(S.settings.hora||"17:00")}" style="font:inherit;font-size:17px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--fg)"><p class="sub" style="font-size:13px">Igual que en Focus OS: cada día de ${hhmm(horaIni())} a ${hhmm(horaIni()+60)} (1 hora). En la semana de exámenes, 30 min y la otra media hora es para estudiar. Focus OS te avisa 10 min antes si importas su calendario.</p></div></div>
@@ -3036,6 +3270,9 @@ function sheetAlts(orig){
 }
 
 /* ============ Eventos ============ */
+document.addEventListener("input",e=>{const el=e.target;if(!el)return;if(el.id==="pfq"){PF=null;const ed=document.getElementById("pfed");if(ed)ed.innerHTML="";pfResults(el.value)}
+  else if(el.id==="pfg"&&PF){const f=pfFind(PF.id);PF.g=Math.max(0,parseFloat(String(el.value).replace(",","."))||0);PF.por=PF.por>=0&&Math.abs(PF.g-f.por[PF.por][1]*PF.n)>.5?-1:PF.por;const b=document.querySelector(".pfres-t b");if(b)b.textContent=String(fround(fprot(f,PF.g))).replace(".",",")+" g"}});
+document.addEventListener("keydown",e=>{if(e.target&&e.target.id==="pfq"&&e.key==="Enter"){e.preventDefault();const b=document.querySelector("#pfres [data-pfpick]");if(b)pfOpen(b.dataset.pfpick,e.target.value)}});
 document.addEventListener("change",e=>{if(e.target&&e.target.matches&&e.target.matches("[data-vozsel]")){try{localStorage.setItem("entreno-voz-name",e.target.value)}catch(x){}pickVoice();unlockAudio();setTimeout(()=>say("Esta es mi voz. Vamos a trabajar.",{urgent:1}),300);return}if(e.target&&e.target.id==="pfname"){S.settings.name=e.target.value.trim().slice(0,18);save()}if(e.target&&e.target.id==="vozfiles"&&e.target.files.length){vozSave([...e.target.files]).then(n=>{toast(n+" audios cargados. Pulsa el altavoz de arriba para probar.");render()})}});
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;if(tab!==b.dataset.tab){G_TABCHANGE=true;buzz(8)}tab=b.dataset.tab;if(tab==="hoy")viewDate=todayISO();render();window.scrollTo(0,0)});
 document.addEventListener("click",e=>{
@@ -3064,7 +3301,18 @@ document.addEventListener("click",e=>{
   const skg=t.closest("[data-skg]");if(skg){SKG=+skg.dataset.skg;SKSEL=null;buzz(8);render();return}
   const skn=t.closest("[data-sk]");if(skn){const[a,b]=skn.dataset.sk.split("|");SKSEL=[a,+b];buzz(8);render();return}
   const gt=t.closest("[data-goto]");if(gt){G_TABCHANGE=true;tab=gt.dataset.goto;render();window.scrollTo(0,0);return}
-  const pr=t.closest("[data-prot]");if(pr){S.prot=S.prot||{};const k=todayISO();S.prot[k]=Math.max(0,(S.prot[k]||0)+(+pr.dataset.prot));buzz(10);save();render();return}
+  const pr=t.closest("[data-prot]");if(pr){protAdd("A ojo",+pr.dataset.prot);buzz(10);save();render();return}
+  const pk=t.closest("[data-pfpick]");if(pk){pfOpen(pk.dataset.pfpick,($("#pfq")||{}).value);return}
+  const pp=t.closest("[data-pfpor]");if(pp&&PF){const f=pfFind(PF.id);PF.por=+pp.dataset.pfpor;PF.n=1;PF.g=f.por[PF.por][1];drawPF();return}
+  const ps=t.closest("[data-pfstep]");if(ps&&PF){const f=pfFind(PF.id),d=+ps.dataset.pfstep;PF.n=d>0?(PF.n<1?1:PF.n+1):(PF.n>1?PF.n-1:0.5);PF.g=f.por[PF.por][1]*PF.n;drawPF();return}
+  if(t.closest("[data-pfcancel]")){PF=null;drawPF();return}
+  if(t.closest("[data-pfadd]")&&PF){const f=pfFind(PF.id);if(!f||!(PF.g>0))return;const u=f.u==="ml"?"ml":"g";
+    const q=f.n+" · "+(PF.por>=0?(PF.n!==1?String(PF.n).replace(".",",")+" × ":"")+f.por[PF.por][0]:Math.round(PF.g)+" "+u);
+    const pv=fround(fprot(f,PF.g));protAdd(q,pv);PF=null;buzz(15);save();render();toast("+"+String(pv).replace(".",",")+" g de proteína apuntados");return}
+  const pd=t.closest("[data-pfdel]");if(pd){const k=todayISO(),L=(S.protlog||{})[k]||[],x=L.splice(+pd.dataset.pfdel,1)[0];if(x){S.prot[k]=Math.max(0,fround((S.prot[k]||0)-x.p))}save();render();return}
+  if(t.closest("[data-mfadd]")){const n=(($("#mfn")||{}).value||"").trim(),pv=parseFloat(String(($("#mfp")||{}).value).replace(",",".")),gv=parseFloat(String(($("#mfg")||{}).value).replace(",","."));
+    if(!n||!(pv>=0&&pv<=100)||!(gv>0)){toast("Pon nombre, proteína por 100 g y gramos de la ración.");return}
+    const id="m"+Date.now();S.myfoods=S.myfoods||[];S.myfoods.push({id,n,al:"",p:pv,u:"g",por:[["1 ración ("+Math.round(gv)+" g)",gv]]});save();render();pfOpen(id,"");return}
   const crb=t.closest("[data-cr]");if(crb){const[k,v]=crb.dataset.cr.split("|");CR[k]=v;CT.clear();render();return}
   if(t.closest("[data-testvoice]")){unlockAudio();setTimeout(()=>say((duro()?SG(DU_PREP):sarge()?SG(SG_PREP):"Prueba de voz.")+" Si me oyes, la voz funciona.",{urgent:1}),400);return}
   const co=t.closest("[data-coach]");if(co){S.settings.coach=co.dataset.coach;save();render();say(co.dataset.coach==="duro"?SG(DU_PREP):SG(SG_PREP),{urgent:1});return}
